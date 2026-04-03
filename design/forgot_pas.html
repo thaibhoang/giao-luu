@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#1a1c1c",
+                        "on-tertiary": "#e2e2e2",
+                        "inverse-on-surface": "#f1f1f1",
+                        "primary-container": "#343b4c",
+                        "error": "#ba1a1a",
+                        "tertiary": "#3b3b3b",
+                        "on-surface-variant": "#474747",
+                        "primary-fixed": "#575e70",
+                        "surface-dim": "#dadada",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#5e5e5e",
+                        "tertiary-fixed-dim": "#474747",
+                        "surface-variant": "#e2e2e2",
+                        "on-primary-fixed-variant": "#dce2f7",
+                        "surface-container-high": "#e8e8e8",
+                        "inverse-surface": "#2f3131",
+                        "error-container": "#ffdad6",
+                        "surface": "#f9f9f9",
+                        "on-primary-fixed": "#ffffff",
+                        "surface-bright": "#f9f9f9",
+                        "outline-variant": "#c6c6c6",
+                        "on-tertiary-fixed": "#ffffff",
+                        "on-secondary-fixed": "#121c2a",
+                        "secondary-fixed-dim": "#a1acbf",
+                        "secondary-container": "#cbd5e9",
+                        "outline": "#777777",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#e2e2e2",
+                        "on-error": "#ffffff",
+                        "primary-fixed-dim": "#404758",
+                        "on-tertiary-container": "#ffffff",
+                        "tertiary-container": "#747474",
+                        "surface-container-low": "#f3f3f3",
+                        "on-secondary-fixed-variant": "#323c4c",
+                        "on-background": "#1a1c1c",
+                        "inverse-primary": "#c0c6db",
+                        "on-primary": "#dce2f7",
+                        "secondary": "#555f70",
+                        "primary": "#000000",
+                        "on-secondary-container": "#121c2a",
+                        "background": "#f9f9f9",
+                        "secondary-fixed": "#bdc7db",
+                        "on-error-container": "#410002",
+                        "surface-tint": "#575e70",
+                        "surface-container-highest": "#e2e2e2",
+                        "surface-container": "#eeeeee",
+                        "on-primary-container": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "1rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Lexend", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #ffffff;
+            color: #1a1c1c;
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased min-h-screen flex flex-col items-center justify-between">
+<!-- Top Navigation Bar -->
+<header class="bg-white/80 dark:bg-black/80 backdrop-blur-xl font-['Lexend'] font-bold tracking-tight text-black dark:text-white uppercase docked full-width top-0 sticky z-50 no-line tonal-layering shadow-[0_12px_24px_rgba(26,28,28,0.06)] dark:shadow-none flex items-center justify-between px-5 h-16 w-full">
+<div class="flex items-center gap-4">
+<button class="hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors p-2 rounded-full Active: opacity-70 scale-95 transition-all">
+<span class="material-symbols-outlined block" data-icon="arrow_back">arrow_back</span>
+</button>
+</div>
+<div class="font-['Lexend'] text-2xl font-black tracking-tighter text-black dark:text-white">
+            SPORTMATCH
+        </div>
+<div class="w-10"></div> <!-- Spacer for centering -->
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow w-full max-w-[375px] px-5 py-10 flex flex-col">
+<!-- Editorial Header Section -->
+<div class="mb-12">
+<h1 class="font-headline text-4xl font-extrabold tracking-tighter text-primary mb-4 leading-none">
+                Đặt lại mật khẩu
+            </h1>
+<p class="font-body text-on-surface-variant text-sm leading-relaxed max-w-[280px]">
+                Nhập email để nhận liên kết đặt lại
+            </p>
+</div>
+<!-- Form Section -->
+<div class="space-y-8">
+<div class="space-y-2">
+<label class="font-headline text-[10px] font-bold tracking-widest uppercase text-on-surface-variant ml-1" for="email">
+                    Email
+                </label>
+<div class="relative group">
+<input class="w-full h-14 px-5 bg-surface-container-low border-none rounded-xl font-body text-primary placeholder:text-outline focus:ring-0 focus:bg-surface-container-lowest focus:border-b focus:border-primary transition-all duration-300" id="email" placeholder="ten@vi-du.com" type="email"/>
+</div>
+</div>
+<!-- Primary Action -->
+<button class="w-full h-14 bg-primary text-on-primary-container font-headline font-bold rounded-xl shadow-lg hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+<span>Gửi liên kết</span>
+<span class="material-symbols-outlined text-sm" data-icon="send">send</span>
+</button>
+</div>
+<!-- Secondary Navigation -->
+<div class="mt-8 text-center">
+<a class="inline-block font-body text-sm font-semibold text-primary underline decoration-surface-variant underline-offset-8 hover:decoration-primary transition-all" href="#">
+                Quay lại đăng nhập
+            </a>
+</div>
+<!-- Visual Anchor (Asymmetric Decorative Element) -->
+<div class="mt-auto pt-12 opacity-5">
+<div class="font-headline text-8xl font-black tracking-tighter leading-none -ml-12 select-none pointer-events-none">
+                RESET
+            </div>
+</div>
+</main>
+<!-- Footer Cluster -->
+<footer class="bg-zinc-50 dark:bg-zinc-950 font-['Inter'] text-[10px] font-medium tracking-widest uppercase full-width py-12 no borders tonal-shift flat flex flex-col items-center gap-6 w-full text-center">
+<div class="flex gap-8">
+<a class="text-zinc-400 dark:text-zinc-600 hover:text-black dark:hover:text-white transition-all" href="#">Support</a>
+<a class="text-zinc-400 dark:text-zinc-600 hover:text-black dark:hover:text-white transition-all" href="#">Privacy</a>
+<a class="text-zinc-400 dark:text-zinc-600 hover:text-black dark:hover:text-white transition-all" href="#">Terms</a>
+</div>
+<p class="text-zinc-400 dark:text-zinc-600">
+            © 2024 SPORTMATCH. ENGINEERED FOR PERFORMANCE.
+        </p>
+</footer>
+<!-- Aesthetic Layering: Soft Grain Overlay (Simulated with Gradient) -->
+<div class="fixed inset-0 pointer-events-none opacity-[0.03] z-[100]" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBFyZs-t_VVjwvmlVO8GzIgi9j1n2Mdigt35adGg9yFbzTB6BtBSGeldGCkt7PsUR7-RpFfNoplLtJGExtOGTYsEc0oz7QOZQsL1PDYp55WiUCekNKnZDlcJIn5ZLB1lv4rP22bSFL6xnCypfbac3aN78_3BB5RnGUU0N1_-0_DlZUcPoOPFY0HLvai1543ukLY3owcwCR7qJhEfUKmkSlKG5qua66JquB_9O5MxLwnE9R_6LNLJb3tyvi95tMNahGjWE6YvdsJIw');"></div>
+</body></html>

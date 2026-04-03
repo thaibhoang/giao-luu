@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-on-surface": "#f1f1f1",
+                    "outline-variant": "#c6c6c6",
+                    "surface-container": "#eeeeee",
+                    "on-tertiary-fixed-variant": "#e2e2e2",
+                    "surface-container-high": "#e8e8e8",
+                    "on-tertiary-fixed": "#ffffff",
+                    "secondary-fixed": "#bdc7db",
+                    "on-surface": "#1a1c1c",
+                    "on-background": "#1a1c1c",
+                    "tertiary": "#3b3b3b",
+                    "tertiary-fixed": "#5e5e5e",
+                    "on-primary": "#dce2f7",
+                    "surface-tint": "#575e70",
+                    "surface": "#f9f9f9",
+                    "surface-dim": "#dadada",
+                    "background": "#f9f9f9",
+                    "primary-container": "#343b4c",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "surface-container-low": "#f3f3f3",
+                    "on-primary-container": "#ffffff",
+                    "surface-bright": "#f9f9f9",
+                    "on-error": "#ffffff",
+                    "inverse-primary": "#c0c6db",
+                    "tertiary-fixed-dim": "#474747",
+                    "primary-fixed-dim": "#404758",
+                    "on-tertiary": "#e2e2e2",
+                    "on-error-container": "#410002",
+                    "on-tertiary-container": "#ffffff",
+                    "primary-fixed": "#575e70",
+                    "primary": "#000000",
+                    "on-secondary-fixed-variant": "#323c4c",
+                    "on-primary-fixed-variant": "#dce2f7",
+                    "tertiary-container": "#747474",
+                    "surface-variant": "#e2e2e2",
+                    "on-secondary-container": "#121c2a",
+                    "error": "#ba1a1a",
+                    "secondary-fixed-dim": "#a1acbf",
+                    "on-surface-variant": "#474747",
+                    "on-secondary-fixed": "#121c2a",
+                    "inverse-surface": "#2f3131",
+                    "surface-container-highest": "#e2e2e2",
+                    "error-container": "#ffdad6",
+                    "secondary-container": "#cbd5e9",
+                    "secondary": "#555f70",
+                    "outline": "#777777",
+                    "on-primary-fixed": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Lexend"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f9f9f9; }
+        .font-lexend { font-family: 'Lexend', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-panel { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23474747'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1.5em; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface antialiased pb-24">
+<!-- TopAppBar Navigation Shell -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-[#f9f9f9]/80 dark:bg-[#111827]/80 backdrop-blur-xl border-none">
+<div class="flex items-center px-5 h-16 w-full max-w-7xl mx-auto justify-between">
+<div class="flex items-center gap-4">
+<button class="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined text-black dark:text-white" data-icon="close">close</span>
+</button>
+<h1 class="font-lexend font-bold tracking-tight text-lg text-black dark:text-white uppercase leading-none">Đăng tin mới</h1>
+</div>
+<div class="flex items-center">
+<span class="text-xs font-medium text-on-surface-variant bg-surface-container px-3 py-1 rounded-full">Bản nháp</span>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-20 px-5 max-w-2xl mx-auto">
+<div class="space-y-10">
+<!-- Form Introduction -->
+<section class="mt-4">
+<p class="text-on-surface-variant text-sm leading-relaxed max-w-sm">
+                    Hoàn thành các thông tin bên dưới để tìm đối thủ hoặc đồng đội phù hợp nhất.
+                </p>
+</section>
+<!-- Segmented Control: Chọn môn -->
+<div class="space-y-4">
+<label class="font-lexend font-bold text-sm tracking-wide text-primary uppercase">Chọn môn</label>
+<div class="grid grid-cols-2 p-1.5 bg-surface-container-low rounded-xl gap-2">
+<button class="flex items-center justify-center gap-2 py-3 rounded-lg bg-surface-container-lowest shadow-sm text-sm font-semibold transition-all">
+<span class="material-symbols-outlined text-xl" data-icon="sports_tennis">sports_tennis</span>
+                        Cầu lông
+                    </button>
+<button class="flex items-center justify-center gap-2 py-3 rounded-lg text-on-surface-variant hover:bg-white/50 text-sm font-medium transition-all">
+<span class="material-symbols-outlined text-xl" data-icon="sports_handball">sports_handball</span>
+                        Pickleball
+                    </button>
+</div>
+</div>
+<!-- Text Input: Tiêu đề -->
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<label class="font-lexend font-bold text-sm tracking-wide text-primary uppercase">Tiêu đề</label>
+<span class="text-[10px] font-medium text-on-surface-variant/60">BẮT BUỘC</span>
+</div>
+<div class="relative">
+<input class="w-full h-14 px-5 bg-surface-container-low border-none rounded-xl focus:ring-0 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline-variant font-medium" placeholder="e.g., Giao lưu cầu lông tối nay" type="text"/>
+<p class="mt-2 text-xs font-medium text-error/80 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="warning">warning</span>
+                        Vui lòng nhập tiêu đề
+                    </p>
+</div>
+</div>
+<!-- Map Input: Địa điểm -->
+<div class="space-y-4">
+<label class="font-lexend font-bold text-sm tracking-wide text-primary uppercase">Địa điểm</label>
+<div class="flex flex-col gap-3">
+<div class="relative group">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant" data-icon="location_on">location_on</span>
+<input class="w-full h-14 pl-12 pr-5 bg-surface-container-low border-none rounded-xl focus:ring-0 focus:bg-surface-container-lowest transition-all text-on-surface font-medium" placeholder="Nhập địa chỉ hoặc tên sân" type="text"/>
+</div>
+<button class="flex items-center justify-center gap-2 w-full py-4 bg-surface-container-low border border-dashed border-outline-variant rounded-xl text-sm font-bold text-primary-fixed-dim hover:bg-surface-container transition-colors group">
+<span class="material-symbols-outlined text-lg" data-icon="map">map</span>
+                        Chọn trên bản đồ
+                    </button>
+</div>
+</div>
+<!-- Time Grid: Thời gian -->
+<div class="space-y-4">
+<label class="font-lexend font-bold text-sm tracking-wide text-primary uppercase">Thời gian</label>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-2">
+<span class="text-[10px] font-bold text-on-surface-variant ml-1">BẮT ĐẦU</span>
+<div class="relative">
+<input class="w-full h-14 px-4 bg-surface-container-low border-none rounded-xl focus:ring-0 text-sm font-medium" type="datetime-local"/>
+</div>
+</div>
+<div class="space-y-2">
+<span class="text-[10px] font-bold text-on-surface-variant ml-1">KẾT THÚC</span>
+<div class="relative">
+<input class="w-full h-14 px-4 bg-surface-container-low border-none rounded-xl focus:ring-0 text-sm font-medium" type="datetime-local"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Numeric & Dropdown Grid -->
+<div class="grid grid-cols-2 gap-6">
+<!-- Numeric: Số người cần -->
+<div class="space-y-4">
+<label class="font-lexend font-bold text-sm tracking-wide text-primary uppercase leading-tight">Số người cần</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant" data-icon="group">group</span>
+<input class="w-full h-14 pl-12 pr-5 bg-surface-container-low border-none rounded-xl focus:ring-0 font-lexend font-bold text-lg" placeholder="0" type="number"/>
+</div>
+</div>
+<!-- Dropdown: Trình độ -->
+<div class="space-y-4">
+<label class="font-lexend font-bold text-sm tracking-wide text-primary uppercase leading-tight">Trình độ</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant" data-icon="trending_up">trending_up</span>
+<select class="w-full h-14 pl-12 pr-10 bg-surface-container-low border-none rounded-xl focus:ring-0 text-sm font-semibold">
+<option value="y">Yếu</option>
+<option selected="" value="tb">Trung bình</option>
+<option value="k">Khá</option>
+<option value="g">Giỏi</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Price Input: Giá ước lượng -->
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<label class="font-lexend font-bold text-sm tracking-wide text-primary uppercase">Giá ước lượng (VND)</label>
+<span class="text-[10px] font-medium text-on-surface-variant/40 italic">TÙY CHỌN</span>
+</div>
+<div class="relative group">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant group-focus-within:text-primary transition-colors" data-icon="payments">payments</span>
+<input class="w-full h-14 pl-12 pr-16 bg-surface-container-low border-none rounded-xl focus:ring-0 focus:bg-surface-container-lowest transition-all text-on-surface font-lexend font-bold" placeholder="e.g., 50.000" type="number"/>
+<span class="absolute right-5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-on-surface-variant/60">VNĐ</span>
+</div>
+</div>
+<!-- Text Input: Thông tin liên hệ -->
+<div class="space-y-4 pb-12">
+<label class="font-lexend font-bold text-sm tracking-wide text-primary uppercase">Thông tin liên hệ</label>
+<div class="relative group">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant" data-icon="contact_support">contact_support</span>
+<input class="w-full h-14 pl-12 pr-5 bg-surface-container-low border-none rounded-xl focus:ring-0 focus:bg-surface-container-lowest transition-all text-on-surface font-medium" placeholder="Số điện thoại hoặc link cá nhân" type="text"/>
+</div>
+</div>
+</div>
+</main>
+<!-- Fixed Bottom Action Bar -->
+<div class="fixed bottom-0 left-0 right-0 p-5 bg-surface/90 backdrop-blur-md z-50">
+<div class="max-w-2xl mx-auto">
+<button class="w-full h-14 bg-primary text-on-primary-container rounded-xl font-lexend font-bold text-base tracking-wide flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-xl shadow-black/10">
+                Đăng tin
+                <span class="material-symbols-outlined" data-icon="send">send</span>
+</button>
+</div>
+</div>
+<!-- Bottom Navigation Shell (Minimized/Secondary) -->
+<nav class="fixed bottom-0 left-0 w-full z-[60] flex justify-around items-center px-6 py-2 bg-white/50 backdrop-blur-sm pointer-events-none opacity-0">
+<!-- Hidden but maintaining structure for logic -->
+<div class="flex items-center justify-center bg-black rounded-xl p-3" data-state="active">
+<span class="material-symbols-outlined text-white" data-icon="check_circle">check_circle</span>
+</div>
+<div class="flex items-center justify-center text-[#474747] p-3">
+<span class="material-symbols-outlined" data-icon="cancel">cancel</span>
+</div>
+</nav>
+</body></html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9f9;
+        }
+        .font-lexend {
+            font-family: 'Lexend', sans-serif;
+        }
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-surface": "#2f3131",
+                      "primary": "#000000",
+                      "secondary": "#555f70",
+                      "primary-container": "#343b4c",
+                      "on-secondary-container": "#121c2a",
+                      "tertiary-fixed-dim": "#474747",
+                      "surface-container": "#eeeeee",
+                      "surface-variant": "#e2e2e2",
+                      "surface-bright": "#f9f9f9",
+                      "surface-container-highest": "#e2e2e2",
+                      "secondary-fixed-dim": "#a1acbf",
+                      "outline": "#777777",
+                      "surface-dim": "#dadada",
+                      "on-surface": "#1a1c1c",
+                      "on-error-container": "#410002",
+                      "tertiary": "#3b3b3b",
+                      "surface": "#f9f9f9",
+                      "on-background": "#1a1c1c",
+                      "surface-container-high": "#e8e8e8",
+                      "surface-container-low": "#f3f3f3",
+                      "surface-container-lowest": "#ffffff",
+                      "on-primary-container": "#ffffff",
+                      "on-tertiary": "#e2e2e2",
+                      "error": "#ba1a1a",
+                      "on-primary-fixed-variant": "#dce2f7",
+                      "background": "#f9f9f9",
+                      "on-primary-fixed": "#ffffff",
+                      "on-tertiary-fixed": "#ffffff",
+                      "inverse-primary": "#c0c6db",
+                      "secondary-container": "#cbd5e9",
+                      "error-container": "#ffdad6",
+                      "on-tertiary-fixed-variant": "#e2e2e2",
+                      "on-surface-variant": "#474747",
+                      "secondary-fixed": "#bdc7db",
+                      "inverse-on-surface": "#f1f1f1",
+                      "on-secondary": "#ffffff",
+                      "on-primary": "#dce2f7",
+                      "on-error": "#ffffff",
+                      "primary-fixed": "#575e70",
+                      "on-secondary-fixed-variant": "#323c4c",
+                      "tertiary-container": "#747474",
+                      "primary-fixed-dim": "#404758",
+                      "surface-tint": "#575e70",
+                      "on-secondary-fixed": "#121c2a",
+                      "tertiary-fixed": "#5e5e5e",
+                      "outline-variant": "#c6c6c6",
+                      "on-tertiary-container": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "1.0rem",
+              },
+              "fontFamily": {
+                      "headline": ["Lexend"],
+                      "body": ["Inter"],
+                      "label": ["Inter"]
+              }
+            },
+          }
+        }
+      </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-white/80 dark:bg-black/80 backdrop-blur-xl flex justify-between items-center px-5 h-16 w-full">
+<div class="flex items-center gap-4">
+<button class="active:scale-95 duration-200 hover:opacity-70 transition-opacity">
+<span class="material-symbols-outlined text-black dark:text-white" data-icon="menu">menu</span>
+</button>
+<h1 class="font-lexend font-bold tracking-tight text-xl text-black dark:text-white">Tin của tôi</h1>
+</div>
+<button class="active:scale-95 duration-200 hover:opacity-70 transition-opacity">
+<span class="material-symbols-outlined text-black dark:text-white text-2xl" data-icon="add">add</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-20 px-5 max-w-2xl mx-auto">
+<!-- Tab Switches (Editorial Detail) -->
+<div class="flex gap-8 mb-8 overflow-x-auto no-scrollbar py-2">
+<button class="font-lexend font-bold text-primary border-b-2 border-primary pb-1 shrink-0">Đã đăng (3)</button>
+<button class="font-lexend font-medium text-on-surface-variant hover:text-primary transition-colors pb-1 shrink-0">Bản nháp</button>
+<button class="font-lexend font-medium text-on-surface-variant hover:text-primary transition-colors pb-1 shrink-0">Đã kết thúc</button>
+</div>
+<!-- Listings Bento/List Layout -->
+<div class="space-y-4">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl transition-all duration-300 hover:shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="sports_tennis">sports_tennis</span>
+<span class="font-label text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant">Cầu lông</span>
+</div>
+<h2 class="font-headline font-bold text-lg text-primary leading-tight">Giao lưu cầu lông tối nay</h2>
+</div>
+<button class="active:scale-90 duration-200">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+<div class="space-y-3 mb-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-lg" data-icon="schedule">schedule</span>
+<p class="text-sm text-on-surface-variant">18:00 - 20:00, 15/10</p>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-lg" data-icon="location_on">location_on</span>
+<p class="text-sm text-on-surface-variant">Sân Cầu Lông Kỳ Hòa</p>
+</div>
+</div>
+<div class="flex justify-between items-center">
+<span class="bg-surface-container-low text-on-surface-variant px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Đang hiển thị</span>
+<div class="flex gap-4">
+<button class="text-sm font-bold text-primary hover:opacity-70 transition-opacity">Sửa</button>
+<button class="text-sm font-bold text-error hover:opacity-70 transition-opacity">Xóa</button>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl transition-all duration-300 hover:shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="sports_soccer">sports_soccer</span>
+<span class="font-label text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant">Bóng đá</span>
+</div>
+<h2 class="font-headline font-bold text-lg text-primary leading-tight">Cần 2 slot đá sân 7 tối mai</h2>
+</div>
+<button class="active:scale-90 duration-200">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+<div class="space-y-3 mb-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-lg" data-icon="schedule">schedule</span>
+<p class="text-sm text-on-surface-variant">19:30 - 21:00, 16/10</p>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-lg" data-icon="location_on">location_on</span>
+<p class="text-sm text-on-surface-variant">Sân bóng Chu Văn An</p>
+</div>
+</div>
+<div class="flex justify-between items-center">
+<span class="bg-surface-container-low text-on-surface-variant px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Đang hiển thị</span>
+<div class="flex gap-4">
+<button class="text-sm font-bold text-primary hover:opacity-70 transition-opacity">Sửa</button>
+<button class="text-sm font-bold text-error hover:opacity-70 transition-opacity">Xóa</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Empty State Section -->
+<section class="mt-16 py-12 flex flex-col items-center text-center">
+<div class="relative w-48 h-48 mb-6">
+<div class="absolute inset-0 bg-surface-container-low rounded-full scale-90 opacity-50"></div>
+<img alt="Illustration" class="w-full h-full object-contain mix-blend-multiply opacity-20 grayscale" data-alt="Minimalist line art illustration of a sport field with an empty bench, monochromatic aesthetic, clean white background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPM31aAbJR4uswNpdO6bjdUbKPfTQMF6AquSa08AE8OrOpxrleUZlvqZpIP_SMiwhzganLjAnGFYbbVXuV5CflErfwrV1iRpk2tgz0gVUUxn10YoDUbg9wrduFmCH4Ca2dGoAQc7dwGvl0m_RfUfKXi1PqK2yfVaolOJNGtAPVVhW6Xji4Cnoj4u8m3AJf8xUI3qQOKu3TPb9R_8cEDfSC20Zb5IviYQTnwqoiOlDtBHr-mwzdcNIbKNBwIy5MKyOiAFQby78kfw"/>
+<span class="material-symbols-outlined absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-6xl text-outline-variant" data-icon="assignment_late">assignment_late</span>
+</div>
+<h3 class="font-headline font-bold text-2xl text-primary mb-2">Bạn chưa đăng tin nào</h3>
+<p class="text-on-surface-variant mb-8 max-w-xs">Bắt đầu kết nối với cộng đồng bằng cách đăng tin tìm đồng đội đầu tiên của bạn.</p>
+<button class="bg-primary text-on-primary-container px-8 h-14 rounded-xl font-headline font-bold active:scale-95 duration-200 shadow-xl shadow-primary/10">
+                Đăng tin đầu tiên
+            </button>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-[1.5rem] bg-white/80 dark:bg-black/80 backdrop-blur-xl flex justify-around items-center w-full px-4 py-3 pb-safe shadow-[0_-4px_24px_rgba(0,0,0,0.04)]">
+<a class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 px-3 py-1.5 hover:text-black dark:hover:text-white transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-inter text-[10px] font-semibold uppercase tracking-widest mt-1">Trang chủ</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 px-3 py-1.5 hover:text-black dark:hover:text-white transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="sports_soccer">sports_soccer</span>
+<span class="font-inter text-[10px] font-semibold uppercase tracking-widest mt-1">Sân vận động</span>
+</a>
+<a class="flex flex-col items-center justify-center text-black dark:text-white bg-zinc-100 dark:bg-zinc-800 rounded-xl px-3 py-1.5 active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="assignment" style="font-variation-settings: 'FILL' 1;">assignment</span>
+<span class="font-inter text-[10px] font-semibold uppercase tracking-widest mt-1">Tin của tôi</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-600 px-3 py-1.5 hover:text-black dark:hover:text-white transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-inter text-[10px] font-semibold uppercase tracking-widest mt-1">Cá nhân</span>
+</a>
+</nav>
+</body></html>

@@ -23,8 +23,9 @@ class SportmatchMvpSchema < ActiveRecord::Migration[8.1]
     end
 
     add_check_constraint :listings, "sport IN ('badminton', 'pickleball')", name: "listings_sport_valid"
+    # Khớp Listing::SKILL_LEVELS / docs/DATA_MODEL — tránh lệch CHECK so với validation trong cửa sổ migrate.
     add_check_constraint :listings,
-                         "skill_level IN ('beginner', 'beginner-intermediate', 'intermediate', 'intermediate-advanced', 'advanced')",
+                         "skill_level IN ('yeu', 'trung_binh_yeu', 'trung_binh_minus', 'trung_binh', 'trung_binh_plus', 'trung_binh_plus_plus', 'trung_binh_kha', 'kha', 'ban_chuyen', 'chuyen_nghiep')",
                          name: "listings_skill_level_valid"
     add_check_constraint :listings, "slots_needed >= 1", name: "listings_slots_needed_positive"
     add_check_constraint :listings, "end_at >= start_at", name: "listings_time_range_valid"

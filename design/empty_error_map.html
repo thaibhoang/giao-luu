@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed": "#bdc7db",
+                    "error": "#ba1a1a",
+                    "tertiary-fixed-dim": "#474747",
+                    "on-tertiary": "#e2e2e2",
+                    "outline-variant": "#c6c6c6",
+                    "on-secondary-container": "#121c2a",
+                    "on-primary": "#dce2f7",
+                    "inverse-surface": "#2f3131",
+                    "surface": "#f9f9f9",
+                    "surface-bright": "#f9f9f9",
+                    "primary": "#000000",
+                    "surface-dim": "#dadada",
+                    "on-tertiary-fixed-variant": "#e2e2e2",
+                    "on-secondary-fixed-variant": "#323c4c",
+                    "surface-container-lowest": "#ffffff",
+                    "on-error": "#ffffff",
+                    "surface-variant": "#e2e2e2",
+                    "surface-container-high": "#e8e8e8",
+                    "secondary-fixed-dim": "#a1acbf",
+                    "on-primary-fixed": "#ffffff",
+                    "on-secondary-fixed": "#121c2a",
+                    "inverse-primary": "#c0c6db",
+                    "secondary": "#555f70",
+                    "outline": "#777777",
+                    "on-primary-fixed-variant": "#dce2f7",
+                    "on-primary-container": "#ffffff",
+                    "secondary-container": "#cbd5e9",
+                    "inverse-on-surface": "#f1f1f1",
+                    "surface-container": "#eeeeee",
+                    "primary-container": "#343b4c",
+                    "surface-container-low": "#f3f3f3",
+                    "on-secondary": "#ffffff",
+                    "primary-fixed-dim": "#404758",
+                    "on-surface-variant": "#474747",
+                    "tertiary": "#3b3b3b",
+                    "surface-container-highest": "#e2e2e2",
+                    "background": "#f9f9f9",
+                    "on-background": "#1a1c1c",
+                    "on-tertiary-fixed": "#ffffff",
+                    "on-surface": "#1a1c1c",
+                    "on-error-container": "#410002",
+                    "tertiary-fixed": "#5e5e5e",
+                    "primary-fixed": "#575e70",
+                    "tertiary-container": "#747474",
+                    "surface-tint": "#575e70",
+                    "on-tertiary-container": "#ffffff",
+                    "error-container": "#ffdad6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Lexend"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .font-lexend { font-family: 'Lexend', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col items-center justify-start">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#f9f9f9] dark:bg-zinc-950/80 backdrop-blur-xl flex items-center px-5 h-16 w-full">
+<div class="flex items-center w-full max-w-[375px] mx-auto justify-between">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors scale-95 active:opacity-80 transition-transform">
+<span class="material-symbols-outlined text-[#000000] dark:text-white">arrow_back</span>
+</button>
+<h1 class="font-lexend font-bold tracking-tight text-xl text-[#000000] dark:text-white">Match Map</h1>
+<div class="w-10"></div> <!-- Spacer for centering -->
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full max-w-[375px] pt-16 pb-20 px-6 flex flex-col items-center justify-center text-center">
+<!-- Empty State Container -->
+<div class="w-full flex flex-col items-center">
+<!-- Minimalist Line-Art Illustration -->
+<div class="relative w-48 h-48 mb-10 flex items-center justify-center">
+<!-- Decorative concentric circles for "radar" feel -->
+<div class="absolute inset-0 border border-outline-variant opacity-10 rounded-full scale-100"></div>
+<div class="absolute inset-0 border border-outline-variant opacity-20 rounded-full scale-75"></div>
+<div class="absolute inset-0 border border-outline-variant opacity-30 rounded-full scale-50"></div>
+<!-- Main Icon -->
+<div class="relative z-10 flex items-center justify-center bg-surface-container-lowest w-24 h-24 rounded-3xl shadow-[0_12px_24px_rgba(26,28,28,0.06)]">
+<span class="material-symbols-outlined text-outline text-6xl" style="font-variation-settings: 'wght' 200;">map</span>
+<div class="absolute -top-2 -right-2 bg-primary text-white w-10 h-10 rounded-full flex items-center justify-center border-4 border-surface">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'wght' 700;">question_mark</span>
+</div>
+</div>
+<!-- Floating magnifying glass element -->
+<div class="absolute bottom-4 left-4 bg-surface-container-high p-3 rounded-2xl">
+<span class="material-symbols-outlined text-on-surface-variant text-xl">search</span>
+</div>
+</div>
+<!-- Typography Content -->
+<h2 class="font-lexend font-bold text-2xl text-primary mb-4 leading-tight">
+                Không tìm thấy trận đấu
+            </h2>
+<p class="font-body text-on-surface-variant leading-relaxed mb-10 px-4">
+                Hãy thử mở rộng bán kính tìm kiếm hoặc thay đổi bộ lọc môn thể thao của bạn.
+            </p>
+<!-- Action Button -->
+<button class="w-full h-14 bg-primary text-on-primary-container font-lexend font-semibold text-base rounded-xl transition-transform active:scale-95 shadow-[0_12px_24px_rgba(26,28,28,0.06)]">
+                Mở rộng bán kính
+            </button>
+<button class="mt-4 py-2 px-6 font-lexend text-sm text-on-surface-variant font-medium hover:text-primary transition-colors">
+                Thay đổi bộ lọc
+            </button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 bg-[#ffffff]/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-t-[1.5rem] shadow-[0_-12px_24px_rgba(26,28,28,0.06)]">
+<div class="flex justify-around items-center h-20 px-6 w-full max-w-[375px] mx-auto">
+<!-- Explore -->
+<div class="flex flex-col items-center justify-center text-[#474747] dark:text-zinc-500 px-4 py-2 hover:text-black dark:hover:text-white transition-all duration-300 ease-in-out">
+<span class="material-symbols-outlined">explore</span>
+<span class="font-lexend text-[10px] uppercase tracking-widest font-semibold mt-1">Explore</span>
+</div>
+<!-- Map (Active) -->
+<div class="flex flex-col items-center justify-center text-[#000000] dark:text-white bg-zinc-100 dark:bg-zinc-800 rounded-xl px-4 py-2 transition-all duration-300 ease-in-out">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">map</span>
+<span class="font-lexend text-[10px] uppercase tracking-widest font-semibold mt-1">Map</span>
+</div>
+<!-- Schedule -->
+<div class="flex flex-col items-center justify-center text-[#474747] dark:text-zinc-500 px-4 py-2 hover:text-black dark:hover:text-white transition-all duration-300 ease-in-out">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-lexend text-[10px] uppercase tracking-widest font-semibold mt-1">Schedule</span>
+</div>
+<!-- Profile -->
+<div class="flex flex-col items-center justify-center text-[#474747] dark:text-zinc-500 px-4 py-2 hover:text-black dark:hover:text-white transition-all duration-300 ease-in-out">
+<span class="material-symbols-outlined">person</span>
+<span class="font-lexend text-[10px] uppercase tracking-widest font-semibold mt-1">Profile</span>
+</div>
+</div>
+</nav>
+<!-- Map Background Preview (Faded) -->
+<div class="fixed inset-0 -z-10 pointer-events-none opacity-[0.03]">
+<img class="w-full h-full object-cover grayscale" data-alt="abstract top down map view of urban city grid with blocks and streets in monochromatic grayscale minimalist style" data-location="Hanoi" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwweGjkXRWmQR9j3WqhiXABZ2b9h2qqR-_wuWlWOY1U_VU2XPkqmDlY0JKW16duOn3-drXYjLvrTIL-b6QQfil6n0eqbUS8RiLEurzhOQrHlYgoDY_8BDi_bLfLuaaZFuklGjtXKI8yg6-uRnxUuOCoM7WmGY7DF1ixaTokFr8mtCk7Z379Wt0c4zxiEDGio9W7XWHI0K76rNQhWoPCaJffVprdfkphMyN2Aunci2ZVMgnLk8ciYHcfyMryJ1fWgnCcgN6TLuJew"/>
+</div>
+</body></html>
