@@ -11,7 +11,10 @@ module Internal
 
         payload = params.permit(
           :schema_version, :source_url, :raw_text,
-          extracted: %i[sport location_name start_time end_time slots_needed skill_level price_estimate contact_info title body],
+          extracted: %i[
+            sport location_name start_time end_time slots_needed
+            skill_level_min skill_level_max price_estimate contact_info title body
+          ],
           geocode: %i[lat lng from_cache]
         ).to_h
 
@@ -25,6 +28,8 @@ module Internal
         lat = geocode["lat"]
         lng = geocode["lng"]
         extracted = payload.fetch("extracted", {})
+        skill_level_min = extracted["skill_level_min"].presence || extracted["skill_level_max"]
+        skill_level_max = extracted["skill_level_max"].presence || extracted["skill_level_min"]
 
         listing_attrs = {
           sport: extracted["sport"],
@@ -34,12 +39,13 @@ module Internal
           start_at: extracted["start_time"],
           end_at: extracted["end_time"],
           slots_needed: extracted["slots_needed"],
-          skill_level: extracted["skill_level"],
+          skill_level_min:,
+          skill_level_max:,
           price_estimate: extracted["price_estimate"],
           contact_info: extracted["contact_info"].presence || source_url,
           source: Listing::SOURCE_FACEBOOK_SCRAPE,
           source_url:,
-          schema_version: payload["schema_version"] || 2,
+          schema_version: payload["schema_version"] || 3,
           user_id: nil
         }
 

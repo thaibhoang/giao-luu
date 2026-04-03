@@ -52,16 +52,17 @@ func main() {
 	payload := ingestPayload{
 		SchemaVersion: 2,
 		Extracted: extractedPayload{
-			Sport:       sport,
-			Location:    location,
-			StartTime:   start.Format(time.RFC3339),
-			EndTime:     end.Format(time.RFC3339),
-			SlotsNeeded: 2,
-			SkillLevel:  "trung_binh_yeu",
-			Price:       intPtr(50000),
-			ContactInfo: sourceURL,
-			Title:       "Ingest từ scraper",
-			Body:        rawText,
+			Sport:         sport,
+			Location:      location,
+			StartTime:     start.Format(time.RFC3339),
+			EndTime:       end.Format(time.RFC3339),
+			SlotsNeeded:   2,
+			SkillLevelMin: "trung_binh_yeu",
+			SkillLevelMax: "trung_binh_plus",
+			Price:         intPtr(50000),
+			ContactInfo:   sourceURL,
+			Title:         "Ingest từ scraper",
+			Body:          rawText,
 		},
 		SourceURL: sourceURL,
 		RawText:   rawText,
@@ -95,16 +96,17 @@ type ingestPayload struct {
 }
 
 type extractedPayload struct {
-	Sport       string `json:"sport"`
-	Location    string `json:"location_name"`
-	StartTime   string `json:"start_time"`
-	EndTime     string `json:"end_time"`
-	SlotsNeeded int    `json:"slots_needed"`
-	SkillLevel  string `json:"skill_level"`
-	Price       *int   `json:"price_estimate,omitempty"`
-	ContactInfo string `json:"contact_info"`
-	Title       string `json:"title,omitempty"`
-	Body        string `json:"body,omitempty"`
+	Sport         string `json:"sport"`
+	Location      string `json:"location_name"`
+	StartTime     string `json:"start_time"`
+	EndTime       string `json:"end_time"`
+	SlotsNeeded   int    `json:"slots_needed"`
+	SkillLevelMin string `json:"skill_level_min"`
+	SkillLevelMax string `json:"skill_level_max"`
+	Price         *int   `json:"price_estimate,omitempty"`
+	ContactInfo   string `json:"contact_info"`
+	Title         string `json:"title,omitempty"`
+	Body          string `json:"body,omitempty"`
 }
 
 type geocodePayload struct {

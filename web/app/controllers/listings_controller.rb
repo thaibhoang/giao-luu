@@ -31,7 +31,8 @@ class ListingsController < ApplicationController
   def new
     @listing = Listing.new(
       sport: "badminton",
-      skill_level: "trung_binh",
+      skill_level_min: "trung_binh",
+      skill_level_max: "trung_binh",
       slots_needed: 1,
       start_at: Time.zone.now.change(min: 0) + 1.day,
       end_at: Time.zone.now.change(min: 0) + 1.day + 2.hours
@@ -44,7 +45,7 @@ class ListingsController < ApplicationController
 
   def create
     attrs = listing_params.except(:lat, :lng)
-    @listing = Listing.new(attrs.merge(source: Listing::SOURCE_USER_SUBMITTED, schema_version: 2, user: Current.session&.user))
+    @listing = Listing.new(attrs.merge(source: Listing::SOURCE_USER_SUBMITTED, schema_version: 3, user: Current.session&.user))
     lat = listing_params[:lat].to_f
     lng = listing_params[:lng].to_f
 
@@ -57,7 +58,7 @@ class ListingsController < ApplicationController
       Listing.insert_with_point!(
         @listing.attributes.symbolize_keys.slice(
           :sport, :title, :body, :location_name, :start_at, :end_at,
-          :slots_needed, :skill_level, :price_estimate, :contact_info,
+          :slots_needed, :skill_level_min, :skill_level_max, :price_estimate, :contact_info,
           :source, :source_url, :schema_version, :user_id
         ),
         longitude: lng,
@@ -73,7 +74,7 @@ class ListingsController < ApplicationController
     @listing = Current.session.user.listings.find(params[:id])
     attrs = listing_params.except(:lat, :lng).merge(
       source: Listing::SOURCE_USER_SUBMITTED,
-      schema_version: @listing.schema_version || 2,
+      schema_version: @listing.schema_version || 3,
       user_id: Current.session.user.id
     )
     lat = listing_params[:lat].to_f
@@ -91,7 +92,7 @@ class ListingsController < ApplicationController
         id: @listing.id,
         attributes: attrs.symbolize_keys.slice(
           :sport, :title, :body, :location_name, :start_at, :end_at,
-          :slots_needed, :skill_level, :price_estimate, :contact_info,
+          :slots_needed, :skill_level_min, :skill_level_max, :price_estimate, :contact_info,
           :source, :source_url, :schema_version, :user_id
         ),
         longitude: lng,
@@ -108,7 +109,7 @@ class ListingsController < ApplicationController
   def listing_params
     params.require(:listing).permit(
       :sport, :title, :body, :location_name, :lat, :lng, :start_at, :end_at,
-      :slots_needed, :skill_level, :price_estimate, :contact_info
+      :slots_needed, :skill_level_min, :skill_level_max, :price_estimate, :contact_info
     )
   end
 

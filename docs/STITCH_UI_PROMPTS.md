@@ -245,10 +245,10 @@ Khi nối UI với backend, đối chiếu [API_CONTRACTS.md](API_CONTRACTS.md) 
 
 | Hạng mục | Ghi nhớ |
 |----------|---------|
-| Map feed | `GET /api/v1/listings/map` — query `lat`, `lng`, `radius_meters`, `sport`, `from`, `to`; response `listings[]` với `sport`, `title`, `location_name`, `lat`, `lng`, `start_at`, `end_at`, `skill_level`, `source`. |
+| Map feed | `GET /api/v1/listings/map` — query `sport`, `from`, `to`; response `listings[]` với `sport`, `title`, `location_name`, `lat`, `lng`, `start_at`, `end_at`, `skill_level_min`, `skill_level_max`, `source`. |
 | Chi tiết | `GET /api/v1/listings/:id` hoặc HTML Turbo `GET /listings/:id` — đồng bộ field hiển thị với model `listings`. |
-| Tạo tin | `POST /api/v1/listings` — cần phiên đăng nhập; body `listing` gồm `sport`, `title`, `location_name`, `lat`, `lng`, `start_at`, `end_at`, `slots_needed`, `skill_level`, `price_estimate`, `contact_info`, v.v. |
-| Trình độ | Slug trong DB/API; nhãn tiếng Việt trên UI khớp bảng `skill_level` trong DATA_MODEL. |
+| Tạo tin | `POST /api/v1/listings` — cần phiên đăng nhập; body `listing` gồm `sport`, `title`, `location_name`, `lat`, `lng`, `start_at`, `end_at`, `slots_needed`, `skill_level_min`, `skill_level_max`, `price_estimate`, `contact_info`, v.v. |
+| Trình độ | Slug range trong DB/API; nhãn tiếng Việt trên UI khớp bảng skill level trong DATA_MODEL. |
 | Nguồn tin | `source`: `user_submitted` vs `facebook_scrape` — badge/copy trên A3. |
 | Tọa độ | Lưu POINT(lon, lat) SRID 4326; UI gửi `lat`/`lng` đúng thứ tự API. |
 

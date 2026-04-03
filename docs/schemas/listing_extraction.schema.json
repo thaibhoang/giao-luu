@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://sportmatch.local/schemas/listing_extraction.schema.json",
   "title": "SportMatchListingExtraction",
-  "description": "Structured extraction from free-text recruiting posts (badminton / pickleball). Validates the \"extracted\" object in docs/API_CONTRACTS.md ingest body. Bump ingest schema_version when making incompatible changes (v2: skill_level slug mới).",
+  "description": "Structured extraction from free-text recruiting posts (badminton / pickleball). Validates the \"extracted\" object in docs/API_CONTRACTS.md ingest body. Bump ingest schema_version when making incompatible changes (v3: skill_level range slug).",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -11,7 +11,8 @@
     "start_time",
     "end_time",
     "slots_needed",
-    "skill_level",
+    "skill_level_min",
+    "skill_level_max",
     "contact_info"
   ],
   "properties": {
@@ -38,7 +39,7 @@
       "minimum": 1,
       "description": "Number of players/slots still needed"
     },
-    "skill_level": {
+    "skill_level_min": {
       "type": "string",
       "enum": [
         "yeu",
@@ -52,7 +53,23 @@
         "ban_chuyen",
         "chuyen_nghiep"
       ],
-      "description": "Slug trình độ chuẩn hóa; map cụm tiếng Việt trong SCRAPER_AGENT.md; nhãn UI — Listing::SKILL_LEVEL_LABELS"
+      "description": "Mức trình độ thấp nhất chấp nhận trong dải trình độ của listing"
+    },
+    "skill_level_max": {
+      "type": "string",
+      "enum": [
+        "yeu",
+        "trung_binh_yeu",
+        "trung_binh_minus",
+        "trung_binh",
+        "trung_binh_plus",
+        "trung_binh_plus_plus",
+        "trung_binh_kha",
+        "kha",
+        "ban_chuyen",
+        "chuyen_nghiep"
+      ],
+      "description": "Mức trình độ cao nhất chấp nhận trong dải trình độ của listing"
     },
     "price_estimate": {
       "type": ["integer", "null"],

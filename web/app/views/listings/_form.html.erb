@@ -47,14 +47,18 @@
     </div>
   </section>
 
-  <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+  <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
     <div class="space-y-2">
       <%= render Ui::FieldLabelComponent.new("Số người cần", for_id: "listing_slots_needed") %>
       <%= render Ui::NumberStepperComponent.new(form: f, attribute: :slots_needed, value: listing.slots_needed || 1, min: 1, max: 20) %>
     </div>
     <div class="space-y-2">
-      <%= render Ui::FieldLabelComponent.new("Trình độ", for_id: "listing_skill_level") %>
-      <%= render Ui::SelectFieldComponent.new(form: f, attribute: :skill_level, choices: Listing::SKILL_LEVELS.map { |s| [Listing.skill_label_for(s), s] }) %>
+      <%= render Ui::FieldLabelComponent.new("Trình độ từ", for_id: "listing_skill_level_min") %>
+      <%= render Ui::SelectFieldComponent.new(form: f, attribute: :skill_level_min, choices: Listing::SKILL_LEVELS.map { |s| [Listing.skill_label_for(s), s] }) %>
+    </div>
+    <div class="space-y-2">
+      <%= render Ui::FieldLabelComponent.new("Đến", for_id: "listing_skill_level_max") %>
+      <%= render Ui::SelectFieldComponent.new(form: f, attribute: :skill_level_max, choices: Listing::SKILL_LEVELS.map { |s| [Listing.skill_label_for(s), s] }) %>
     </div>
     <div class="space-y-2">
       <%= render Ui::FieldLabelComponent.new("Phí (VND)", for_id: "listing_price_estimate", optional_badge: true) %>

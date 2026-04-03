@@ -29,6 +29,7 @@ class Listing < ApplicationRecord
     "ban_chuyen" => "Bán chuyên",
     "chuyen_nghiep" => "Chuyên nghiệp"
   }.freeze
+  SKILL_LEVEL_INDEX = SKILL_LEVELS.each_with_index.to_h.freeze
 
   SOURCE_USER_SUBMITTED = "user_submitted"
   SOURCE_FACEBOOK_SCRAPE = "facebook_scrape"
@@ -36,12 +37,13 @@ class Listing < ApplicationRecord
   belongs_to :user, optional: true
 
   validates :sport, inclusion: { in: SPORTS }
-  validates :skill_level, inclusion: { in: SKILL_LEVELS }
+  validates :skill_level_min, :skill_level_max, inclusion: { in: SKILL_LEVELS }
   validates :title, :location_name, :contact_info, :source, presence: true
   validates :slots_needed, numericality: { only_integer: true, greater_than_or_equal_to: 1 }
   validates :schema_version, numericality: { only_integer: true, greater_than_or_equal_to: 1 }
   validate :end_at_not_before_start_at
   validate :user_present_for_user_submitted
+  validate :skill_level_range_order
 
   scope :with_geom, -> { where.not(geom: nil) }
   scope :by_sport, ->(sport) { sport.present? ? where(sport:) : all }
@@ -50,6 +52,17 @@ class Listing < ApplicationRecord
 
   def self.skill_label_for(slug)
     SKILL_LEVEL_LABELS.fetch(slug, slug)
+  end
+
+  def self.skill_range_label_for(min_slug, max_slug)
+    return "" if min_slug.blank? || max_slug.blank?
+    return skill_label_for(min_slug) if min_slug == max_slug
+
+    "#{skill_label_for(min_slug)} - #{skill_label_for(max_slug)}"
+  end
+
+  def skill_range_label
+    self.class.skill_range_label_for(skill_level_min, skill_level_max)
   end
 
   def self.within_radius(lat:, lng:, radius_meters:)
@@ -66,7 +79,7 @@ class Listing < ApplicationRecord
   def self.map_rows_for(sport: nil, from: nil, to: nil)
     rel = with_geom.by_sport(sport).from_time(from).to_time(to)
     rel.select(
-      "id, sport, title, location_name, start_at, end_at, skill_level, price_estimate, source, "\
+      "id, sport, title, location_name, start_at, end_at, skill_level_min, skill_level_max, price_estimate, source, "\
       "ST_Y(geom::geometry) AS lat, ST_X(geom::geometry) AS lng"
     )
   end
@@ -74,7 +87,7 @@ class Listing < ApplicationRecord
   # geography(Point,4326) is not mapped by ActiveRecord (ADR-004); use SQL for writes.
   def self.insert_with_point!(attributes, longitude:, latitude:)
     cols = %i[
-      sport title body location_name start_at end_at slots_needed skill_level
+      sport title body location_name start_at end_at slots_needed skill_level_min skill_level_max
       price_estimate contact_info source source_url schema_version user_id
       created_at updated_at
     ]
@@ -94,7 +107,7 @@ class Listing < ApplicationRecord
 
   def self.update_with_point!(id:, attributes:, longitude:, latitude:)
     cols = %i[
-      sport title body location_name start_at end_at slots_needed skill_level
+      sport title body location_name start_at end_at slots_needed skill_level_min skill_level_max
       price_estimate contact_info source source_url schema_version user_id
       updated_at
     ]
@@ -123,5 +136,16 @@ class Listing < ApplicationRecord
     return unless source == SOURCE_USER_SUBMITTED
 
     errors.add(:user, :blank) if user_id.blank?
+  end
+
+  def skill_level_range_order
+    return if skill_level_min.blank? || skill_level_max.blank?
+
+    min_index = SKILL_LEVEL_INDEX[skill_level_min]
+    max_index = SKILL_LEVEL_INDEX[skill_level_max]
+    return if min_index.nil? || max_index.nil?
+    return if min_index <= max_index
+
+    errors.add(:skill_level_max, "phải lớn hơn hoặc bằng mức bắt đầu")
   end
 end

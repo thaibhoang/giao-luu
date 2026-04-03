@@ -19,7 +19,7 @@ Tài liệu cho agent triển khai pipeline **thu thập → trích xuất → g
 1. Hệ thống: "You output a single JSON object matching the provided JSON Schema. No markdown fences."
 2. User: nội dung text + ngày tham chiếu (để resolve "tối nay", "CN tuần sau") theo **Asia/Ho_Chi_Minh**, sau đó chuyển `start_time`/`end_time` sang **ISO 8601 UTC** trong output.
 3. `sport`: suy luận từ ngữ cảnh; mặc định an toàn theo nhóm nguồn nếu được cấu hình.
-4. `skill_level`: map cụm tiếng Việt sang **slug** (cột DB / API) — một trong:
+4. `skill_level_min` / `skill_level_max`: map cụm tiếng Việt sang **slug** (cột DB / API) — một trong:
    - `yeu` — yếu, mới chơi, sơ cấp
    - `trung_binh_yeu` — trung bình yếu, yếu trung bình
    - `trung_binh_minus` — trung bình -
@@ -46,7 +46,7 @@ Nhãn hiển thị tiếng Việt cho UI: xem `Listing::SKILL_LEVEL_LABELS` tron
 
 - `POST /internal/v1/listings/import` với HMAC theo [API_CONTRACTS.md](API_CONTRACTS.md) và ADR-002.
 - **Idempotent** theo `source_url`.
-- Payload ingest dùng `schema_version` **2** trở lên khi `skill_level` theo slug mới (xem API_CONTRACTS).
+- Payload ingest dùng `schema_version` **3** trở lên khi gửi range `skill_level_min/max` (xem API_CONTRACTS).
 
 ## [Scraper] Rate limit và bot behavior
 

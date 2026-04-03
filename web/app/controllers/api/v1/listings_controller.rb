@@ -27,7 +27,8 @@ module Api
               lng: l.attributes["lng"].to_f,
               start_at: l.start_at&.iso8601,
               end_at: l.end_at&.iso8601,
-              skill_level: l.skill_level,
+              skill_level_min: l.skill_level_min,
+              skill_level_max: l.skill_level_max,
               price_estimate: l.price_estimate,
               source: l.source
             }
@@ -42,14 +43,14 @@ module Api
         listing = Listing.find(params[:id])
         render json: listing.as_json(only: %i[
                                        id sport title body location_name start_at end_at slots_needed
-                                       skill_level price_estimate contact_info source source_url schema_version
+                                       skill_level_min skill_level_max price_estimate contact_info source source_url schema_version
                                      ])
       end
 
       def create
         attrs = listing_create_params.except(:lat, :lng).merge(
           source: Listing::SOURCE_USER_SUBMITTED,
-          schema_version: 2,
+          schema_version: 3,
           user: Current.session&.user
         )
         listing = Listing.new(attrs)
@@ -57,7 +58,7 @@ module Api
           created = Listing.insert_with_point!(
             listing.attributes.symbolize_keys.slice(
               :sport, :title, :body, :location_name, :start_at, :end_at,
-              :slots_needed, :skill_level, :price_estimate, :contact_info,
+              :slots_needed, :skill_level_min, :skill_level_max, :price_estimate, :contact_info,
               :source, :source_url, :schema_version, :user_id
             ),
             longitude: listing_create_params[:lng].to_f,
@@ -76,7 +77,7 @@ module Api
       def listing_create_params
         params.require(:listing).permit(
           :sport, :title, :body, :location_name, :lat, :lng, :start_at, :end_at,
-          :slots_needed, :skill_level, :price_estimate, :contact_info
+          :slots_needed, :skill_level_min, :skill_level_max, :price_estimate, :contact_info
         )
       end
 

@@ -27,7 +27,7 @@
     <div class="flex items-start gap-3"><%= render Ui::IconComponent.new(name: "location_on") %> <div><p class="text-xs uppercase text-on-surface-variant font-bold">Địa điểm</p><p><%= @listing.location_name %></p></div></div>
     <div class="flex items-start gap-3"><%= render Ui::IconComponent.new(name: "schedule") %> <div><p class="text-xs uppercase text-on-surface-variant font-bold">Thời gian</p><p><%= l(@listing.start_at, format: :long) %> - <%= l(@listing.end_at, format: :short) %></p></div></div>
     <div class="flex items-start gap-3"><%= render Ui::IconComponent.new(name: "person_add") %> <div><p class="text-xs uppercase text-on-surface-variant font-bold">Cần thêm</p><p><%= @listing.slots_needed %> người</p></div></div>
-    <div class="flex items-start gap-3"><%= render Ui::IconComponent.new(name: "trending_up") %> <div><p class="text-xs uppercase text-on-surface-variant font-bold">Trình độ</p><p><%= Listing.skill_label_for(@listing.skill_level) %></p></div></div>
+    <div class="flex items-start gap-3"><%= render Ui::IconComponent.new(name: "trending_up") %> <div><p class="text-xs uppercase text-on-surface-variant font-bold">Trình độ</p><p><%= @listing.skill_range_label %></p></div></div>
     <div class="flex items-start gap-3"><%= render Ui::IconComponent.new(name: "payments") %> <div><p class="text-xs uppercase text-on-surface-variant font-bold">Giá</p><p><%= number_with_delimiter(@listing.price_estimate || 0) %> VND</p></div></div>
   </section>
 

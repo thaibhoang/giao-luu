@@ -84,7 +84,7 @@ sequenceDiagram
 
 ## MVP — Tạo listing thủ công
 
-Theo [API_CONTRACTS.md](API_CONTRACTS.md) `POST /api/v1/listings`: **cần đăng nhập**; `skill_level` là slug mới ([listing_extraction.schema.json](schemas/listing_extraction.schema.json)). Có thể enqueue geocode khi thiếu `geom` ([SCRAPER_AGENT.md](SCRAPER_AGENT.md)).
+Theo [API_CONTRACTS.md](API_CONTRACTS.md) `POST /api/v1/listings`: **cần đăng nhập**; `skill_level_min`/`skill_level_max` là slug range mới ([listing_extraction.schema.json](schemas/listing_extraction.schema.json)). Có thể enqueue geocode khi thiếu `geom` ([SCRAPER_AGENT.md](SCRAPER_AGENT.md)).
 
 ```mermaid
 sequenceDiagram
@@ -98,7 +98,7 @@ sequenceDiagram
   alt chưa đăng nhập
     Rails-->>Client: 401 hoặc redirect đăng nhập (tuỳ implement)
   else đã đăng nhập
-    Client->>Rails: POST body listing (ISO 8601 UTC) + skill_level slug
+    Client->>Rails: POST body listing (ISO 8601 UTC) + skill_level_min/max slug
     alt validation lỗi
       Rails-->>Client: 422 { errors: [...] }
     else hợp lệ

@@ -14,14 +14,15 @@ class InternalV1ListingsImportsControllerTest < ActionDispatch::IntegrationTest
 
   test "imports listing with valid hmac" do
     payload = {
-      schema_version: 2,
+      schema_version: 3,
       extracted: {
         sport: "badminton",
         location_name: "Sân thử",
         start_time: (Time.current + 1.day).iso8601,
         end_time: (Time.current + 1.day + 1.hour).iso8601,
         slots_needed: 2,
-        skill_level: "trung_binh",
+        skill_level_min: "trung_binh",
+        skill_level_max: "kha",
         price_estimate: 0,
         contact_info: "https://example.com/contact"
       },

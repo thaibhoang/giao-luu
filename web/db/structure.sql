@@ -85,7 +85,8 @@ CREATE TABLE public.listings (
     start_at timestamp(6) without time zone NOT NULL,
     end_at timestamp(6) without time zone NOT NULL,
     slots_needed integer NOT NULL,
-    skill_level character varying NOT NULL,
+    skill_level_min character varying NOT NULL,
+    skill_level_max character varying NOT NULL,
     price_estimate integer,
     contact_info character varying NOT NULL,
     source character varying NOT NULL,
@@ -95,7 +96,9 @@ CREATE TABLE public.listings (
     updated_at timestamp(6) without time zone NOT NULL,
     geom public.geography(Point,4326),
     user_id bigint,
-    CONSTRAINT listings_skill_level_valid CHECK (((skill_level)::text = ANY ((ARRAY['yeu'::character varying, 'trung_binh_yeu'::character varying, 'trung_binh_minus'::character varying, 'trung_binh'::character varying, 'trung_binh_plus'::character varying, 'trung_binh_plus_plus'::character varying, 'trung_binh_kha'::character varying, 'kha'::character varying, 'ban_chuyen'::character varying, 'chuyen_nghiep'::character varying])::text[]))),
+    CONSTRAINT listings_skill_level_max_valid CHECK (((skill_level_max)::text = ANY ((ARRAY['yeu'::character varying, 'trung_binh_yeu'::character varying, 'trung_binh_minus'::character varying, 'trung_binh'::character varying, 'trung_binh_plus'::character varying, 'trung_binh_plus_plus'::character varying, 'trung_binh_kha'::character varying, 'kha'::character varying, 'ban_chuyen'::character varying, 'chuyen_nghiep'::character varying])::text[]))),
+    CONSTRAINT listings_skill_level_min_valid CHECK (((skill_level_min)::text = ANY ((ARRAY['yeu'::character varying, 'trung_binh_yeu'::character varying, 'trung_binh_minus'::character varying, 'trung_binh'::character varying, 'trung_binh_plus'::character varying, 'trung_binh_plus_plus'::character varying, 'trung_binh_kha'::character varying, 'kha'::character varying, 'ban_chuyen'::character varying, 'chuyen_nghiep'::character varying])::text[]))),
+    CONSTRAINT listings_skill_level_range_valid CHECK ((array_position(ARRAY['yeu'::text, 'trung_binh_yeu'::text, 'trung_binh_minus'::text, 'trung_binh'::text, 'trung_binh_plus'::text, 'trung_binh_plus_plus'::text, 'trung_binh_kha'::text, 'kha'::text, 'ban_chuyen'::text, 'chuyen_nghiep'::text], (skill_level_min)::text) <= array_position(ARRAY['yeu'::text, 'trung_binh_yeu'::text, 'trung_binh_minus'::text, 'trung_binh'::text, 'trung_binh_plus'::text, 'trung_binh_plus_plus'::text, 'trung_binh_kha'::text, 'kha'::text, 'ban_chuyen'::text, 'chuyen_nghiep'::text], (skill_level_max)::text))),
     CONSTRAINT listings_slots_needed_positive CHECK ((slots_needed >= 1)),
     CONSTRAINT listings_sport_valid CHECK (((sport)::text = ANY ((ARRAY['badminton'::character varying, 'pickleball'::character varying])::text[]))),
     CONSTRAINT listings_time_range_valid CHECK ((end_at >= start_at))
@@ -357,6 +360,7 @@ ALTER TABLE ONLY public.listings
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260403110000'),
 ('20260403040003'),
 ('20260403040002'),
 ('20260403040001'),
