@@ -19,14 +19,21 @@ Tài liệu cho agent triển khai pipeline **thu thập → trích xuất → g
 1. Hệ thống: "You output a single JSON object matching the provided JSON Schema. No markdown fences."
 2. User: nội dung text + ngày tham chiếu (để resolve "tối nay", "CN tuần sau") theo **Asia/Ho_Chi_Minh**, sau đó chuyển `start_time`/`end_time` sang **ISO 8601 UTC** trong output.
 3. `sport`: suy luận từ ngữ cảnh; mặc định an toàn theo nhóm nguồn nếu được cấu hình.
-4. `skill_level`: map cụm tiếng Việt sang enum:
-   - "mới chơi", "sơ cấp" → `beginner`
-   - "trung bình yếu", "yếu trung bình" → `beginner-intermediate`
-   - "trung bình" → `intermediate`
-   - "khá", "trên trung bình" → `intermediate-advanced`
-   - "mạnh", "cao thủ" → `advanced`
+4. `skill_level`: map cụm tiếng Việt sang **slug** (cột DB / API) — một trong:
+   - `yeu` — yếu, mới chơi, sơ cấp
+   - `trung_binh_yeu` — trung bình yếu, yếu trung bình
+   - `trung_binh_minus` — trung bình -
+   - `trung_binh` — trung bình (không phân nhánh)
+   - `trung_binh_plus` — trung bình +
+   - `trung_binh_plus_plus` — trung bình ++
+   - `trung_binh_kha` — trung bình khá
+   - `kha` — khá, trên trung bình (không ghi “trung bình khá”)
+   - `ban_chuyen` — bán chuyên
+   - `chuyen_nghiep` — chuyên nghiệp, mạnh, cao thủ
 5. `price_estimate`: số nguyên VND; nếu không rõ → `null`.
 6. `contact_info`: ưu tiên URL bài viết gốc.
+
+Nhãn hiển thị tiếng Việt cho UI: xem `Listing::SKILL_LEVEL_LABELS` trong app (hoặc bảng tương đương trong tài liệu product).
 
 ## [Scraper] Geocoding
 
@@ -39,6 +46,7 @@ Tài liệu cho agent triển khai pipeline **thu thập → trích xuất → g
 
 - `POST /internal/v1/listings/import` với HMAC theo [API_CONTRACTS.md](API_CONTRACTS.md) và ADR-002.
 - **Idempotent** theo `source_url`.
+- Payload ingest dùng `schema_version` **2** trở lên khi `skill_level` theo slug mới (xem API_CONTRACTS).
 
 ## [Scraper] Rate limit và bot behavior
 

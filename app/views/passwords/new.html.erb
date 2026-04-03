@@ -1,0 +1,5 @@
+<h1>Quên mật khẩu</h1>
+<%= form_with url: passwords_path, method: :post do |f| %>
+  <p><%= f.email_field :email_address, placeholder: "Email", required: true %></p>
+  <p><%= f.submit "Gửi hướng dẫn" %></p>
+<% end %>

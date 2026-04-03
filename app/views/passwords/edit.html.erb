@@ -1,0 +1,6 @@
+<h1>Đặt lại mật khẩu</h1>
+<%= form_with url: password_path(params[:token]), method: :put do |f| %>
+  <p><%= f.password_field :password, placeholder: "Mật khẩu mới", required: true %></p>
+  <p><%= f.password_field :password_confirmation, placeholder: "Xác nhận", required: true %></p>
+  <p><%= f.submit "Cập nhật" %></p>
+<% end %>

@@ -1,9 +1,71 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+# frozen_string_literal: true
+
+# Seed listings có geom cố định để kiểm map / ST_DWithin (docs/DATA_MODEL.md).
+return unless ActiveRecord::Base.connection.table_exists?("listings")
+return unless ActiveRecord::Base.connection.extension_enabled?("postgis")
+return unless ActiveRecord::Base.connection.table_exists?("users")
+
+now = Time.current
+
+demo_user = User.find_or_initialize_by(email_address: "demo@example.com")
+if demo_user.new_record?
+  demo_user.password = "password"
+  demo_user.password_confirmation = "password"
+  demo_user.save!
+end
+
+unless Listing.exists?(title: "Seed: giao lưu HCM")
+  Listing.insert_with_point!(
+    {
+      sport: "badminton",
+      title: "Seed: giao lưu HCM",
+      body: "Bản ghi thử từ db:seed",
+      location_name: "Trung tâm Quận 1 (seed)",
+      start_at: now + 1.day,
+      end_at: now + 1.day + 2.hours,
+      slots_needed: 2,
+      skill_level: "trung_binh",
+      price_estimate: 50_000,
+      contact_info: "https://example.com/seed-hcm",
+      source: "user_submitted",
+      source_url: nil,
+      schema_version: 2,
+      user_id: demo_user.id
+    },
+    longitude: 106.6297,
+    latitude: 10.8231
+  )
+end
+
+unless Listing.exists?(title: "Seed: pickleball Hà Nội")
+  Listing.insert_with_point!(
+    {
+      sport: "pickleball",
+      title: "Seed: pickleball Hà Nội",
+      location_name: "Công viên (seed)",
+      start_at: now + 2.days,
+      end_at: now + 2.days + 3.hours,
+      slots_needed: 3,
+      skill_level: "trung_binh_yeu",
+      price_estimate: nil,
+      contact_info: "https://example.com/seed-hn",
+      source: "user_submitted",
+      source_url: nil,
+      schema_version: 2,
+      user_id: demo_user.id
+    },
+    longitude: 105.8342,
+    latitude: 21.0278
+  )
+end
+
+cache_key = "sân 583 nguyễn trãi, hồ chí minh"
+unless GeocodingCache.exists?(location_query: cache_key)
+  GeocodingCache.insert_with_point!(
+    location_query: cache_key,
+    provider: "google",
+    raw_response: nil,
+    longitude: 106.6297,
+    latitude: 10.8231
+  )
+end

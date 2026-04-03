@@ -1,0 +1,6 @@
+<h1>Đăng nhập</h1>
+<%= form_with url: session_path, method: :post do |f| %>
+  <p><%= f.email_field :email_address, placeholder: "Email", required: true %></p>
+  <p><%= f.password_field :password, placeholder: "Mật khẩu", required: true %></p>
+  <p><%= f.submit "Đăng nhập" %></p>
+<% end %>

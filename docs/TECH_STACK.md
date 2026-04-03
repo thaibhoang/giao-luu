@@ -21,11 +21,11 @@ Tài liệu dành cho **Architect Agent** và mọi implementer. Không thêm fr
 | ADR-001 | Trang bản đồ dùng **React** (Google Maps qua `@react-google-maps/api`) build bằng **`jsbundling-rails` + esbuild**; mount vào layout Rails | [decisions/001-map-frontend-react-esbuild.md](decisions/001-map-frontend-react-esbuild.md) |
 | ADR-002 | Ingest scraper → Rails: **HMAC-signed JSON** qua HTTPS nội bộ; không public không auth | [decisions/002-scraper-to-rails-auth.md](decisions/002-scraper-to-rails-auth.md) |
 | ADR-003 | Thời gian lưu DB: **UTC** (`timestamptz`); hiển thị theo timezone người dùng (mặc định `Asia/Ho_Chi_Minh`) | [decisions/003-timezone-storage.md](decisions/003-timezone-storage.md) |
+| ADR-004 | PostGIS: migration SQL + **`db/structure.sql`**, không dùng gem `activerecord-postgis-adapter` trong MVP | [decisions/004-postgis-without-adapter.md](decisions/004-postgis-without-adapter.md) |
 
 ## PostGIS trong Rails
 
-- Kích hoạt extension `postgis` trong migration.
-- Có thể dùng gem `activerecord-postgis-adapter` **hoặc** SQL/raw `ST_GeogFromText` tùy ADR bổ sung; cho đến khi có ADR mới, ưu tiên **một** cách nhất quán được ghi trong migration đầu tiên có `geography`.
+- Chốt cách làm: [ADR-004](decisions/004-postgis-without-adapter.md) — `enable_extension "postgis"`, cột `geography` và GIST qua SQL trong migration, `config.active_record.schema_format = :sql`.
 
 ## Môi trường và secrets
 

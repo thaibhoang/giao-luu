@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://sportmatch.local/schemas/listing_extraction.schema.json",
   "title": "SportMatchListingExtraction",
-  "description": "Structured extraction from free-text recruiting posts (badminton / pickleball). Validates the \"extracted\" object in docs/API_CONTRACTS.md ingest body. Bump ingest schema_version when making incompatible changes.",
+  "description": "Structured extraction from free-text recruiting posts (badminton / pickleball). Validates the \"extracted\" object in docs/API_CONTRACTS.md ingest body. Bump ingest schema_version when making incompatible changes (v2: skill_level slug mới).",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -41,13 +41,18 @@
     "skill_level": {
       "type": "string",
       "enum": [
-        "beginner",
-        "beginner-intermediate",
-        "intermediate",
-        "intermediate-advanced",
-        "advanced"
+        "yeu",
+        "trung_binh_yeu",
+        "trung_binh_minus",
+        "trung_binh",
+        "trung_binh_plus",
+        "trung_binh_plus_plus",
+        "trung_binh_kha",
+        "kha",
+        "ban_chuyen",
+        "chuyen_nghiep"
       ],
-      "description": "Normalized skill band; map Vietnamese colloquial phrases in SCRAPER_AGENT.md"
+      "description": "Slug trình độ chuẩn hóa; map cụm tiếng Việt trong SCRAPER_AGENT.md; nhãn UI — Listing::SKILL_LEVEL_LABELS"
     },
     "price_estimate": {
       "type": ["integer", "null"],

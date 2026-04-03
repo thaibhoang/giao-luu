@@ -84,7 +84,7 @@ sequenceDiagram
 
 ## MVP — Tạo listing thủ công
 
-Theo [API_CONTRACTS.md](API_CONTRACTS.md) `POST /api/v1/listings`. Auth ghi nhận là **sau MVP**; có thể enqueue geocode khi thiếu `geom` ([SCRAPER_AGENT.md](SCRAPER_AGENT.md)).
+Theo [API_CONTRACTS.md](API_CONTRACTS.md) `POST /api/v1/listings`: **cần đăng nhập**; `skill_level` là slug mới ([listing_extraction.schema.json](schemas/listing_extraction.schema.json)). Có thể enqueue geocode khi thiếu `geom` ([SCRAPER_AGENT.md](SCRAPER_AGENT.md)).
 
 ```mermaid
 sequenceDiagram
@@ -94,17 +94,22 @@ sequenceDiagram
   participant PostGIS
   participant SolidQueueWorker
 
-  Client->>Rails: POST /api/v1/listings + body listing (ISO 8601 UTC)
-  alt validation lỗi
-    Rails-->>Client: 422 { errors: [...] }
-  else hợp lệ
-    Rails->>PostGIS: INSERT listing (geom nếu có lat/lng)
-    PostGIS-->>Rails: ok
-    opt Chưa có geom, chỉ có location_name
-      Rails->>SolidQueueWorker: enqueue GeocodeListingJob
-      Note over SolidQueueWorker: xử lý bất đồng bộ — xem diagram job geocode
+  Client->>Rails: POST /api/v1/listings + cookie/session hợp lệ
+  alt chưa đăng nhập
+    Rails-->>Client: 401 hoặc redirect đăng nhập (tuỳ implement)
+  else đã đăng nhập
+    Client->>Rails: POST body listing (ISO 8601 UTC) + skill_level slug
+    alt validation lỗi
+      Rails-->>Client: 422 { errors: [...] }
+    else hợp lệ
+      Rails->>PostGIS: INSERT listing user_id + geom nếu có lat/lng
+      PostGIS-->>Rails: ok
+      opt Chưa có geom, chỉ có location_name
+        Rails->>SolidQueueWorker: enqueue GeocodeListingJob
+        Note over SolidQueueWorker: xử lý bất đồng bộ — xem diagram job geocode
+      end
+      Rails-->>Client: 201 (hoặc 200 tuỳ implement) + listing
     end
-    Rails-->>Client: 201 (hoặc 200 tuỳ implement) + listing
   end
 ```
 
