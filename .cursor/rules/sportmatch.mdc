@@ -1,0 +1,15 @@
+---
+description: Quy tắc dự án SportMatch (PostGIS, stack, privacy, Git)
+globs: "**/*.{rb,erb,js,go}"
+alwaysApply: false
+---
+
+# SportMatch — Cursor rules
+
+- Đọc [AGENTS.md](../AGENTS.md) trước khi sửa code; stack cứng trong [docs/TECH_STACK.md](../docs/TECH_STACK.md).
+- **PostGIS**: Tọa độ `POINT(longitude, latitude)`, kiểu `geography(Point,4326)`; `ST_DWithin` và bán kính theo **mét**. Không đảo lon/lat.
+- **Job nền**: Ưu tiên **Solid Queue**; không đổi sang Sidekiq trừ khi có ADR mới.
+- **Git**: Conventional Commits; branch `feature/*`, `hotfix/*`.
+- **Privacy**: Không lưu PII nhạy cảm từ Facebook ngoài link nguồn / dữ liệu listing đã thống nhất trong docs.
+- **Map UI**: Clustering khi nhiều marker; icon tách cầu lông vs pickleball ([docs/MAPS_AND_COSTS.md](../docs/MAPS_AND_COSTS.md)).
+- **Scraper/Go**: Validate JSON theo [docs/schemas/listing_extraction.schema.json](../docs/schemas/listing_extraction.schema.json); rate limit / backoff cho nguồn ngoài.

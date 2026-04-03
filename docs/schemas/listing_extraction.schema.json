@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sportmatch.local/schemas/listing_extraction.schema.json",
+  "title": "SportMatchListingExtraction",
+  "description": "Structured extraction from free-text recruiting posts (badminton / pickleball). Validates the \"extracted\" object in docs/API_CONTRACTS.md ingest body. Bump ingest schema_version when making incompatible changes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sport",
+    "location_name",
+    "start_time",
+    "end_time",
+    "slots_needed",
+    "skill_level",
+    "contact_info"
+  ],
+  "properties": {
+    "sport": {
+      "type": "string",
+      "enum": ["badminton", "pickleball"]
+    },
+    "location_name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Venue name or address snippet for display and geocoding"
+    },
+    "start_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601; prefer Z (UTC) or explicit offset"
+    },
+    "end_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "slots_needed": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Number of players/slots still needed"
+    },
+    "skill_level": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "beginner-intermediate",
+        "intermediate",
+        "intermediate-advanced",
+        "advanced"
+      ],
+      "description": "Normalized skill band; map Vietnamese colloquial phrases in SCRAPER_AGENT.md"
+    },
+    "price_estimate": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "description": "Estimated fee per person in VND when mentioned; null if unknown"
+    },
+    "contact_info": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Prefer canonical Facebook post URL; no raw phone/email unless policy allows"
+    }
+  }
+}

@@ -1,24 +1,47 @@
-# README
+# SportMatch (giao-luu)
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Nền tảng kết nối **cầu lông** và **pickleball** — tìm đối / giao lưu, hiển thị tin trên bản đồ.
 
-Things you may want to cover:
+**Tài liệu cho AI và dev**: bắt đầu từ [AGENTS.md](AGENTS.md), sau đó [docs/PROJECT_CHARTER.md](docs/PROJECT_CHARTER.md) và [docs/TECH_STACK.md](docs/TECH_STACK.md).
 
-* Ruby version
+## Yêu cầu môi trường (dev)
 
-* System dependencies
+- Ruby (theo [.ruby-version](.ruby-version))
+- PostgreSQL **có extension PostGIS**
+- Node.js + Yarn hoặc npm (cho bundle map React khi ADR-001 được implement)
+- Go 1.22+ (cho service scraper, thư mục `scraper/` khi được thêm)
 
-* Configuration
+## Cài đặt nhanh (Rails)
 
-* Database creation
+```bash
+bin/setup
+```
 
-* Database initialization
+Cấu hình DB trong `config/database.yml`. Sau khi bật PostGIS, tạo DB và migration theo [docs/DATA_MODEL.md](docs/DATA_MODEL.md).
 
-* How to run the test suite
+## Biến môi trường (gợi ý)
 
-* Services (job queues, cache servers, search engines, etc.)
+| Biến | Mô tả |
+|------|--------|
+| `DATABASE_URL` | Postgres + PostGIS |
+| `GOOGLE_MAPS_API_KEY` | Maps JS / hoặc tách key server cho Geocoding |
+| `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` | Pipeline extract |
+| `SCRAPER_HMAC_SECRET` | Ký request ingest Go → Rails |
 
-* Deployment instructions
+Chi tiết: [docs/TECH_STACK.md](docs/TECH_STACK.md), [docs/API_CONTRACTS.md](docs/API_CONTRACTS.md).
 
-* ...
+## Chạy ứng dụng
+
+```bash
+bin/dev
+```
+
+## Kiểm tra
+
+```bash
+bin/ci
+```
+
+## License / compliance
+
+Pipeline tự động từ Facebook có rủi ro ToS — đọc [docs/SCRAPER_AGENT.md](docs/SCRAPER_AGENT.md).
