@@ -2,8 +2,6 @@
 
 class SportmatchMvpSchema < ActiveRecord::Migration[8.1]
   def up
-    enable_extension "postgis" unless extension_enabled?("postgis")
-
     create_table :listings do |t|
       t.string :sport, null: false
       t.string :title, null: false

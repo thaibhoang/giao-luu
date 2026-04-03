@@ -6,7 +6,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: giao_luu_development
     ports:
-      - "5432:5432"
+      - "54322:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -19,6 +19,9 @@ services:
     build:
       context: ./web
       dockerfile: Dockerfile
+      target: development
+      args:
+        DEV_IMAGE: "true"
     depends_on:
       postgres:
         condition: service_healthy
@@ -26,8 +29,11 @@ services:
       - "3000:80"
     environment:
       RAILS_ENV: development
+      PORT: "80"
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/giao_luu_development
       RAILS_INTERNAL_URL: http://web:80
+      # Tuỳ chọn: export RAILS_MASTER_KEY trước khi up, hoặc thêm vào web/.env (compose không đọc web/.env trừ khi khai báo env_file)
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY:-}
 
   scraper:
     build:
@@ -37,7 +43,6 @@ services:
       - web
     environment:
       RAILS_INTERNAL_URL: http://web:80
-    # Binary stub; sau này scraper gọi ingest Rails qua biến này
     restart: "no"
 
 volumes:

@@ -18,7 +18,17 @@ default: &default
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  user: <%= ENV["DATABASE_USER"] %>
+  password: <%= ENV["DATABASE_PASSWORD"] %>
+  # Docker Compose map PostGIS ra host 54322 — xem .env.example ở gốc repo.
+  host: <%= ENV.fetch("DATABASE_HOST", "localhost") %>
+  port: <%= ENV.fetch("DATABASE_PORT", "5432").to_i %>
 
+  # The specified database role being used to connect to PostgreSQL.
+  # To create additional roles in PostgreSQL see `$ createuser --help`.
+  # When left blank, PostgreSQL will use the default role. This is
+  # the same name as the operating system user running Rails.
+  #username: giao_luu
 
 development:
   <<: *default

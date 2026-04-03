@@ -22,6 +22,8 @@ Nền tảng kết nối **cầu lông** và **pickleball** — tìm đối / gi
 
 ## Docker Compose (PostGIS + Rails + scraper)
 
+Stack dùng image Rails **target `development`** (đủ gem nhóm `:development`, khớp `RAILS_ENV=development` trong compose) và PostGIS 16. Service `web` map **http://localhost:3000** → cổng 80 trong container (Thruster + Puma).
+
 Từ gốc repo:
 
 ```bash
@@ -29,7 +31,15 @@ docker compose build
 docker compose up
 ```
 
-Ứng dụng Rails: **http://localhost:3000** (map cổng host `3000` → `80` trong container). Nếu cần giải mã `credentials`, đặt `RAILS_MASTER_KEY` trong môi trường hoặc file `.env` (xem [.env.example](.env.example)).
+Tuỳ chọn: `export RAILS_MASTER_KEY=...` trước khi `up` nếu cần giải mã `credentials` (không có `web/config/master.key` trong image). Xem [.env.example](.env.example).
+
+**Lưu ý:** `docker compose` chỉ dùng **một** Postgres (primary). Chạy full Solid Cache/Queue/Cable như `production` trong `database.yml` không nằm trong luồng compose này.
+
+**Build image production (Kamal / không compose),** mặc định stage cuối của [web/Dockerfile](web/Dockerfile):
+
+```bash
+docker build -f web/Dockerfile -t giao_luu_web web
+```
 
 ## Cài đặt nhanh (Rails, native)
 
