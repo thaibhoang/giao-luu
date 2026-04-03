@@ -1,0 +1,4 @@
+<%= content_tag :span, name,
+      class: icon_classes,
+      data: (extra_attributes[:data] || {}).merge(icon: data_icon),
+      **extra_attributes.except(:data) %>

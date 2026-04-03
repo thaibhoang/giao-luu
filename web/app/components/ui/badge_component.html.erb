@@ -1,0 +1,9 @@
+<span
+  class="<%= class_names(
+    "text-xs font-medium",
+    tone_classes,
+    @html_options[:class]
+  ) %>"
+  <%= tag.attributes(@html_options.except(:class)) %>>
+  <%= text %>
+</span>

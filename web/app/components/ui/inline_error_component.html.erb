@@ -1,0 +1,6 @@
+<p
+  class="<%= class_names("mt-2 text-xs font-medium text-error/80 flex items-center gap-1", @html_options[:class]) %>"
+  <%= tag.attributes(@html_options.except(:class)) %>>
+  <%= render Ui::IconComponent.new(name: "warning", size_class: "text-sm") %>
+  <%= message %>
+</p>

@@ -1,0 +1,19 @@
+<div class="relative <%= @html_options[:wrapper_class] %>">
+  <% if icon.present? %>
+    <span class="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none z-10">
+      <%= render Ui::IconComponent.new(name: icon, size_class: "text-xl text-on-surface-variant") %>
+    </span>
+  <% end %>
+  <% html_opts = { class: select_classes }.merge(@html_options.except(:wrapper_class, :class)) %>
+  <% html_opts[:id] = field_id if field_id.present? %>
+  <% if form && attribute %>
+    <%= form.select attribute,
+          choices,
+          { include_blank: include_blank },
+          html_opts %>
+  <% else %>
+    <%= select_tag name,
+          options_for_select(choices, selected),
+          html_opts.merge(include_blank: include_blank) %>
+  <% end %>
+</div>

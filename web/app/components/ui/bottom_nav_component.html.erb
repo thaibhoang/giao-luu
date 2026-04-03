@@ -1,0 +1,23 @@
+<nav
+  class="<%= class_names(
+    "fixed bottom-0 w-full z-50 bg-[#ffffff]/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-t-[1.5rem] shadow-[0_-12px_24px_rgba(26,28,28,0.06)]",
+    @html_options[:class]
+  ) %>"
+  <%= tag.attributes(@html_options.except(:class)) %>>
+  <div class="flex justify-around items-center h-20 px-6 w-full max-w-[375px] mx-auto">
+    <% items.each do |item| %>
+      <% active = item[:active] %>
+      <%= link_to item.fetch(:path), class: class_names(
+            "flex flex-col items-center justify-center px-4 py-2 transition-all duration-300 ease-in-out rounded-xl",
+            active ? "text-[#000000] dark:text-white bg-zinc-100 dark:bg-zinc-800" : "text-[#474747] dark:text-zinc-500 hover:text-black dark:hover:text-white"
+          ) do %>
+        <%= render Ui::IconComponent.new(
+              name: item.fetch(:icon),
+              filled: active,
+              size_class: "text-2xl"
+            ) %>
+        <span class="font-lexend text-[10px] uppercase tracking-widest font-semibold mt-1"><%= item.fetch(:label) %></span>
+      <% end %>
+    <% end %>
+  </div>
+</nav>

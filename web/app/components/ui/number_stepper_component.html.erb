@@ -1,0 +1,25 @@
+<div
+  class="<%= class_names("flex items-center bg-surface-container-low rounded-xl", @html_options[:class]) %>"
+  data-controller="number-stepper"
+  <%= tag.attributes(@html_options.except(:class)) %>>
+  <button type="button" class="p-4 text-black shrink-0" data-action="number-stepper#decrement">
+    <%= render Ui::IconComponent.new(name: "remove") %>
+  </button>
+  <% input_attrs = {
+       class: "w-full bg-transparent border-none text-center font-lexend font-bold focus:ring-0 ui-input-no-spin",
+       type: "number",
+       min: min,
+       max: max,
+       step: step,
+       data: { number_stepper_target: "input" }
+     } %>
+  <% input_attrs[:id] = field_id if field_id.present? %>
+  <% if form && attribute %>
+    <%= form.number_field attribute, value: value, **input_attrs %>
+  <% else %>
+    <%= number_field_tag name, value, **input_attrs %>
+  <% end %>
+  <button type="button" class="p-4 text-black shrink-0" data-action="number-stepper#increment">
+    <%= render Ui::IconComponent.new(name: "add") %>
+  </button>
+</div>

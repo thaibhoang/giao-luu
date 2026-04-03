@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi" class="light">
   <head>
     <title><%= content_for(:title) || "Giao Luu" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -18,16 +18,24 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <body class="bg-background text-on-surface font-body antialiased min-h-screen flex flex-col">
+    <%# Khu vực mount React / full-bleed map (ADR-001); đặt content_for :map_mount trong view trang bản đồ. %>
+    <%= yield :map_mount %>
+
     <% flash.each do |type, message| %>
-      <div class="flash flash-<%= type %>"><%= message %></div>
+      <%= render Ui::FlashComponent.new(type: type, message: message) %>
     <% end %>
-    <main class="container mx-auto mt-28 px-5 flex">
+
+    <main class="flex-1 w-full flex flex-col min-h-0">
       <%= yield %>
     </main>
   </body>

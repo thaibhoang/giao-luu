@@ -1,0 +1,35 @@
+<div class="w-full flex flex-col items-center <%= @html_options[:class] %>" <%= tag.attributes(@html_options.except(:class)) %>>
+  <div class="relative w-48 h-48 mb-10 flex items-center justify-center">
+    <div class="absolute inset-0 border border-outline-variant opacity-10 rounded-full scale-100"></div>
+    <div class="absolute inset-0 border border-outline-variant opacity-20 rounded-full scale-75"></div>
+    <div class="absolute inset-0 border border-outline-variant opacity-30 rounded-full scale-50"></div>
+    <div class="relative z-10 flex items-center justify-center bg-surface-container-lowest w-24 h-24 rounded-3xl shadow-[0_12px_24px_rgba(26,28,28,0.06)]">
+      <%= render Ui::IconComponent.new(
+            name: "map",
+            size_class: "text-6xl text-outline",
+            style: "font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;"
+          ) %>
+      <div class="absolute -top-2 -right-2 bg-primary text-white w-10 h-10 rounded-full flex items-center justify-center border-4 border-surface">
+        <%= render Ui::IconComponent.new(
+              name: "question_mark",
+              size_class: "text-sm text-white",
+              style: "font-variation-settings: 'FILL' 0, 'wght' 700, 'GRAD' 0, 'opsz' 24;"
+            ) %>
+      </div>
+    </div>
+    <div class="absolute bottom-4 left-4 bg-surface-container-high p-3 rounded-2xl">
+      <%= render Ui::IconComponent.new(name: "search", size_class: "text-xl text-on-surface-variant") %>
+    </div>
+  </div>
+  <h2 class="font-lexend font-bold text-2xl text-primary mb-4 leading-tight text-center"><%= title %></h2>
+  <p class="font-body text-on-surface-variant leading-relaxed mb-10 px-4 text-center"><%= description %></p>
+  <% primary_classes = "w-full max-w-sm h-14 bg-primary text-on-primary-container font-lexend font-semibold text-base rounded-xl transition-transform active:scale-95 shadow-[0_12px_24px_rgba(26,28,28,0.06)] inline-flex items-center justify-center" %>
+  <% if primary_href.present? %>
+    <%= link_to primary_label, primary_href, class: primary_classes %>
+  <% else %>
+    <%= button_tag primary_label, type: "button", class: primary_classes %>
+  <% end %>
+  <% if secondary_label.present? && secondary_href.present? %>
+    <%= link_to secondary_label, secondary_href, class: "mt-4 py-2 px-6 font-lexend text-sm text-on-surface-variant font-medium hover:text-primary transition-colors" %>
+  <% end %>
+</div>

@@ -1,0 +1,60 @@
+<main class="min-h-screen flex flex-col items-center justify-center px-5 pb-20 pt-16 <%= @html_options[:class] %>" <%= tag.attributes(@html_options.except(:class)) %>>
+  <div class="w-full max-w-lg flex flex-col items-center text-center">
+    <div class="relative w-full mb-12 flex justify-center">
+      <div class="relative w-64 h-64 bg-surface-container-low rounded-xl flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle, #000 1px, transparent 1px); background-size: 20px 20px;"></div>
+        <div class="relative flex flex-col items-center">
+          <%= render Ui::IconComponent.new(
+                name: "location_off",
+                size_class: "text-neutral-300 text-[120px] select-none",
+                style: "font-variation-settings: 'FILL' 0, 'wght' 100, 'GRAD' 0, 'opsz' 24;"
+              ) %>
+          <div class="absolute -bottom-2 -right-4 bg-surface-container-lowest shadow-[0_12px_24px_rgba(0,0,0,0.06)] p-4 rounded-xl rotate-6 border border-outline-variant/10">
+            <%= render Ui::IconComponent.new(name: "search_off", size_class: "text-3xl text-primary") %>
+          </div>
+        </div>
+      </div>
+      <div class="absolute top-0 right-0 transform translate-x-4 -translate-y-4">
+        <span class="bg-primary text-on-primary-container px-3 py-1 rounded-full text-[10px] font-lexend font-bold uppercase tracking-widest shadow-sm">
+          <%= status_badge %>
+        </span>
+      </div>
+    </div>
+    <div class="space-y-6 w-full">
+      <div class="space-y-2">
+        <p class="text-on-surface-variant text-[12px] font-lexend font-bold uppercase tracking-[0.2em] mb-2"><%= title %></p>
+        <h2 class="text-4xl md:text-5xl font-lexend font-extrabold text-primary tracking-tight leading-none">
+          <%= headline %>
+        </h2>
+      </div>
+      <p class="text-on-surface-variant text-lg max-w-sm mx-auto leading-relaxed font-medium">
+        <%= description %>
+      </p>
+      <% if primary_label.present? %>
+        <div class="pt-8">
+          <% btn = "inline-flex items-center justify-center bg-primary text-on-primary-container h-14 px-10 rounded-xl font-lexend font-bold text-base transition-all active:scale-95 hover:bg-primary-container shadow-sm group" %>
+          <% if primary_href.present? %>
+            <%= link_to primary_href, class: btn do %>
+              <%= render Ui::IconComponent.new(name: primary_icon, size_class: "mr-3 transition-transform group-hover:-translate-x-1") %>
+              <%= primary_label %>
+            <% end %>
+          <% else %>
+            <%= button_tag type: "button", class: btn do %>
+              <%= render Ui::IconComponent.new(name: primary_icon, size_class: "mr-3") %>
+              <%= primary_label %>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+    <div class="mt-16 flex items-center space-x-8 opacity-40">
+      <div class="h-px w-12 bg-outline-variant"></div>
+      <div class="flex space-x-3">
+        <%= render Ui::IconComponent.new(name: "sports_tennis", size_class: "text-sm") %>
+        <%= render Ui::IconComponent.new(name: "sports_handball", size_class: "text-sm") %>
+        <%= render Ui::IconComponent.new(name: "sports_soccer", size_class: "text-sm") %>
+      </div>
+      <div class="h-px w-12 bg-outline-variant"></div>
+    </div>
+  </div>
+</main>

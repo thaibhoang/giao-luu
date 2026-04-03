@@ -1,0 +1,18 @@
+<div class="flex justify-between items-end gap-2 <%= wrapper_class %>">
+  <% label_classes = class_names(
+    "font-lexend font-bold text-sm tracking-wide text-primary",
+    @html_options[:class],
+    "uppercase" => @uppercase
+  ) %>
+  <% if for_id.present? %>
+    <%= label_tag for_id, text, class: label_classes %>
+  <% else %>
+    <span class="<%= label_classes %>"><%= text %></span>
+  <% end %>
+  <% if @required_badge %>
+    <%= render Ui::BadgeComponent.new("BẮT BUỘC", tone: :required) %>
+  <% end %>
+  <% if @optional_badge %>
+    <%= render Ui::BadgeComponent.new("TÙY CHỌN", tone: :optional) %>
+  <% end %>
+</div>
