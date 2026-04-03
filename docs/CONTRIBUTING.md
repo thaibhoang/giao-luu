@@ -19,6 +19,7 @@
 - [ ] Privacy: không thêm lưu PII Facebook ngoài chính sách trong [SCRAPER_AGENT.md](SCRAPER_AGENT.md).
 - [ ] Map: clustering + icon riêng hai môn ([MAPS_AND_COSTS.md](MAPS_AND_COSTS.md)).
 - [ ] Thay đổi kiến trúc: ADR mới trong [decisions/](decisions/).
+- [ ] Thay đổi luồng nghiệp vụ (map, ingest, job): cập nhật [FLOWS_SEQUENCE.md](FLOWS_SEQUENCE.md).
 
 ## Test
 

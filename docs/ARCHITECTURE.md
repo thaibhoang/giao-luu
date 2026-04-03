@@ -52,6 +52,7 @@ flowchart LR
 
 ## [All] Tài liệu liên quan
 
+- [FLOWS_SEQUENCE.md](FLOWS_SEQUENCE.md) — sequence diagram (Mermaid) theo luồng MVP và roadmap
 - [API_CONTRACTS.md](API_CONTRACTS.md)
 - [SCRAPER_AGENT.md](SCRAPER_AGENT.md)
 - [MAPS_AND_COSTS.md](MAPS_AND_COSTS.md)
