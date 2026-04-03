@@ -11,7 +11,6 @@ class ListingsController < ApplicationController
     @listings = Listing.order(start_at: :asc).limit(20)
     @map_center_lat = parse_coordinate(params[:lat], default: 10.8231, range: -90.0..90.0)
     @map_center_lng = parse_coordinate(params[:lng], default: 106.6297, range: -180.0..180.0)
-    @map_radius_meters = params.fetch(:radius_meters, 30_000).to_i.clamp(100, 50_000)
     @map_focus_listing_id = params[:listing_id]
   end
 

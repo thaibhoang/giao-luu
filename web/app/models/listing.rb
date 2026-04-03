@@ -63,8 +63,8 @@ class Listing < ApplicationRecord
     )
   end
 
-  def self.map_rows_for(lat:, lng:, radius_meters:, sport: nil, from: nil, to: nil)
-    rel = within_radius(lat:, lng:, radius_meters:).by_sport(sport).from_time(from).to_time(to)
+  def self.map_rows_for(sport: nil, from: nil, to: nil)
+    rel = with_geom.by_sport(sport).from_time(from).to_time(to)
     rel.select(
       "id, sport, title, location_name, start_at, end_at, skill_level, price_estimate, source, "\
       "ST_Y(geom::geometry) AS lat, ST_X(geom::geometry) AS lng"

@@ -15,7 +15,7 @@
 
 - Public listing page: `GET /listings`
 - Listing SEO detail: `GET /listings/:id`
-- Public map feed JSON: `GET /api/v1/listings/map?lat=10.8231&lng=106.6297&radius_meters=5000`
+- Public map feed JSON: `GET /api/v1/listings/map`
 - Internal ingest endpoint: `POST /internal/v1/listings/import`
 
 ## Kiểm tra nhanh tính năng map UI
@@ -26,9 +26,14 @@
   - `GET /listings/:id` (listing có `geom`) phải hiển thị mini map.
   - nút `Mở trong bản đồ` điều hướng về `/map` và focus đúng listing.
 - Bộ lọc map:
-  - Nút vị trí hiện tại (`my_location`) phải pan map + gọi lại feed.
-  - Đổi `radius_meters` phải gọi lại feed với bán kính mới.
-  - Đổi `from/to` phải gọi lại feed với thời gian mới.
+  - Nút vị trí hiện tại (`my_location`) phải pan map, **không** gọi lại feed.
+  - Pan/zoom map không gọi lại feed.
+  - Tìm kiếm theo tên listing lọc tức thời ở client, không gọi lại feed.
+  - Đổi tab môn thể thao (`Tất cả/Cầu lông/Pickleball`) phải lọc đúng marker + danh sách ngay trên client.
+  - Trên desktop: đổi `from/to` phải gọi lại feed với thời gian mới.
+  - Trên mobile: không hiển thị bộ lọc thời gian.
+  - Thanh ngang ở panel dưới map phải bấm được để ẩn/hiện danh sách, mở rộng vùng nhìn bản đồ.
+  - Mở tab Network: vào `/map` chỉ có 1 request feed ban đầu; không phát sinh request feed thêm khi pan/zoom/gõ text.
 
 ## Lưu ý contract filter thời gian
 
@@ -36,7 +41,7 @@
   - `from` hoặc `to` không phải ISO8601.
   - `to < from`.
 - Ví dụ hợp lệ:
-  - `/api/v1/listings/map?lat=10.82&lng=106.62&radius_meters=3000&from=2026-04-03T10:00:00Z&to=2026-04-03T14:00:00Z`
+  - `/api/v1/listings/map?from=2026-04-03T10:00:00Z&to=2026-04-03T14:00:00Z`
 
 ## Chạy scraper ingest thử
 
@@ -53,4 +58,4 @@
   - Kiểm tra `SCRAPER_HMAC_SECRET` đồng nhất giữa `web` và `scraper`.
 - Không thấy marker map:
   - Kiểm tra có bản ghi `geom` khác `NULL`.
-  - Kiểm tra query `lat/lng/radius_meters` và `GOOGLE_MAPS_API_KEY`.
+  - Kiểm tra `GOOGLE_MAPS_API_KEY`.

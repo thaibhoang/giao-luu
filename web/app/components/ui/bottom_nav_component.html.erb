@@ -4,11 +4,11 @@
     @html_options[:class]
   ) %>"
   <%= tag.attributes(@html_options.except(:class)) %>>
-  <div class="flex justify-around items-center h-20 px-6 w-full max-w-[375px] mx-auto">
+  <div class="flex justify-around md:justify-center md:gap-8 lg:gap-12 items-center h-20 md:h-24 px-4 md:px-6 lg:px-8 w-full max-w-[375px] md:max-w-4xl mx-auto">
     <% items.each do |item| %>
       <% active = item[:active] %>
       <%= link_to item.fetch(:path), class: class_names(
-            "flex flex-col items-center justify-center px-4 py-2 transition-all duration-300 ease-in-out rounded-xl",
+            "flex flex-col items-center justify-center min-w-[52px] md:min-w-[96px] px-3 md:px-4 py-2 transition-all duration-300 ease-in-out rounded-xl",
             active ? "text-[#000000] dark:text-white bg-zinc-100 dark:bg-zinc-800" : "text-[#474747] dark:text-zinc-500 hover:text-black dark:hover:text-white"
           ) do %>
         <%= render Ui::IconComponent.new(
@@ -16,7 +16,7 @@
               filled: active,
               size_class: "text-2xl"
             ) %>
-        <span class="font-lexend text-[10px] uppercase tracking-widest font-semibold mt-1"><%= item.fetch(:label) %></span>
+        <span class="hidden md:inline font-lexend text-[10px] md:text-[11px] uppercase tracking-[0.12em] font-semibold mt-1 whitespace-nowrap"><%= item.fetch(:label) %></span>
       <% end %>
     <% end %>
   </div>

@@ -6,17 +6,11 @@ module Api
       allow_unauthenticated_access only: %i[map show]
 
       def map
-        lat = params.fetch(:lat).to_f
-        lng = params.fetch(:lng).to_f
-        radius_meters = params.fetch(:radius_meters, 5000).to_i.clamp(100, 50_000)
         from = parse_time!(params[:from], "from")
         to = parse_time!(params[:to], "to")
         validate_time_range!(from:, to:)
 
         listings = Listing.map_rows_for(
-          lat:,
-          lng:,
-          radius_meters:,
           sport: params[:sport],
           from:,
           to:
@@ -39,9 +33,7 @@ module Api
             }
           end
         }
-        Rails.logger.info("map_feed listings_count=#{listings.size} radius_meters=#{radius_meters} sport=#{params[:sport]}")
-      rescue KeyError
-        render json: { errors: [{ field: "lat/lng", message: "is required" }] }, status: :unprocessable_entity
+        Rails.logger.info("map_feed listings_count=#{listings.size} sport=#{params[:sport]}")
       rescue InvalidTimeFilter => e
         render json: { errors: [{ field: e.field, message: e.message }] }, status: :unprocessable_entity
       end
