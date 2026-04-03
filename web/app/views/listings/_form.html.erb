@@ -19,19 +19,20 @@
   <section class="space-y-4">
     <%= render Ui::FieldLabelComponent.new("Địa điểm", for_id: "listing_location_name") %>
     <%= render Ui::TextFieldComponent.new(form: f, attribute: :location_name, id: "listing_location_name", icon: "location_on", placeholder: "Nhập địa chỉ hoặc tên sân", error: listing.errors[:location_name].first) %>
-    <%= render Ui::ButtonComponent.new("Chọn trên bản đồ", variant: :dashed, type: "button", icon: "map", full_width: true, size_class: "h-12 px-4 text-sm") %>
+    <%= render Ui::ButtonComponent.new("Xác định vị trí trên bản đồ", variant: :dashed, type: "button", icon: "map", full_width: true, size_class: "h-12 px-4 text-sm", id: "location-map-search-btn") %>
+    <p id="location-map-status" class="text-xs text-on-surface-variant">
+      <%= (local_assigns[:lat_value].present? && local_assigns[:lng_value].present?) ? "Da chon vi tri tren ban do." : "Chua chon vi tri. Vui long tim hoac cham tren ban do." %>
+    </p>
+    <div id="listing-location-map" class="h-72 rounded-2xl border border-outline-variant/40 bg-surface-container-low"
+         data-initial-lat="<%= local_assigns[:lat_value] %>"
+         data-initial-lng="<%= local_assigns[:lng_value] %>"></div>
+    <% if listing.errors[:base].present? %>
+      <p class="text-xs text-red-600"><%= listing.errors[:base].first %></p>
+    <% end %>
   </section>
 
-  <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div class="space-y-2">
-      <%= render Ui::FieldLabelComponent.new("Latitude", for_id: "listing_lat", uppercase: false) %>
-      <%= render Ui::TextFieldComponent.new(name: "listing[lat]", value: local_assigns.fetch(:lat_value, nil), id: "listing_lat", type: "number", step: :any, placeholder: "10.8231") %>
-    </div>
-    <div class="space-y-2">
-      <%= render Ui::FieldLabelComponent.new("Longitude", for_id: "listing_lng", uppercase: false) %>
-      <%= render Ui::TextFieldComponent.new(name: "listing[lng]", value: local_assigns.fetch(:lng_value, nil), id: "listing_lng", type: "number", step: :any, placeholder: "106.6297") %>
-    </div>
-  </section>
+  <input id="listing_lat" name="listing[lat]" type="hidden" value="<%= local_assigns.fetch(:lat_value, nil) %>" />
+  <input id="listing_lng" name="listing[lng]" type="hidden" value="<%= local_assigns.fetch(:lng_value, nil) %>" />
 
   <section class="space-y-4">
     <%= render Ui::FieldLabelComponent.new("Thời gian") %>
@@ -74,4 +75,177 @@
   <%= render Ui::FixedBottomBarComponent.new(inner_class: "max-w-2xl mx-auto px-5") do %>
     <%= render Ui::ButtonComponent.new(submit_label, type: "submit", icon: submit_icon, full_width: true) %>
   <% end %>
+<% end %>
+
+<% if ENV["GOOGLE_MAPS_API_KEY"].present? %>
+  <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>" defer></script>
+  <script>
+    (() => {
+      const waitForGoogleMaps = () =>
+        new Promise((resolve, reject) => {
+          const startedAt = Date.now();
+          const timer = setInterval(() => {
+            if (window.google && window.google.maps) {
+              clearInterval(timer);
+              resolve();
+            } else if (Date.now() - startedAt > 12_000) {
+              clearInterval(timer);
+              reject(new Error("Google Maps library timeout"));
+            }
+          }, 120);
+        });
+
+      const setupListingLocationPicker = async () => {
+        const mapEl = document.getElementById("listing-location-map");
+        if (!mapEl) return;
+        if (mapEl.dataset.initialized === "true") return;
+        mapEl.dataset.initialized = "true";
+
+        await waitForGoogleMaps();
+
+        const locationInput = document.getElementById("listing_location_name");
+        const latInput = document.getElementById("listing_lat");
+        const lngInput = document.getElementById("listing_lng");
+        const searchBtn = document.getElementById("location-map-search-btn");
+        const statusEl = document.getElementById("location-map-status");
+        const formEl = mapEl.closest("form");
+        if (!locationInput || !latInput || !lngInput || !searchBtn || !statusEl || !formEl) return;
+
+        const parseCoordinate = (raw, min, max) => {
+          if (typeof raw !== "string") return null;
+          const trimmed = raw.trim();
+          if (!trimmed) return null;
+          const value = Number(trimmed);
+          if (!Number.isFinite(value)) return null;
+          if (value < min || value > max) return null;
+          return value;
+        };
+
+        const currentLat = () => parseCoordinate(latInput.value, -90, 90);
+        const currentLng = () => parseCoordinate(lngInput.value, -180, 180);
+        const hasValidPoint = () => currentLat() !== null && currentLng() !== null;
+
+        const initialLat = parseCoordinate(mapEl.dataset.initialLat || "", -90, 90) || currentLat() || 10.8231;
+        const initialLng = parseCoordinate(mapEl.dataset.initialLng || "", -180, 180) || currentLng() || 106.6297;
+        const hasInitialPoint = hasValidPoint();
+
+        const map = new google.maps.Map(mapEl, {
+          center: { lat: initialLat, lng: initialLng },
+          zoom: hasInitialPoint ? 15 : 12,
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: false
+        });
+
+        let marker = null;
+        const setSelectedPoint = (lat, lng, message) => {
+          if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+          latInput.value = String(lat);
+          lngInput.value = String(lng);
+          statusEl.textContent = message || "Da chon vi tri tren ban do.";
+          if (marker) marker.setMap(null);
+          marker = new google.maps.Marker({ position: { lat, lng }, map });
+          map.panTo({ lat, lng });
+        };
+
+        if (hasInitialPoint) {
+          setSelectedPoint(currentLat(), currentLng(), "Da tai lai vi tri da luu.");
+        }
+
+        map.addListener("click", (event) => {
+          if (!event.latLng) return;
+          setSelectedPoint(event.latLng.lat(), event.latLng.lng(), "Da chon vi tri bang thao tac cham tren ban do.");
+        });
+
+        const debounce = (fn, waitMs) => {
+          let timer = null;
+          return (...args) => {
+            if (timer) clearTimeout(timer);
+            timer = setTimeout(() => fn(...args), waitMs);
+          };
+        };
+
+        const tryUseCurrentLocation = (messageWhenSuccess) => {
+          if (!navigator.geolocation) {
+            statusEl.textContent = "Khong tim duoc dia diem va trinh duyet khong ho tro GPS. Vui long cham tren ban do.";
+            return;
+          }
+          statusEl.textContent = "Khong tim thay dia diem. Dang thu lay vi tri hien tai...";
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              setSelectedPoint(
+                pos.coords.latitude,
+                pos.coords.longitude,
+                messageWhenSuccess || "Khong tim thay dia diem, da dung vi tri hien tai."
+              );
+            },
+            () => {
+              statusEl.textContent = "Khong tim thay dia diem va khong lay duoc GPS. Vui long cham tren ban do de chon vi tri.";
+            },
+            { enableHighAccuracy: true, timeout: 8000, maximumAge: 30000 }
+          );
+        };
+
+        let lookupRequestId = 0;
+        const lookupAndSetPoint = async ({ query, allowGpsFallback }) => {
+          const normalized = (query || "").trim();
+          if (!normalized) return;
+
+          lookupRequestId += 1;
+          const requestId = lookupRequestId;
+          statusEl.textContent = "Dang tim vi tri...";
+          const response = await fetch("/geocoding/lookup?query=" + encodeURIComponent(normalized), {
+            headers: { "Accept": "application/json" }
+          });
+          let json = {};
+          try {
+            json = await response.json();
+          } catch (_error) {
+            json = {};
+          }
+          if (requestId !== lookupRequestId) return;
+          if (!response.ok) {
+            statusEl.textContent = json.error || "Khong tim thay vi tri. Hay cham truc tiep tren ban do.";
+            if (allowGpsFallback) tryUseCurrentLocation("Khong tim thay dia diem, da dung vi tri hien tai.");
+            return;
+          }
+
+          const lat = Number(json.lat);
+          const lng = Number(json.lng);
+          if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+            statusEl.textContent = "Phan hoi geocode khong hop le. Vui long cham tren ban do.";
+            if (allowGpsFallback) tryUseCurrentLocation();
+            return;
+          }
+
+          setSelectedPoint(lat, lng, "Da tim thay vi tri (" + json.provider + ").");
+        };
+
+        searchBtn.addEventListener("click", async () => {
+          await lookupAndSetPoint({ query: locationInput.value, allowGpsFallback: true });
+        });
+
+        const debouncedLookup = debounce(() => {
+          if ((locationInput.value || "").trim().length < 3) return;
+          lookupAndSetPoint({ query: locationInput.value, allowGpsFallback: false }).catch(() => {});
+        }, 900);
+        locationInput.addEventListener("input", debouncedLookup);
+
+        formEl.addEventListener("submit", (event) => {
+          if (!hasValidPoint()) {
+            event.preventDefault();
+            statusEl.textContent = "Ban can chon vi tri tren ban do truoc khi dang tin.";
+          }
+        });
+      };
+
+      document.addEventListener("turbo:load", () => {
+        setupListingLocationPicker().catch((error) => {
+          console.error("Khong khoi tao duoc map picker", error);
+        });
+      });
+    })();
+  </script>
+<% else %>
+  <p class="text-xs text-amber-700">Thieu GOOGLE_MAPS_API_KEY nen khong the bat buoc chon vi tri tren ban do.</p>
 <% end %>

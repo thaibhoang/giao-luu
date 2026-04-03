@@ -1,5 +1,6 @@
 services:
   postgres:
+    # Lưu ý: major version phải khớp với web.build.args.PG_MAJOR
     image: postgis/postgis:16-3.4
     environment:
       POSTGRES_USER: postgres
@@ -22,6 +23,7 @@ services:
       target: development
       args:
         DEV_IMAGE: "true"
+        PG_MAJOR: "16"
     depends_on:
       postgres:
         condition: service_healthy

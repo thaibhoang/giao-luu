@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   resources :passwords, param: :token
   root "home#index"
   resources :listings, only: %i[index show new create edit update]
+  get "geocoding/lookup", to: "geocoding#lookup"
   get "map", to: "listings#map"
   get "my-listings", to: "listings#my", as: :my_listings
   get "empty-map", to: "pages#empty_map"

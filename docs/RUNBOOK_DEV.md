@@ -54,6 +54,12 @@
 
 - Lỗi PostGIS khi test/migrate:
   - Đảm bảo DB đang dùng image `postgis/postgis` hoặc server có cài extension PostGIS.
+- Lỗi `pg_dump: server version mismatch`:
+  - Kiểm tra nhanh version:
+    - `docker compose exec web pg_dump --version`
+    - `docker compose exec postgres psql --version`
+  - Đảm bảo major version khớp nhau (hiện tại: `16`), sau đó rebuild lại web image:
+    - `docker compose build --no-cache web && docker compose up -d web`
 - Lỗi 401 ingest:
   - Kiểm tra `SCRAPER_HMAC_SECRET` đồng nhất giữa `web` và `scraper`.
 - Không thấy marker map:

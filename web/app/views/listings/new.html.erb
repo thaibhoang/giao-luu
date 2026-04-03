@@ -13,5 +13,5 @@
     </p>
   </section>
 
-  <%= render "form", listing: @listing, url: listings_path, method: :post, submit_label: "Đăng tin", submit_icon: "send", lat_value: params.dig(:listing, :lat), lng_value: params.dig(:listing, :lng) %>
+  <%= render "form", listing: @listing, url: listings_path, method: :post, submit_label: "Đăng tin", submit_icon: "send", lat_value: @lat_value, lng_value: @lng_value %>
 <% end %>

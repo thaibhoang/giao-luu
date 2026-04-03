@@ -11,15 +11,24 @@
 #   docker run -d -p 80:80 -e RAILS_MASTER_KEY=<từ config/master.key> --name giao_luu giao_luu
 
 ARG RUBY_VERSION=3.4.1
+ARG PG_MAJOR=16
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base_common
 
 WORKDIR /rails
+ARG PG_MAJOR
 
 # Thống nhất với stage build + final (bundle install phải ghi vào đúng thư mục được COPY).
 ENV BUNDLE_PATH="/usr/local/bundle"
 
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libvips postgresql-client && \
+    apt-get install --no-install-recommends -y ca-certificates curl gnupg libjemalloc2 libvips && \
+    install -m 0755 -d /etc/apt/keyrings && \
+    curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /etc/apt/keyrings/postgresql.gpg && \
+    chmod a+r /etc/apt/keyrings/postgresql.gpg && \
+    . /etc/os-release && \
+    echo "deb [signed-by=/etc/apt/keyrings/postgresql.gpg] http://apt.postgresql.org/pub/repos/apt ${VERSION_CODENAME}-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
+    apt-get update -qq && \
+    apt-get install --no-install-recommends -y "postgresql-client-${PG_MAJOR}" && \
     ln -s /usr/lib/$(uname -m)-linux-gnu/libjemalloc.so.2 /usr/local/lib/libjemalloc.so && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
