@@ -1,0 +1,10 @@
+<div class="<%= @html_options[:wrapper_class] %>">
+  <%= @form.text_area @attribute,
+        rows: rows,
+        id: field_id,
+        class: input_classes,
+        placeholder: @placeholder %>
+  <% if error.present? %>
+    <%= render Ui::InlineErrorComponent.new(error) %>
+  <% end %>
+</div>

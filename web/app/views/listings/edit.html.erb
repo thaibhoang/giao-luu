@@ -1,0 +1,21 @@
+<% content_for :title, "Sửa tin | SportMatch" %>
+
+<%= render Ui::TopAppBarComponent.new(title: "Sửa tin", back_href: my_listings_path, back_icon: "close") do |bar| %>
+  <% bar.with_trailing do %>
+    <%= render Ui::IconComponent.new(name: "more_horiz", size_class: "text-2xl text-on-surface") %>
+  <% end %>
+<% end %>
+
+<%= render Ui::PageShellComponent.new(padding_top: "pt-24", max_width: "max-w-2xl", horizontal_padding: "px-5", padding_bottom: "pb-32") do %>
+  <section class="mb-6">
+    <p class="text-on-surface-variant text-sm font-medium">Đã đăng <%= time_ago_in_words(@listing.created_at) %> trước</p>
+  </section>
+  <%= render "form",
+             listing: @listing,
+             url: listing_path(@listing),
+             method: :patch,
+             submit_label: "Lưu thay đổi",
+             submit_icon: "save",
+             lat_value: params.dig(:listing, :lat),
+             lng_value: params.dig(:listing, :lng) %>
+<% end %>

@@ -1,0 +1,8 @@
+<div class="<%= @html_options[:wrapper_class] %>">
+  <%= @form.datetime_local_field @attribute,
+        id: field_id,
+        class: input_classes %>
+  <% if error.present? %>
+    <%= render Ui::InlineErrorComponent.new(error) %>
+  <% end %>
+</div>

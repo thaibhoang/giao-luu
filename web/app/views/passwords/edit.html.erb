@@ -1,6 +1,25 @@
-<h1>Đặt lại mật khẩu</h1>
-<%= form_with url: password_path(params[:token]), method: :put do |f| %>
-  <p><%= f.password_field :password, placeholder: "Mật khẩu mới", required: true %></p>
-  <p><%= f.password_field :password_confirmation, placeholder: "Xác nhận", required: true %></p>
-  <p><%= f.submit "Cập nhật" %></p>
+<% content_for :title, "Mật khẩu mới | SportMatch" %>
+
+<%= render Ui::TopAppBarComponent.new(title: "SportMatch", back_href: new_session_path, back_icon: "arrow_back") %>
+
+<%= render Ui::PageShellComponent.new(padding_top: "pt-24", padding_bottom: "pb-16", max_width: "max-w-[420px]", horizontal_padding: "px-5") do %>
+  <div class="space-y-10">
+    <div>
+      <span class="text-[10px] font-medium tracking-[0.2em] uppercase text-on-surface-variant mb-2 block">Security Access</span>
+      <h1 class="font-headline text-4xl font-extrabold tracking-tight text-primary leading-tight">Mật khẩu mới</h1>
+      <p class="text-on-surface-variant text-sm mt-4 leading-relaxed max-w-[280px]">Tạo mật khẩu mạnh để bảo vệ tài khoản SportMatch của bạn.</p>
+    </div>
+
+    <%= form_with url: password_path(params[:token]), method: :put, class: "space-y-6" do |f| %>
+      <div class="space-y-2">
+        <%= render Ui::FieldLabelComponent.new("Mật khẩu mới", for_id: "password") %>
+        <%= render Ui::TextFieldComponent.new(form: f, attribute: :password, type: "password", id: "password", placeholder: "••••••••") %>
+      </div>
+      <div class="space-y-2">
+        <%= render Ui::FieldLabelComponent.new("Xác nhận mật khẩu", for_id: "password_confirmation") %>
+        <%= render Ui::TextFieldComponent.new(form: f, attribute: :password_confirmation, type: "password", id: "password_confirmation", placeholder: "••••••••") %>
+      </div>
+      <%= render Ui::ButtonComponent.new("Cập nhật mật khẩu", type: "submit", icon: "arrow_forward", full_width: true) %>
+    <% end %>
+  </div>
 <% end %>

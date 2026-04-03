@@ -1,74 +1,17 @@
 <% content_for :title, "Đăng tin mới | SportMatch" %>
 
-<div class="mx-auto w-full max-w-2xl px-4 py-8">
-  <h1 class="text-2xl font-semibold mb-4">Đăng tin giao lưu</h1>
-
-  <% if @listing.errors.any? %>
-    <div class="mb-4 rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-      <p class="font-semibold">Không thể lưu tin:</p>
-      <ul class="list-disc pl-5">
-        <% @listing.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    </div>
+<%= render Ui::TopAppBarComponent.new(title: "Đăng tin mới", back_href: listings_path, back_icon: "close") do |bar| %>
+  <% bar.with_trailing do %>
+    <%= render Ui::BadgeComponent.new("Bản nháp", tone: :neutral) %>
   <% end %>
+<% end %>
 
-  <%= form_with model: @listing, url: listings_path, method: :post, class: "space-y-3" do |f| %>
-    <div>
-      <%= f.label :sport, "Môn", class: "block text-sm mb-1" %>
-      <%= f.select :sport, Listing::SPORTS.map { |s| [s.humanize, s] }, {}, class: "w-full rounded border px-3 py-2" %>
-    </div>
-    <div>
-      <%= f.label :title, "Tiêu đề", class: "block text-sm mb-1" %>
-      <%= f.text_field :title, class: "w-full rounded border px-3 py-2", required: true %>
-    </div>
-    <div>
-      <%= f.label :body, "Mô tả", class: "block text-sm mb-1" %>
-      <%= f.text_area :body, rows: 4, class: "w-full rounded border px-3 py-2" %>
-    </div>
-    <div>
-      <%= f.label :location_name, "Tên địa điểm", class: "block text-sm mb-1" %>
-      <%= f.text_field :location_name, class: "w-full rounded border px-3 py-2", required: true %>
-    </div>
-    <div class="grid grid-cols-2 gap-3">
-      <div>
-        <%= f.label :lat, "Latitude", class: "block text-sm mb-1" %>
-        <%= f.number_field :lat, step: :any, class: "w-full rounded border px-3 py-2", required: true %>
-      </div>
-      <div>
-        <%= f.label :lng, "Longitude", class: "block text-sm mb-1" %>
-        <%= f.number_field :lng, step: :any, class: "w-full rounded border px-3 py-2", required: true %>
-      </div>
-    </div>
-    <div class="grid grid-cols-2 gap-3">
-      <div>
-        <%= f.label :start_at, "Bắt đầu", class: "block text-sm mb-1" %>
-        <%= f.datetime_local_field :start_at, class: "w-full rounded border px-3 py-2", required: true %>
-      </div>
-      <div>
-        <%= f.label :end_at, "Kết thúc", class: "block text-sm mb-1" %>
-        <%= f.datetime_local_field :end_at, class: "w-full rounded border px-3 py-2", required: true %>
-      </div>
-    </div>
-    <div class="grid grid-cols-3 gap-3">
-      <div>
-        <%= f.label :slots_needed, "Số người", class: "block text-sm mb-1" %>
-        <%= f.number_field :slots_needed, min: 1, class: "w-full rounded border px-3 py-2", required: true %>
-      </div>
-      <div>
-        <%= f.label :skill_level, "Trình độ", class: "block text-sm mb-1" %>
-        <%= f.select :skill_level, Listing::SKILL_LEVELS.map { |s| [Listing.skill_label_for(s), s] }, {}, class: "w-full rounded border px-3 py-2" %>
-      </div>
-      <div>
-        <%= f.label :price_estimate, "Phí (VND)", class: "block text-sm mb-1" %>
-        <%= f.number_field :price_estimate, min: 0, class: "w-full rounded border px-3 py-2" %>
-      </div>
-    </div>
-    <div>
-      <%= f.label :contact_info, "Liên hệ", class: "block text-sm mb-1" %>
-      <%= f.text_field :contact_info, class: "w-full rounded border px-3 py-2", required: true %>
-    </div>
-    <%= f.submit "Đăng tin", class: "rounded bg-blue-600 px-4 py-2 text-white" %>
-  <% end %>
-</div>
+<%= render Ui::PageShellComponent.new(padding_top: "pt-24", max_width: "max-w-2xl", horizontal_padding: "px-5", padding_bottom: "pb-32") do %>
+  <section class="mb-6">
+    <p class="text-on-surface-variant text-sm leading-relaxed max-w-sm">
+      Hoàn thành các thông tin bên dưới để tìm đối thủ hoặc đồng đội phù hợp nhất.
+    </p>
+  </section>
+
+  <%= render "form", listing: @listing, url: listings_path, method: :post, submit_label: "Đăng tin", submit_icon: "send", lat_value: params.dig(:listing, :lat), lng_value: params.dig(:listing, :lng) %>
+<% end %>

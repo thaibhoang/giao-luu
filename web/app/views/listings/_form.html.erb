@@ -1,0 +1,73 @@
+<%= form_with model: listing, url: url, method: method, class: "space-y-8" do |f| %>
+  <%= render Ui::FormErrorSummaryComponent.new(record: listing, title: "Không thể lưu tin") %>
+
+  <section class="space-y-4">
+    <%= render Ui::FieldLabelComponent.new("Chọn môn") %>
+    <%= render Ui::SportSegmentedControlComponent.new(name: "listing[sport]", value: listing.sport) %>
+  </section>
+
+  <section class="space-y-4">
+    <%= render Ui::FieldLabelComponent.new("Tiêu đề", for_id: "listing_title", required_badge: true) %>
+    <%= render Ui::TextFieldComponent.new(form: f, attribute: :title, id: "listing_title", placeholder: "e.g., Giao lưu cầu lông tối nay", error: listing.errors[:title].first) %>
+  </section>
+
+  <section class="space-y-4">
+    <%= render Ui::FieldLabelComponent.new("Mô tả", for_id: "listing_body", optional_badge: true) %>
+    <%= render Ui::TextAreaFieldComponent.new(form: f, attribute: :body, id: "listing_body", rows: 4, placeholder: "Mô tả thêm về kèo và yêu cầu") %>
+  </section>
+
+  <section class="space-y-4">
+    <%= render Ui::FieldLabelComponent.new("Địa điểm", for_id: "listing_location_name") %>
+    <%= render Ui::TextFieldComponent.new(form: f, attribute: :location_name, id: "listing_location_name", icon: "location_on", placeholder: "Nhập địa chỉ hoặc tên sân", error: listing.errors[:location_name].first) %>
+    <%= render Ui::ButtonComponent.new("Chọn trên bản đồ", variant: :dashed, type: "button", icon: "map", full_width: true, size_class: "h-12 px-4 text-sm") %>
+  </section>
+
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="space-y-2">
+      <%= render Ui::FieldLabelComponent.new("Latitude", for_id: "listing_lat", uppercase: false) %>
+      <%= render Ui::TextFieldComponent.new(name: "listing[lat]", value: local_assigns.fetch(:lat_value, nil), id: "listing_lat", type: "number", step: :any, placeholder: "10.8231") %>
+    </div>
+    <div class="space-y-2">
+      <%= render Ui::FieldLabelComponent.new("Longitude", for_id: "listing_lng", uppercase: false) %>
+      <%= render Ui::TextFieldComponent.new(name: "listing[lng]", value: local_assigns.fetch(:lng_value, nil), id: "listing_lng", type: "number", step: :any, placeholder: "106.6297") %>
+    </div>
+  </section>
+
+  <section class="space-y-4">
+    <%= render Ui::FieldLabelComponent.new("Thời gian") %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="space-y-2">
+        <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider ml-1">Bắt đầu</span>
+        <%= render Ui::DateTimeFieldComponent.new(form: f, attribute: :start_at, error: listing.errors[:start_at].first) %>
+      </div>
+      <div class="space-y-2">
+        <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider ml-1">Kết thúc</span>
+        <%= render Ui::DateTimeFieldComponent.new(form: f, attribute: :end_at, error: listing.errors[:end_at].first) %>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="space-y-2">
+      <%= render Ui::FieldLabelComponent.new("Số người cần", for_id: "listing_slots_needed") %>
+      <%= render Ui::NumberStepperComponent.new(form: f, attribute: :slots_needed, value: listing.slots_needed || 1, min: 1, max: 20) %>
+    </div>
+    <div class="space-y-2">
+      <%= render Ui::FieldLabelComponent.new("Trình độ", for_id: "listing_skill_level") %>
+      <%= render Ui::SelectFieldComponent.new(form: f, attribute: :skill_level, choices: Listing::SKILL_LEVELS.map { |s| [Listing.skill_label_for(s), s] }) %>
+    </div>
+    <div class="space-y-2">
+      <%= render Ui::FieldLabelComponent.new("Phí (VND)", for_id: "listing_price_estimate", optional_badge: true) %>
+      <%= render Ui::TextFieldComponent.new(form: f, attribute: :price_estimate, type: "number", icon: "payments", placeholder: "50000") %>
+    </div>
+  </section>
+
+  <section class="space-y-4 pb-24">
+    <%= render Ui::FieldLabelComponent.new("Thông tin liên hệ", for_id: "listing_contact_info") %>
+    <%= render Ui::TextFieldComponent.new(form: f, attribute: :contact_info, id: "listing_contact_info", icon: "contact_support", placeholder: "Số điện thoại hoặc link cá nhân", error: listing.errors[:contact_info].first) %>
+  </section>
+
+  <%= render Ui::FixedBottomBarComponent.new(inner_class: "max-w-2xl mx-auto px-5") do %>
+    <%= render Ui::ButtonComponent.new(submit_label, type: "submit", icon: submit_icon, full_width: true) %>
+  <% end %>
+<% end %>

@@ -1,0 +1,76 @@
+<% content_for :title, "Bản đồ kèo | SportMatch" %>
+
+<%= render Ui::TopAppBarComponent.new(title: "SportMatch") do |bar| %>
+  <% bar.with_trailing do %>
+    <%= link_to my_listings_path, class: "w-8 h-8 rounded-full border border-outline-variant overflow-hidden flex items-center justify-center" do %>
+      <%= render Ui::IconComponent.new(name: "person", size_class: "text-base") %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<div class="pt-16 pb-24 relative min-h-screen">
+  <div id="browse-map" class="absolute inset-0 bg-surface-container-low"></div>
+  <div class="relative z-10 max-w-6xl mx-auto px-5 pt-6 space-y-4">
+    <div class="flex items-center gap-3">
+      <%= render Ui::TextFieldComponent.new(name: "q", placeholder: "Tìm khu vực, sân...", icon: "search", wrapper_class: "flex-1", input_class: "bg-white/90 backdrop-blur-xl shadow-sm" ) %>
+      <button class="w-12 h-12 bg-white/90 backdrop-blur-xl rounded-2xl flex items-center justify-center shadow-sm border border-outline-variant/20 text-primary">
+        <%= render Ui::IconComponent.new(name: "my_location") %>
+      </button>
+    </div>
+
+    <div class="flex items-center gap-2 overflow-x-auto pb-1">
+      <%= render Ui::BadgeComponent.new("Tất cả", tone: :neutral) %>
+      <%= render Ui::BadgeComponent.new("Cầu lông", tone: :optional) %>
+      <%= render Ui::BadgeComponent.new("Pickleball", tone: :optional) %>
+    </div>
+  </div>
+
+  <div class="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-2xl rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.08)] z-20 h-[360px]">
+    <div class="flex justify-center py-3"><div class="w-10 h-1.5 bg-outline-variant rounded-full"></div></div>
+    <div class="px-5 mb-4 flex justify-between items-end">
+      <div>
+        <h2 class="font-headline font-extrabold text-xl tracking-tight">Kèo quanh đây</h2>
+        <p class="text-on-surface-variant text-xs">Tìm thấy <%= @listings.size %> trận đấu</p>
+      </div>
+      <%= link_to "Xem tất cả", listings_path, class: "text-primary font-headline font-bold text-xs" %>
+    </div>
+    <div class="flex gap-4 overflow-x-auto px-5 pb-8">
+      <% @listings.each do |listing| %>
+        <div class="min-w-[280px]">
+          <%= render Ui::ListingCardComponent.new(listing: listing, compact: true) %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<%= render Ui::BottomNavComponent.new(items: [
+  { path: listings_path, icon: "explore", label: "Explore", active: false },
+  { path: map_path, icon: "map", label: "Map", active: true },
+  { path: my_listings_path, icon: "assignment", label: "Tin của tôi", active: false },
+  { path: authenticated? ? my_listings_path : new_session_path, icon: "person", label: "Profile", active: false }
+]) %>
+
+<% if ENV["GOOGLE_MAPS_API_KEY"].present? %>
+  <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>"></script>
+  <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
+  <script>
+    (async function initMap() {
+      const center = { lat: 10.8231, lng: 106.6297 };
+      const mapEl = document.getElementById("browse-map");
+      if (!mapEl || !window.google) return;
+      const map = new google.maps.Map(mapEl, { center, zoom: 11, mapTypeControl: false, streetViewControl: false });
+      const resp = await fetch("/api/v1/listings/map?lat=" + center.lat + "&lng=" + center.lng + "&radius_meters=30000");
+      const json = await resp.json();
+      const markers = (json.listings || []).map((item) => {
+        const icon = item.sport === "pickleball" ? "🟧" : "🏸";
+        return new google.maps.Marker({
+          position: { lat: Number(item.lat), lng: Number(item.lng) },
+          title: item.title,
+          label: { text: icon, color: "#111827" }
+        });
+      });
+      new markerClusterer.MarkerClusterer({ map, markers });
+    })();
+  </script>
+<% end %>

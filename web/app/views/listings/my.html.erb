@@ -1,0 +1,39 @@
+<% content_for :title, "Tin của tôi | SportMatch" %>
+
+<%= render Ui::TopAppBarComponent.new(title: "Tin của tôi", back_href: listings_path, back_icon: "menu") do |bar| %>
+  <% bar.with_trailing do %>
+    <%= link_to new_listing_path, class: "p-2 rounded-full hover:bg-surface-container-low" do %>
+      <%= render Ui::IconComponent.new(name: "add") %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%= render Ui::PageShellComponent.new(padding_top: "pt-24", padding_bottom: "pb-28", max_width: "max-w-2xl", horizontal_padding: "px-5") do %>
+  <div class="flex gap-8 mb-8 overflow-x-auto py-2">
+    <button class="font-lexend font-bold text-primary border-b-2 border-primary pb-1 shrink-0">Đã đăng (<%= @published_listings.size %>)</button>
+    <button class="font-lexend font-medium text-on-surface-variant pb-1 shrink-0">Bản nháp</button>
+    <button class="font-lexend font-medium text-on-surface-variant pb-1 shrink-0">Đã kết thúc (<%= @finished_listings.size %>)</button>
+  </div>
+
+  <% if @published_listings.any? %>
+    <div class="space-y-4">
+      <% @published_listings.each do |listing| %>
+        <%= render Ui::ListingCardComponent.new(listing: listing, show_actions: true) %>
+      <% end %>
+    </div>
+  <% else %>
+    <%= render Ui::EmptyStateComponent.new(
+      title: "Bạn chưa đăng tin nào",
+      description: "Bắt đầu kết nối với cộng đồng bằng cách đăng tin tìm đồng đội đầu tiên của bạn.",
+      primary_label: "Đăng tin đầu tiên",
+      primary_href: new_listing_path
+    ) %>
+  <% end %>
+<% end %>
+
+<%= render Ui::BottomNavComponent.new(items: [
+  { path: listings_path, icon: "explore", label: "Trang chủ", active: false },
+  { path: map_path, icon: "map", label: "Map", active: false },
+  { path: my_listings_path, icon: "assignment", label: "Tin của tôi", active: true },
+  { path: new_session_path, icon: "person", label: "Cá nhân", active: false }
+]) %>

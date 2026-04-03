@@ -92,6 +92,25 @@ class Listing < ApplicationRecord
     find(row["id"])
   end
 
+  def self.update_with_point!(id:, attributes:, longitude:, latitude:)
+    cols = %i[
+      sport title body location_name start_at end_at slots_needed skill_level
+      price_estimate contact_info source source_url schema_version user_id
+      updated_at
+    ]
+    now = Time.current
+    h = attributes.symbolize_keys.merge(updated_at: now)
+    assignments = cols.map { |c| "#{c} = ?" }.join(", ")
+    sql = <<~SQL.squish
+      UPDATE listings
+      SET #{assignments}, geom = ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography
+      WHERE id = ?
+    SQL
+    binds = cols.map { |c| h[c] } + [longitude, latitude, id]
+    connection.exec_update(sanitize_sql_array([sql, *binds]), "Listing Update", [])
+    find(id)
+  end
+
   private
 
   def end_at_not_before_start_at

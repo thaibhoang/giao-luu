@@ -1,67 +1,42 @@
-<% content_for :title, "SportMatch - Bản đồ và tin giao lưu" %>
+<% content_for :title, "SportMatch - Trang chủ" %>
 
-<div class="mx-auto w-full max-w-6xl px-4 py-6 space-y-4">
-  <div class="flex items-center justify-between gap-4">
-    <h1 class="text-2xl font-semibold">Tin giao lưu thể thao</h1>
-    <% if authenticated? %>
-      <%= link_to "Đăng tin mới", new_listing_path, class: "rounded-lg bg-blue-600 px-4 py-2 text-white" %>
-    <% else %>
-      <%= link_to "Đăng nhập để đăng tin", new_session_path, class: "rounded-lg bg-slate-900 px-4 py-2 text-white" %>
+<%= render Ui::TopAppBarComponent.new(title: "SportMatch") do |bar| %>
+  <% bar.with_trailing do %>
+    <%= link_to(authenticated? ? my_listings_path : new_session_path, class: "w-8 h-8 rounded-full bg-surface-container flex items-center justify-center") do %>
+      <%= render Ui::IconComponent.new(name: "person", size_class: "text-base") %>
     <% end %>
-  </div>
-
-  <p class="text-sm text-slate-600">Map có clustering theo sport, dữ liệu lấy từ map feed công khai.</p>
-
-  <div id="browse-map" class="h-80 w-full rounded-xl border border-slate-200"></div>
-
-  <div class="rounded-xl border border-slate-200 overflow-hidden">
-    <table class="w-full text-sm">
-      <thead class="bg-slate-50 text-left">
-        <tr>
-          <th class="px-3 py-2">Môn</th>
-          <th class="px-3 py-2">Tiêu đề</th>
-          <th class="px-3 py-2">Địa điểm</th>
-          <th class="px-3 py-2">Thời gian</th>
-          <th class="px-3 py-2"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @listings.each do |listing| %>
-          <tr class="border-t border-slate-100">
-            <td class="px-3 py-2"><%= listing.sport %></td>
-            <td class="px-3 py-2"><%= listing.title %></td>
-            <td class="px-3 py-2"><%= listing.location_name %></td>
-            <td class="px-3 py-2"><%= l(listing.start_at, format: :short) %></td>
-            <td class="px-3 py-2"><%= link_to "Chi tiết", listing_path(listing), class: "text-blue-600" %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<% if ENV["GOOGLE_MAPS_API_KEY"].present? %>
-  <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>"></script>
-  <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
-  <script>
-    (async function initMap() {
-      const center = { lat: 10.8231, lng: 106.6297 };
-      const mapEl = document.getElementById("browse-map");
-      if (!mapEl || !window.google) return;
-
-      const map = new google.maps.Map(mapEl, { center, zoom: 10, mapTypeControl: false });
-      const resp = await fetch("/api/v1/listings/map?lat=" + center.lat + "&lng=" + center.lng + "&radius_meters=30000");
-      const json = await resp.json();
-      const markers = (json.listings || []).map((item) => {
-        const icon = item.sport === "pickleball" ? "🟧" : "🏸";
-        return new google.maps.Marker({
-          position: { lat: Number(item.lat), lng: Number(item.lng) },
-          title: item.title,
-          label: { text: icon, color: "#111827" }
-        });
-      });
-      // eslint-disable-next-line no-undef
-      new markerClusterer.MarkerClusterer({ map, markers });
-    })();
-  </script>
+  <% end %>
 <% end %>
+
+<%= render Ui::PageShellComponent.new(padding_top: "pt-24", padding_bottom: "pb-28", max_width: "max-w-6xl", horizontal_padding: "px-5") do %>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+    <section class="space-y-4">
+      <div class="inline-flex items-center gap-2 bg-primary-container/5 px-3 py-1 rounded-full">
+        <span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+        <span class="text-[10px] font-bold tracking-widest uppercase text-on-surface-variant">Live Community</span>
+      </div>
+      <h1 class="font-headline text-4xl lg:text-5xl font-black leading-tight tracking-tight text-primary">
+        Tìm đối cầu lông & pickleball gần bạn
+      </h1>
+      <div class="h-1 w-12 bg-primary"></div>
+      <p class="text-on-surface-variant">Khám phá kèo quanh bạn trên bản đồ, lọc theo bán kính và trình độ phù hợp.</p>
+      <div class="pt-2 flex flex-wrap gap-3">
+        <%= render Ui::ButtonComponent.new("Xem bản đồ", href: map_path, full_width: false, size_class: "h-14 px-6 text-base") %>
+        <%= render Ui::ButtonComponent.new(authenticated? ? "Đăng tin mới" : "Đăng nhập", href: (authenticated? ? new_listing_path : new_session_path), variant: :secondary, full_width: false, size_class: "h-14 px-6 text-base") %>
+      </div>
+    </section>
+
+    <section class="grid grid-cols-2 gap-4">
+      <% @listings.first(4).each do |listing| %>
+        <%= render Ui::ListingCardComponent.new(listing: listing, compact: true) %>
+      <% end %>
+    </section>
+  </div>
+<% end %>
+
+<%= render Ui::BottomNavComponent.new(items: [
+  { path: listings_path, icon: "explore", label: "Explore", active: true },
+  { path: map_path, icon: "map", label: "Map", active: false },
+  { path: my_listings_path, icon: "assignment", label: "Tin của tôi", active: false },
+  { path: authenticated? ? my_listings_path : new_session_path, icon: "person", label: "Profile", active: false }
+]) %>

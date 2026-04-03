@@ -1,0 +1,21 @@
+<% content_for :title, "Không có kết quả | SportMatch" %>
+
+<%= render Ui::TopAppBarComponent.new(title: "Match Map", back_href: map_path, back_icon: "arrow_back") %>
+
+<%= render Ui::PageShellComponent.new(padding_top: "pt-20", padding_bottom: "pb-28", max_width: "max-w-[375px]", horizontal_padding: "px-6", extra_class: "min-h-screen flex flex-col justify-center") do %>
+  <%= render Ui::EmptyStateComponent.new(
+    title: "Không tìm thấy trận đấu",
+    description: "Hãy thử mở rộng bán kính tìm kiếm hoặc thay đổi bộ lọc môn thể thao của bạn.",
+    primary_label: "Mở rộng bán kính",
+    primary_href: map_path,
+    secondary_label: "Thay đổi bộ lọc",
+    secondary_href: map_path
+  ) %>
+<% end %>
+
+<%= render Ui::BottomNavComponent.new(items: [
+  { path: listings_path, icon: "explore", label: "Explore", active: false },
+  { path: map_path, icon: "map", label: "Map", active: true },
+  { path: my_listings_path, icon: "assignment", label: "Schedule", active: false },
+  { path: authenticated? ? my_listings_path : new_session_path, icon: "person", label: "Profile", active: false }
+]) %>

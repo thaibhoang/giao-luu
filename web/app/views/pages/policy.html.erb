@@ -1,0 +1,42 @@
+<% content_for :title, "Chính sách bảo mật | SportMatch" %>
+
+<%= render Ui::TopAppBarComponent.new(title: "Chính sách bảo mật", back_href: listings_path, back_icon: "arrow_back") %>
+
+<%= render Ui::PageShellComponent.new(padding_top: "pt-24", padding_bottom: "pb-20", max_width: "max-w-4xl", horizontal_padding: "px-5") do %>
+  <div class="mb-12">
+    <span class="text-[10px] font-medium tracking-widest uppercase text-on-surface-variant opacity-60">Cập nhật lần cuối: 24 tháng 5, 2024</span>
+    <h1 class="font-headline font-extrabold text-4xl mt-2 mb-6 text-black tracking-tight leading-tight">Cam kết bảo mật thông tin vận động viên.</h1>
+    <div class="h-1 w-12 bg-black rounded-full"></div>
+  </div>
+
+  <section class="mb-10 space-y-4">
+    <h2 class="font-headline font-bold text-xl">1. Thu thập thông tin</h2>
+    <p>SportMatch thu thập thông tin cần thiết để cung cấp dịch vụ kết nối thể thao hiệu quả và an toàn.</p>
+    <p>Thông tin bao gồm email, sở thích thể thao và vị trí để hiển thị kèo phù hợp theo khu vực.</p>
+  </section>
+
+  <section class="mb-10 p-8 bg-surface-container-low rounded-xl">
+    <h2 class="font-headline font-bold text-xl mb-4">2. Sử dụng dữ liệu cá nhân</h2>
+    <ul class="space-y-3">
+      <li class="flex items-start gap-3"><%= render Ui::IconComponent.new(name: "check_circle", size_class: "text-sm mt-1") %><span>Xác minh tài khoản và đảm bảo an toàn cộng đồng.</span></li>
+      <li class="flex items-start gap-3"><%= render Ui::IconComponent.new(name: "check_circle", size_class: "text-sm mt-1") %><span>Gửi thông báo liên quan đến lịch đấu và cập nhật hệ thống.</span></li>
+      <li class="flex items-start gap-3"><%= render Ui::IconComponent.new(name: "check_circle", size_class: "text-sm mt-1") %><span>Cải thiện chất lượng gợi ý đối thủ và trải nghiệm người dùng.</span></li>
+    </ul>
+  </section>
+
+  <section class="mb-10 space-y-4">
+    <h2 class="font-headline font-bold text-xl">3. Quyền của người dùng</h2>
+    <p>Bạn có thể truy cập, chỉnh sửa hoặc yêu cầu xóa dữ liệu cá nhân qua cài đặt tài khoản.</p>
+    <p>SportMatch không bán dữ liệu cá nhân cho bên thứ ba vì mục đích tiếp thị.</p>
+  </section>
+
+  <section class="my-16 border-t border-neutral-100 pt-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+      <div>
+        <h3 class="font-headline font-bold">Bạn có thắc mắc?</h3>
+        <p class="text-sm text-on-surface-variant">Đội ngũ hỗ trợ của chúng tôi luôn sẵn sàng giải đáp.</p>
+      </div>
+      <%= render Ui::ButtonComponent.new("Liên hệ hỗ trợ", full_width: false, size_class: "h-12 px-6 text-sm") %>
+    </div>
+  </section>
+<% end %>

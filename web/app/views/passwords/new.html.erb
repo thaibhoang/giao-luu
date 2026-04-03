@@ -1,5 +1,23 @@
-<h1>Quên mật khẩu</h1>
-<%= form_with url: passwords_path, method: :post do |f| %>
-  <p><%= f.email_field :email_address, placeholder: "Email", required: true %></p>
-  <p><%= f.submit "Gửi hướng dẫn" %></p>
+<% content_for :title, "Quên mật khẩu | SportMatch" %>
+
+<%= render Ui::TopAppBarComponent.new(title: "SportMatch", back_href: new_session_path, back_icon: "arrow_back") %>
+
+<%= render Ui::PageShellComponent.new(padding_top: "pt-24", padding_bottom: "pb-16", max_width: "max-w-[420px]", horizontal_padding: "px-5") do %>
+  <div class="space-y-10">
+    <div>
+      <h1 class="font-headline text-4xl font-extrabold tracking-tight text-primary mb-4 leading-none">Đặt lại mật khẩu</h1>
+      <p class="font-body text-on-surface-variant text-sm leading-relaxed max-w-[280px]">Nhập email để nhận liên kết đặt lại</p>
+    </div>
+
+    <%= form_with url: passwords_path, method: :post, class: "space-y-8" do |f| %>
+      <div class="space-y-2">
+        <%= render Ui::FieldLabelComponent.new("Email", for_id: "email_address") %>
+        <%= render Ui::TextFieldComponent.new(form: f, attribute: :email_address, type: "email", id: "email_address", placeholder: "ten@vi-du.com") %>
+      </div>
+      <%= render Ui::ButtonComponent.new("Gửi liên kết", type: "submit", icon: "send", full_width: true) %>
+    <% end %>
+    <div class="text-center">
+      <%= link_to "Quay lại đăng nhập", new_session_path, class: "font-body text-sm font-semibold text-primary underline decoration-surface-variant underline-offset-8" %>
+    </div>
+  </div>
 <% end %>

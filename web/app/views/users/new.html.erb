@@ -1,0 +1,36 @@
+<% content_for :title, "Đăng ký | SportMatch" %>
+
+<%= render Ui::TopAppBarComponent.new(title: "SportMatch", back_href: new_session_path, back_icon: "arrow_back") %>
+
+<%= render Ui::PageShellComponent.new(padding_top: "pt-24", padding_bottom: "pb-20", max_width: "max-w-[420px]", horizontal_padding: "px-5") do %>
+  <div class="space-y-10">
+    <div>
+      <span class="text-[10px] font-bold tracking-[0.2em] text-on-surface-variant uppercase">Premium Membership</span>
+      <h1 class="font-headline text-4xl font-extrabold tracking-tight text-primary leading-tight mt-2">Tạo tài khoản</h1>
+    </div>
+
+    <%= render Ui::FormErrorSummaryComponent.new(record: @user, title: "Không thể tạo tài khoản") %>
+
+    <%= form_with model: @user, url: users_path, class: "space-y-6" do |f| %>
+      <div class="space-y-2">
+        <%= render Ui::FieldLabelComponent.new("Email", for_id: "user_email_address") %>
+        <%= render Ui::TextFieldComponent.new(form: f, attribute: :email_address, type: "email", id: "user_email_address", placeholder: "example@sportmatch.com") %>
+      </div>
+      <div class="space-y-2">
+        <%= render Ui::FieldLabelComponent.new("Mật khẩu", for_id: "user_password") %>
+        <%= render Ui::TextFieldComponent.new(form: f, attribute: :password, type: "password", id: "user_password", placeholder: "••••••••") %>
+      </div>
+      <div class="space-y-2">
+        <%= render Ui::FieldLabelComponent.new("Xác nhận mật khẩu", for_id: "user_password_confirmation") %>
+        <%= render Ui::TextFieldComponent.new(form: f, attribute: :password_confirmation, type: "password", id: "user_password_confirmation", placeholder: "••••••••") %>
+      </div>
+      <label class="flex items-start gap-3 pt-1">
+        <input type="checkbox" required class="w-5 h-5 rounded border-outline-variant/30 text-primary focus:ring-0 bg-surface-container-low">
+        <span class="text-xs leading-relaxed text-on-surface-variant font-medium">
+          Tôi đồng ý với <%= link_to "Điều khoản", policy_path, class: "text-primary font-bold underline decoration-surface-variant" %> và Chính sách quyền riêng tư
+        </span>
+      </label>
+      <%= render Ui::ButtonComponent.new("Đăng ký", type: "submit", icon: "arrow_forward", full_width: true) %>
+    <% end %>
+  </div>
+<% end %>
