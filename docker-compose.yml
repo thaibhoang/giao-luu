@@ -34,6 +34,7 @@ services:
       RAILS_INTERNAL_URL: http://web:80
       # Tuỳ chọn: export RAILS_MASTER_KEY trước khi up, hoặc thêm vào web/.env (compose không đọc web/.env trừ khi khai báo env_file)
       RAILS_MASTER_KEY: ${RAILS_MASTER_KEY:-}
+      SCRAPER_HMAC_SECRET: ${SCRAPER_HMAC_SECRET:-dev-secret}
 
   scraper:
     build:
@@ -43,6 +44,7 @@ services:
       - web
     environment:
       RAILS_INTERNAL_URL: http://web:80
+      SCRAPER_HMAC_SECRET: ${SCRAPER_HMAC_SECRET:-dev-secret}
     restart: "no"
 
 volumes:

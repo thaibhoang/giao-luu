@@ -44,9 +44,31 @@ class Listing < ApplicationRecord
   validate :user_present_for_user_submitted
 
   scope :with_geom, -> { where.not(geom: nil) }
+  scope :by_sport, ->(sport) { sport.present? ? where(sport:) : all }
+  scope :from_time, ->(from) { from.present? ? where("start_at >= ?", from) : all }
+  scope :to_time, ->(to) { to.present? ? where("start_at <= ?", to) : all }
 
   def self.skill_label_for(slug)
     SKILL_LEVEL_LABELS.fetch(slug, slug)
+  end
+
+  def self.within_radius(lat:, lng:, radius_meters:)
+    where(
+      sanitize_sql_array(
+        [
+          "geom IS NOT NULL AND ST_DWithin(geom, ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography, ?)",
+          lng, lat, radius_meters
+        ]
+      )
+    )
+  end
+
+  def self.map_rows_for(lat:, lng:, radius_meters:, sport: nil, from: nil, to: nil)
+    rel = within_radius(lat:, lng:, radius_meters:).by_sport(sport).from_time(from).to_time(to)
+    rel.select(
+      "id, sport, title, location_name, start_at, end_at, skill_level, source, "\
+      "ST_Y(geom::geometry) AS lat, ST_X(geom::geometry) AS lng"
+    )
   end
 
   # geography(Point,4326) is not mapped by ActiveRecord (ADR-004); use SQL for writes.

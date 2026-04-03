@@ -4,6 +4,6 @@ class HomeController < ApplicationController
   allow_unauthenticated_access
 
   def index
-    render plain: "SportMatch"
+    redirect_to listings_path
   end
 end

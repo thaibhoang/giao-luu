@@ -1,0 +1,43 @@
+<% content_for :title, "#{@listing.title} | SportMatch" %>
+<% content_for :head do %>
+  <meta name="description" content="<%= @listing.body.to_s.truncate(140) %>">
+  <link rel="canonical" href="<%= listing_url(@listing) %>">
+  <meta property="og:title" content="<%= @listing.title %>">
+  <meta property="og:description" content="<%= @listing.body.to_s.truncate(140) %>">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="<%= listing_url(@listing) %>">
+<% end %>
+
+<article class="mx-auto w-full max-w-3xl px-4 py-8 space-y-4">
+  <div class="flex items-center justify-between gap-3">
+    <h1 class="text-2xl font-bold"><%= @listing.title %></h1>
+    <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium"><%= @listing.sport %></span>
+  </div>
+  <p class="text-slate-700"><%= @listing.body.presence || "Không có mô tả thêm." %></p>
+
+  <dl class="grid grid-cols-1 gap-2 rounded-lg border border-slate-200 p-4 text-sm">
+    <div><dt class="font-medium">Địa điểm</dt><dd><%= @listing.location_name %></dd></div>
+    <div><dt class="font-medium">Bắt đầu</dt><dd><%= l(@listing.start_at, format: :long) %></dd></div>
+    <div><dt class="font-medium">Kết thúc</dt><dd><%= l(@listing.end_at, format: :long) %></dd></div>
+    <div><dt class="font-medium">Trình độ</dt><dd><%= Listing.skill_label_for(@listing.skill_level) %></dd></div>
+    <div><dt class="font-medium">Cần thêm</dt><dd><%= @listing.slots_needed %> người</dd></div>
+    <div><dt class="font-medium">Liên hệ</dt><dd><%= @listing.contact_info %></dd></div>
+  </dl>
+
+  <script type="application/ld+json">
+    <%= raw({
+      "@context": "https://schema.org",
+      "@type": "SportsEvent",
+      name: @listing.title,
+      startDate: @listing.start_at&.iso8601,
+      endDate: @listing.end_at&.iso8601,
+      eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+      location: {
+        "@type": "Place",
+        name: @listing.location_name
+      },
+      description: @listing.body.to_s,
+      url: listing_url(@listing)
+    }.to_json) %>
+  </script>
+</article>
