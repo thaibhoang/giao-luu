@@ -19,7 +19,7 @@ module Ui
       if @form && @attribute
         "#{@form.object_name}_#{@attribute}"
       elsif @name.present?
-        helpers.sanitize_to_id(@name)
+        sanitize_to_id(@name)
       end
     end
   end

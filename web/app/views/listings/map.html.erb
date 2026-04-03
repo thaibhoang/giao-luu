@@ -9,19 +9,47 @@
 <% end %>
 
 <div class="pt-16 pb-24 relative min-h-screen">
-  <div id="browse-map" class="absolute inset-0 bg-surface-container-low"></div>
+  <div
+    id="browse-map"
+    class="absolute inset-0 bg-surface-container-low"
+    data-initial-lat="<%= @map_center_lat %>"
+    data-initial-lng="<%= @map_center_lng %>"
+    data-initial-radius="<%= @map_radius_meters %>"
+    data-focus-listing-id="<%= @map_focus_listing_id %>"
+  ></div>
   <div class="relative z-10 max-w-6xl mx-auto px-5 pt-6 space-y-4">
     <div class="flex items-center gap-3">
       <%= render Ui::TextFieldComponent.new(name: "q", placeholder: "Tìm khu vực, sân...", icon: "search", wrapper_class: "flex-1", input_class: "bg-white/90 backdrop-blur-xl shadow-sm" ) %>
-      <button class="w-12 h-12 bg-white/90 backdrop-blur-xl rounded-2xl flex items-center justify-center shadow-sm border border-outline-variant/20 text-primary">
+      <button id="map-locate-btn" type="button" class="w-12 h-12 bg-white/90 backdrop-blur-xl rounded-2xl flex items-center justify-center shadow-sm border border-outline-variant/20 text-primary">
         <%= render Ui::IconComponent.new(name: "my_location") %>
       </button>
     </div>
 
     <div class="flex items-center gap-2 overflow-x-auto pb-1">
-      <%= render Ui::BadgeComponent.new("Tất cả", tone: :neutral) %>
-      <%= render Ui::BadgeComponent.new("Cầu lông", tone: :optional) %>
-      <%= render Ui::BadgeComponent.new("Pickleball", tone: :optional) %>
+      <button type="button" data-map-sport-filter="" class="px-4 h-9 rounded-full bg-primary text-white text-sm font-semibold whitespace-nowrap">Tất cả</button>
+      <button type="button" data-map-sport-filter="badminton" class="px-4 h-9 rounded-full bg-white/90 text-on-surface border border-outline-variant/30 text-sm font-semibold whitespace-nowrap">Cầu lông</button>
+      <button type="button" data-map-sport-filter="pickleball" class="px-4 h-9 rounded-full bg-white/90 text-on-surface border border-outline-variant/30 text-sm font-semibold whitespace-nowrap">Pickleball</button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+      <label class="block">
+        <span class="sr-only">Bán kính</span>
+        <select id="map-radius-select" class="w-full h-11 rounded-xl border border-outline-variant/30 bg-white/90 px-3 text-sm">
+          <option value="1000">1 km</option>
+          <option value="3000">3 km</option>
+          <option value="5000">5 km</option>
+          <option value="10000">10 km</option>
+          <option value="30000" selected>30 km</option>
+        </select>
+      </label>
+      <label class="block">
+        <span class="sr-only">Từ thời gian</span>
+        <input id="map-from-input" type="datetime-local" class="w-full h-11 rounded-xl border border-outline-variant/30 bg-white/90 px-3 text-sm" />
+      </label>
+      <label class="block">
+        <span class="sr-only">Đến thời gian</span>
+        <input id="map-to-input" type="datetime-local" class="w-full h-11 rounded-xl border border-outline-variant/30 bg-white/90 px-3 text-sm" />
+      </label>
     </div>
   </div>
 
@@ -30,7 +58,7 @@
     <div class="px-5 mb-4 flex justify-between items-end">
       <div>
         <h2 class="font-headline font-extrabold text-xl tracking-tight">Kèo quanh đây</h2>
-        <p class="text-on-surface-variant text-xs">Tìm thấy <%= @listings.size %> trận đấu</p>
+        <p id="map-result-count" class="text-on-surface-variant text-xs">Tìm thấy <%= @listings.size %> trận đấu</p>
       </div>
       <%= link_to "Xem tất cả", listings_path, class: "text-primary font-headline font-bold text-xs" %>
     </div>
@@ -52,25 +80,252 @@
 ]) %>
 
 <% if ENV["GOOGLE_MAPS_API_KEY"].present? %>
-  <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>"></script>
-  <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>" defer></script>
+  <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js" defer></script>
   <script>
-    (async function initMap() {
-      const center = { lat: 10.8231, lng: 106.6297 };
-      const mapEl = document.getElementById("browse-map");
-      if (!mapEl || !window.google) return;
-      const map = new google.maps.Map(mapEl, { center, zoom: 11, mapTypeControl: false, streetViewControl: false });
-      const resp = await fetch("/api/v1/listings/map?lat=" + center.lat + "&lng=" + center.lng + "&radius_meters=30000");
-      const json = await resp.json();
-      const markers = (json.listings || []).map((item) => {
-        const icon = item.sport === "pickleball" ? "🟧" : "🏸";
-        return new google.maps.Marker({
-          position: { lat: Number(item.lat), lng: Number(item.lng) },
-          title: item.title,
-          label: { text: icon, color: "#111827" }
+    (() => {
+      if (window.__sportMatchBrowseMapBound) return;
+      window.__sportMatchBrowseMapBound = true;
+
+      const normalize = (value) => (value || "").toString().trim().toLowerCase();
+      const toISO = (value) => (value ? new Date(value).toISOString() : "");
+      const fmt = new Intl.NumberFormat("vi-VN");
+      const sportIcon = (sport) => (sport === "pickleball" ? "🏓" : "🏸");
+
+      const waitForMapLib = () =>
+        new Promise((resolve, reject) => {
+          const startedAt = Date.now();
+          const timer = setInterval(() => {
+            if (window.google && window.google.maps && window.markerClusterer) {
+              clearInterval(timer);
+              resolve();
+            } else if (Date.now() - startedAt > 12_000) {
+              clearInterval(timer);
+              reject(new Error("Google Maps library timeout"));
+            }
+          }, 120);
+        });
+
+      const svgIcon = (text, clustered = false) => {
+        const border = clustered ? "#ef4444" : "#f5002f";
+        const bg = "#ffffff";
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+          <circle cx="24" cy="24" r="21" fill="${bg}" stroke="${border}" stroke-width="2.5"/>
+          <text x="24" y="30" text-anchor="middle" font-family="Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, Arial, sans-serif" font-size="20">${text}</text>
+        </svg>`;
+        return {
+          url: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg),
+          scaledSize: new google.maps.Size(48, 48),
+          anchor: new google.maps.Point(24, 24)
+        };
+      };
+
+      const clusterSvgIcon = (count) => {
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="58" height="58" viewBox="0 0 58 58">
+          <circle cx="29" cy="29" r="25" fill="#ffffff" stroke="#ef4444" stroke-width="3"/>
+          <text x="29" y="34" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="700" fill="#111827">${fmt.format(count)}</text>
+        </svg>`;
+        return {
+          url: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg),
+          scaledSize: new google.maps.Size(58, 58),
+          anchor: new google.maps.Point(29, 29)
+        };
+      };
+
+      const setupBrowseMap = async () => {
+        const mapEl = document.getElementById("browse-map");
+        if (!mapEl) return;
+        if (mapEl.dataset.initialized === "true") return;
+        mapEl.dataset.initialized = "true";
+
+        await waitForMapLib();
+
+        const center = {
+          lat: Number(mapEl.dataset.initialLat || 10.8231),
+          lng: Number(mapEl.dataset.initialLng || 106.6297)
+        };
+        const focusListingId = (mapEl.dataset.focusListingId || "").toString();
+
+        const locateBtn = document.getElementById("map-locate-btn");
+        const queryInput = document.querySelector('input[name="q"]');
+        const resultCountEl = document.getElementById("map-result-count");
+        const sportFilterButtons = Array.from(document.querySelectorAll("[data-map-sport-filter]"));
+        const radiusSelect = document.getElementById("map-radius-select");
+        const fromInput = document.getElementById("map-from-input");
+        const toInput = document.getElementById("map-to-input");
+
+        if (radiusSelect) {
+          radiusSelect.value = String(Number(mapEl.dataset.initialRadius || 30000));
+        }
+
+        const map = new google.maps.Map(mapEl, {
+          center,
+          zoom: 12,
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: false,
+          rotateControl: false,
+          gestureHandling: "greedy",
+          zoomControl: true,
+          styles: [
+            { elementType: "geometry", stylers: [{ color: "#efefef" }] },
+            { elementType: "labels.text.fill", stylers: [{ color: "#6b7280" }] },
+            { elementType: "labels.text.stroke", stylers: [{ color: "#f3f4f6" }] },
+            { featureType: "poi", stylers: [{ visibility: "off" }] },
+            { featureType: "transit", stylers: [{ visibility: "off" }] },
+            { featureType: "road", elementType: "geometry", stylers: [{ color: "#d6d9df" }] },
+            { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#cfd4db" }] },
+            { featureType: "water", elementType: "geometry", stylers: [{ color: "#dfe5ec" }] }
+          ]
+        });
+
+        let activeSport = "";
+        let listings = [];
+        let markers = [];
+        let cluster = null;
+        let currentCenter = { ...center };
+
+        const clearMapMarkers = () => {
+          markers.forEach((marker) => marker.setMap(null));
+          markers = [];
+          if (cluster) {
+            cluster.clearMarkers();
+            cluster = null;
+          }
+        };
+
+        const renderMarkers = (items) => {
+          clearMapMarkers();
+          markers = items
+            .filter((item) => Number.isFinite(Number(item.lat)) && Number.isFinite(Number(item.lng)))
+            .map((item) => {
+              const marker = new google.maps.Marker({
+                position: { lat: Number(item.lat), lng: Number(item.lng) },
+                title: item.title,
+                icon: svgIcon(sportIcon(item.sport))
+              });
+              marker.addListener("click", () => {
+                window.location.href = "/listings/" + item.id;
+              });
+              return marker;
+            });
+
+          cluster = new markerClusterer.MarkerClusterer({
+            map,
+            markers,
+            renderer: {
+              render: ({ count, position }) =>
+                new google.maps.Marker({
+                  position,
+                  icon: clusterSvgIcon(count),
+                  zIndex: Number(google.maps.Marker.MAX_ZINDEX) + count
+                })
+            }
+          });
+
+          if (resultCountEl) {
+            resultCountEl.textContent = "Tìm thấy " + items.length + " trận đấu";
+          }
+        };
+
+        const filteredListings = () => {
+          const q = normalize(queryInput && queryInput.value);
+          return listings.filter((item) => {
+            const matchSport = activeSport ? item.sport === activeSport : true;
+            const haystack = normalize(item.title) + " " + normalize(item.location_name);
+            const matchQuery = q ? haystack.includes(q) : true;
+            return matchSport && matchQuery;
+          });
+        };
+
+        const fetchListings = async () => {
+          const radius = Number((radiusSelect && radiusSelect.value) || 30000);
+          const params = new URLSearchParams({
+            lat: String(currentCenter.lat),
+            lng: String(currentCenter.lng),
+            radius_meters: String(radius)
+          });
+          if (activeSport) params.set("sport", activeSport);
+          if (fromInput && fromInput.value) params.set("from", toISO(fromInput.value));
+          if (toInput && toInput.value) params.set("to", toISO(toInput.value));
+
+          const resp = await fetch("/api/v1/listings/map?" + params.toString());
+          if (!resp.ok) throw new Error("map feed failed");
+          const json = await resp.json();
+          listings = json.listings || [];
+          renderMarkers(filteredListings());
+
+          if (focusListingId) {
+            const focused = listings.find((item) => String(item.id) === focusListingId);
+            if (focused && Number.isFinite(Number(focused.lat)) && Number.isFinite(Number(focused.lng))) {
+              map.panTo({ lat: Number(focused.lat), lng: Number(focused.lng) });
+              map.setZoom(15);
+            }
+          }
+        };
+
+        const refetchWithCurrentFilters = () => {
+          fetchListings().catch((error) => {
+            console.error("Khong tai duoc du lieu map", error);
+          });
+        };
+
+        sportFilterButtons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            activeSport = btn.dataset.mapSportFilter || "";
+            sportFilterButtons.forEach((el) => {
+              const isActive = el === btn;
+              el.classList.toggle("bg-primary", isActive);
+              el.classList.toggle("text-white", isActive);
+              el.classList.toggle("bg-white/90", !isActive);
+              el.classList.toggle("text-on-surface", !isActive);
+              el.classList.toggle("border", !isActive);
+              el.classList.toggle("border-outline-variant/30", !isActive);
+            });
+            refetchWithCurrentFilters();
+          });
+        });
+
+        if (queryInput) {
+          queryInput.addEventListener("input", () => renderMarkers(filteredListings()));
+        }
+        if (radiusSelect) {
+          radiusSelect.addEventListener("change", refetchWithCurrentFilters);
+        }
+        if (fromInput) {
+          fromInput.addEventListener("change", refetchWithCurrentFilters);
+        }
+        if (toInput) {
+          toInput.addEventListener("change", refetchWithCurrentFilters);
+        }
+
+        if (locateBtn) {
+          locateBtn.addEventListener("click", () => {
+            if (!navigator.geolocation) return;
+            navigator.geolocation.getCurrentPosition(
+              (pos) => {
+                currentCenter = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                map.panTo(currentCenter);
+                map.setZoom(14);
+                refetchWithCurrentFilters();
+              },
+              () => {}
+            );
+          });
+        }
+
+        refetchWithCurrentFilters();
+      };
+
+      document.addEventListener("turbo:load", () => {
+        setupBrowseMap().catch((error) => {
+          console.error("Khong khoi tao duoc map", error);
         });
       });
-      new markerClusterer.MarkerClusterer({ map, markers });
     })();
   </script>
+<% else %>
+  <div class="fixed top-20 left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-xl rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-900 shadow">
+    Thiếu cấu hình <code>GOOGLE_MAPS_API_KEY</code>. Vui lòng thêm key vào file <code>.env</code> ở thư mục gốc và khởi động lại Docker để hiển thị bản đồ.
+  </div>
 <% end %>

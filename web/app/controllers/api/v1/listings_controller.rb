@@ -9,8 +9,9 @@ module Api
         lat = params.fetch(:lat).to_f
         lng = params.fetch(:lng).to_f
         radius_meters = params.fetch(:radius_meters, 5000).to_i.clamp(100, 50_000)
-        from = parse_time(params[:from])
-        to = parse_time(params[:to])
+        from = parse_time!(params[:from], "from")
+        to = parse_time!(params[:to], "to")
+        validate_time_range!(from:, to:)
 
         listings = Listing.map_rows_for(
           lat:,
@@ -33,6 +34,7 @@ module Api
               start_at: l.start_at&.iso8601,
               end_at: l.end_at&.iso8601,
               skill_level: l.skill_level,
+              price_estimate: l.price_estimate,
               source: l.source
             }
           end
@@ -40,6 +42,8 @@ module Api
         Rails.logger.info("map_feed listings_count=#{listings.size} radius_meters=#{radius_meters} sport=#{params[:sport]}")
       rescue KeyError
         render json: { errors: [{ field: "lat/lng", message: "is required" }] }, status: :unprocessable_entity
+      rescue InvalidTimeFilter => e
+        render json: { errors: [{ field: e.field, message: e.message }] }, status: :unprocessable_entity
       end
 
       def show
@@ -84,10 +88,28 @@ module Api
         )
       end
 
-      def parse_time(value)
-        value.present? ? Time.iso8601(value) : nil
+      class InvalidTimeFilter < StandardError
+        attr_reader :field
+
+        def initialize(field:, message:)
+          @field = field
+          super(message)
+        end
+      end
+
+      def parse_time!(value, field)
+        return nil if value.blank?
+
+        Time.iso8601(value)
       rescue ArgumentError
-        nil
+        raise InvalidTimeFilter.new(field:, message: "must be ISO8601")
+      end
+
+      def validate_time_range!(from:, to:)
+        return if from.blank? || to.blank?
+        return unless to < from
+
+        raise InvalidTimeFilter.new(field: "to", message: "must be greater than or equal to from")
       end
     end
   end

@@ -9,10 +9,18 @@ class ListingsController < ApplicationController
 
   def map
     @listings = Listing.order(start_at: :asc).limit(20)
+    @map_center_lat = parse_coordinate(params[:lat], default: 10.8231, range: -90.0..90.0)
+    @map_center_lng = parse_coordinate(params[:lng], default: 106.6297, range: -180.0..180.0)
+    @map_radius_meters = params.fetch(:radius_meters, 30_000).to_i.clamp(100, 50_000)
+    @map_focus_listing_id = params[:listing_id]
   end
 
   def show
     @listing = Listing.find(params[:id])
+    @listing_lat, @listing_lng = Listing.where(id: @listing.id).pick(
+      Arel.sql("ST_Y(geom::geometry)"),
+      Arel.sql("ST_X(geom::geometry)")
+    )
   end
 
   def my
@@ -103,5 +111,12 @@ class ListingsController < ApplicationController
       :sport, :title, :body, :location_name, :lat, :lng, :start_at, :end_at,
       :slots_needed, :skill_level, :price_estimate, :contact_info
     )
+  end
+
+  def parse_coordinate(value, default:, range:)
+    num = Float(value)
+    range.cover?(num) ? num : default
+  rescue ArgumentError, TypeError
+    default
   end
 end

@@ -18,6 +18,26 @@
 - Public map feed JSON: `GET /api/v1/listings/map?lat=10.8231&lng=106.6297&radius_meters=5000`
 - Internal ingest endpoint: `POST /internal/v1/listings/import`
 
+## Kiểm tra nhanh tính năng map UI
+
+- Home -> Map:
+  - vào `GET /map` phải hiển thị map ngay lần đầu, không cần reload.
+- Listing detail:
+  - `GET /listings/:id` (listing có `geom`) phải hiển thị mini map.
+  - nút `Mở trong bản đồ` điều hướng về `/map` và focus đúng listing.
+- Bộ lọc map:
+  - Nút vị trí hiện tại (`my_location`) phải pan map + gọi lại feed.
+  - Đổi `radius_meters` phải gọi lại feed với bán kính mới.
+  - Đổi `from/to` phải gọi lại feed với thời gian mới.
+
+## Lưu ý contract filter thời gian
+
+- API `GET /api/v1/listings/map` trả `422` nếu:
+  - `from` hoặc `to` không phải ISO8601.
+  - `to < from`.
+- Ví dụ hợp lệ:
+  - `/api/v1/listings/map?lat=10.82&lng=106.62&radius_meters=3000&from=2026-04-03T10:00:00Z&to=2026-04-03T14:00:00Z`
+
 ## Chạy scraper ingest thử
 
 - Set env:
