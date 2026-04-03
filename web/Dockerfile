@@ -1,11 +1,18 @@
 # syntax=docker/dockerfile:1
 # check=error=true
 
-# This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
-# docker build -t giao_luu .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name giao_luu giao_luu
-
-# For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
+# Production image cho app Rails (monorepo: file này nằm trong web/).
+#
+# Build (context phải là thư mục web/):
+#   cd web && docker build -t giao_luu .
+# Hoặc từ gốc repo:
+#   docker build -f web/Dockerfile -t giao_luu web
+#
+# Chạy tay:
+#   docker run -d -p 80:80 -e RAILS_MASTER_KEY=<từ config/master.key> --name giao_luu giao_luu
+#
+# Môi trường dev đa dịch vụ (PostGIS + web + scraper): docker compose ở gốc repo.
+# Devcontainer: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
 ARG RUBY_VERSION=3.4.1

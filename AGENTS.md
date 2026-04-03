@@ -2,6 +2,13 @@
 
 Tài liệu điểm vào cho con người và AI agent làm việc trong repo này. Đọc **theo thứ tự** trước khi sửa code.
 
+## Cấu trúc monorepo
+
+- **`web/`** — ứng dụng Rails 8 (lệnh `bin/rails`, `bin/dev`, `bin/setup` chạy trong thư mục này).
+- **`scraper/`** — service Go (pipeline thu thập / LLM / ingest; hiện là stub có thể build/chạy).
+- **`docs/`** — tài liệu dùng chung.
+- **Docker Compose** — file `docker-compose.yml` ở gốc repo: PostGIS + image `web` + `scraper` (dev). Build Rails: context `./web`.
+
 ## Thứ tự đọc bắt buộc
 
 1. [docs/PROJECT_CHARTER.md](docs/PROJECT_CHARTER.md) — mục tiêu, MVP, persona.

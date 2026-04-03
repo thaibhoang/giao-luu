@@ -1,3 +1,5 @@
+# Kamal chạy từ thư mục web/ (cd web && bin/kamal ...) để build context trỏ đúng app Rails trong monorepo.
+#
 # Name of your application. Used to uniquely configure containers.
 service: giao_luu
 
@@ -79,6 +81,9 @@ asset_path: /rails/public/assets
 # Configure the image builder.
 builder:
   arch: amd64
+  # Context "." = thư mục hiện tại khi gọi kamal (phải là web/).
+  context: .
+  dockerfile: Dockerfile
 
   # # Build image via remote server (useful for faster amd64 builds on arm64 computers)
   # remote: ssh://docker@docker-builder-server

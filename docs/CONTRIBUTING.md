@@ -23,5 +23,5 @@
 
 ## Test
 
-- Khi đã có suite: chạy `bin/ci` hoặc lệnh CI địa phương trước khi push.
+- Khi đã có suite: trong `web/`, chạy `bin/ci` hoặc lệnh CI địa phương trước khi push.
 - Thêm test cho truy vấn spatial nếu sửa scope map feed.
