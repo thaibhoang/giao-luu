@@ -79,7 +79,7 @@ module Internal
       end
 
       def render_unauthorized
-        render json: { errors: [{ field: "signature", message: "invalid" }] }, status: :unauthorized
+        render json: { errors: [ { field: "signature", message: "invalid" } ] }, status: :unauthorized
       end
     end
   end

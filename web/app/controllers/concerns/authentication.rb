@@ -50,4 +50,3 @@ module Authentication
       cookies.delete(:session_id)
     end
 end
-

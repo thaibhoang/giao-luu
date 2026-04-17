@@ -29,6 +29,6 @@ class Rack::Attack
       match_data: request.env["rack.attack.match_data"]
     }
 
-    [429, { "Content-Type" => "application/json" }, [body.to_json]]
+    [ 429, { "Content-Type" => "application/json" }, [ body.to_json ] ]
   end
 end

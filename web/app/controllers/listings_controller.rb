@@ -151,9 +151,9 @@ class ListingsController < ApplicationController
   end
 
   def extract_coordinate_pair(lat_raw, lng_raw)
-    [Float(lat_raw), Float(lng_raw)]
+    [ Float(lat_raw), Float(lng_raw) ]
   rescue ArgumentError, TypeError
-    [nil, nil]
+    [ nil, nil ]
   end
 
   def valid_coordinate_pair?(lat, lng)
@@ -185,7 +185,7 @@ class ListingsController < ApplicationController
   end
 
   def seconds_until_end_of_day
-    [(Time.zone.now.end_of_day - Time.zone.now).ceil, 60].max
+    [ (Time.zone.now.end_of_day - Time.zone.now).ceil, 60 ].max
   end
 
   def parse_coordinate(value, default:, range:)

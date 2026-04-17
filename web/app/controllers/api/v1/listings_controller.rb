@@ -36,7 +36,7 @@ module Api
         }
         Rails.logger.info("map_feed listings_count=#{listings.size} sport=#{params[:sport]}")
       rescue InvalidTimeFilter => e
-        render json: { errors: [{ field: e.field, message: e.message }] }, status: :unprocessable_entity
+        render json: { errors: [ { field: e.field, message: e.message } ] }, status: :unprocessable_entity
       end
 
       def show

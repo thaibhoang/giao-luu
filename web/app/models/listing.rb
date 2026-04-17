@@ -94,14 +94,14 @@ class Listing < ApplicationRecord
     now = Time.current
     h = attributes.symbolize_keys.reverse_merge(created_at: now, updated_at: now, user_id: nil)
     values = cols.map { |c| h[c] }
-    placeholders = (["?"] * cols.size).join(", ")
+    placeholders = ([ "?" ] * cols.size).join(", ")
     sql = <<~SQL.squish
       INSERT INTO listings (#{cols.join(", ")}, geom)
       VALUES (#{placeholders}, ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography)
       RETURNING id
     SQL
-    binds = values + [longitude, latitude]
-    row = connection.exec_query(sanitize_sql_array([sql, *binds])).first
+    binds = values + [ longitude, latitude ]
+    row = connection.exec_query(sanitize_sql_array([ sql, *binds ])).first
     find(row["id"])
   end
 
@@ -119,8 +119,8 @@ class Listing < ApplicationRecord
       SET #{assignments}, geom = ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography
       WHERE id = ?
     SQL
-    binds = cols.map { |c| h[c] } + [longitude, latitude, id]
-    connection.exec_update(sanitize_sql_array([sql, *binds]), "Listing Update", [])
+    binds = cols.map { |c| h[c] } + [ longitude, latitude, id ]
+    connection.exec_update(sanitize_sql_array([ sql, *binds ]), "Listing Update", [])
     find(id)
   end
 

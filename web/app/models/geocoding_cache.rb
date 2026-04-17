@@ -14,7 +14,7 @@ class GeocodingCache < ApplicationRecord
       RETURNING id
     SQL
     row = connection.exec_query(
-      sanitize_sql_array([sql, location_query, provider, raw_response, now, longitude, latitude])
+      sanitize_sql_array([ sql, location_query, provider, raw_response, now, longitude, latitude ])
     ).first
     find(row["id"])
   end
@@ -57,7 +57,7 @@ class GeocodingCache < ApplicationRecord
     SQL
     raw_payload = raw_response.is_a?(String) ? raw_response : raw_response.to_json
     row = connection.exec_query(
-      sanitize_sql_array([sql, normalized, provider, raw_payload, now, longitude, latitude])
+      sanitize_sql_array([ sql, normalized, provider, raw_payload, now, longitude, latitude ])
     ).first
     find(row["id"])
   end

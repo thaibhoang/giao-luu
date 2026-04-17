@@ -29,6 +29,8 @@ services:
         condition: service_healthy
     ports:
       - "3000:80"
+    env_file:
+      - web/.env
     environment:
       RAILS_ENV: development
       PORT: "80"
