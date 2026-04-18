@@ -1,14 +1,16 @@
 # frozen_string_literal: true
 
 class ListingsController < ApplicationController
+  include Pagy::Method
+
   allow_unauthenticated_access only: %i[index show map]
 
   def index
-    @listings = Listing.order(start_at: :asc).limit(100)
+    @pagy, @listings = pagy(Listing.order(start_at: :asc), items: 20)
   end
 
   def map
-    @listings = Listing.order(start_at: :asc).limit(20)
+    @pagy, @listings = pagy(Listing.order(start_at: :asc), items: 20)
     @map_center_lat = parse_coordinate(params[:lat], default: 10.8231, range: -90.0..90.0)
     @map_center_lng = parse_coordinate(params[:lng], default: 106.6297, range: -180.0..180.0)
     @map_focus_listing_id = params[:listing_id]

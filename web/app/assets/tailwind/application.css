@@ -141,4 +141,44 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  /* ── Pagy pagination ─────────────────────────────────────── */
+  .pagy.series-nav {
+    --rounding: 0.5rem;
+    --padding: 0.625rem;
+    --spacing: 0.25rem;
+    --border-width: 1px;
+    --font-size: 0.875rem;
+    --font-weight: 500;
+    --line-height: 1.5;
+
+    @apply flex gap-x-1 font-(--font-weight)
+      text-(length:--font-size) leading-(--line-height)
+      text-on-surface justify-center flex-wrap;
+
+    a:not([role="separator"]) {
+      @apply block rounded-(--rounding) px-(--padding) py-[calc(var(--padding)/3)]
+        bg-surface-container border border-outline-variant text-on-surface;
+    }
+
+    a[href]:hover {
+      @apply bg-surface-container-high text-on-surface;
+    }
+
+    a:not([href]) {
+      @apply cursor-default;
+    }
+
+    a[role="link"]:not([aria-current]) {
+      @apply opacity-50;
+    }
+
+    a[aria-current] {
+      @apply bg-primary-container text-on-primary-container border-primary-container font-semibold;
+    }
+
+    a[role="separator"] {
+      @apply px-2 text-on-surface-variant self-center;
+    }
+  }
 }

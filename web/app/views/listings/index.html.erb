@@ -9,7 +9,7 @@
 <% end %>
 
 <%= render Ui::PageShellComponent.new(padding_top: "pt-24", padding_bottom: "pb-28", max_width: "max-w-6xl", horizontal_padding: "px-5") do %>
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+  <div class="grid grid-cols-1 gap-10 items-center">
     <section class="space-y-4">
       <div class="inline-flex items-center gap-2 bg-primary-container/5 px-3 py-1 rounded-full">
         <span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
@@ -27,10 +27,12 @@
     </section>
 
     <section class="grid grid-cols-2 gap-4">
-      <% @listings.first(4).each do |listing| %>
+      <% @listings.first(20).each do |listing| %>
         <%= render Ui::ListingCardComponent.new(listing: listing, compact: true) %>
       <% end %>
     </section>
+
+    <%== @pagy.series_nav %>
   </div>
 <% end %>
 

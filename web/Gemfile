@@ -72,3 +72,5 @@ end
 
 gem "dotenv", "~> 3.2"
 gem "rack-attack"
+
+gem "pagy", "~> 43.5"

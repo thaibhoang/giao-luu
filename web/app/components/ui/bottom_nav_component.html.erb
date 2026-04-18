@@ -4,7 +4,7 @@
     @html_options[:class]
   ) %>"
   <%= tag.attributes(@html_options.except(:class)) %>>
-  <div class="flex justify-around md:justify-center md:gap-8 lg:gap-12 items-center h-20 md:h-24 px-4 md:px-6 lg:px-8 w-full max-w-[375px] md:max-w-4xl mx-auto">
+  <div class="flex justify-around md:justify-center md:gap-8 lg:gap-12 items-center h-12 md:h-14 px-4 md:px-6 lg:px-8 w-full max-w-[375px] md:max-w-4xl mx-auto">
     <% items.each do |item| %>
       <% active = item[:active] %>
       <%= link_to item.fetch(:path), class: class_names(
