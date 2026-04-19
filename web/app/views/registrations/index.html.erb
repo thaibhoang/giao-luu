@@ -1,0 +1,48 @@
+<% content_for :title, "Người đăng ký — #{@listing.title} | SportMatch" %>
+
+<%= render Ui::TopAppBarComponent.new(title: "Người đăng ký", back_href: listing_path(@listing)) %>
+
+<div class="pt-20 pb-10 px-5 max-w-3xl mx-auto space-y-6">
+  <div class="space-y-1">
+    <h2 class="text-xl font-extrabold text-on-surface"><%= @listing.title %></h2>
+    <p class="text-sm text-on-surface-variant"><%= @registrations.size %> người đã đăng ký</p>
+  </div>
+
+  <% if @registrations.empty? %>
+    <div class="py-16 flex flex-col items-center gap-3 text-on-surface-variant">
+      <%= render Ui::IconComponent.new(name: "group", size_class: "text-5xl opacity-30") %>
+      <p class="text-sm">Chưa có ai đăng ký tham gia bài đăng này.</p>
+    </div>
+  <% else %>
+    <ul class="space-y-3">
+      <% @registrations.each_with_index do |reg, idx| %>
+        <li class="p-5 bg-surface-container-lowest border border-outline-variant/20 rounded-3xl space-y-2">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <span class="text-sm font-bold text-primary">#<%= idx + 1 %></span>
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="font-semibold text-on-surface truncate"><%= reg.user.email_address %></p>
+              <p class="text-xs text-on-surface-variant">
+                Đăng ký lúc <%= l(reg.created_at, format: :long) %>
+              </p>
+            </div>
+          </div>
+
+          <% if reg.phone.present? %>
+            <div class="flex items-center gap-2 text-sm text-on-surface-variant">
+              <%= render Ui::IconComponent.new(name: "phone", size_class: "text-base") %>
+              <span><%= reg.phone %></span>
+            </div>
+          <% end %>
+
+          <% if reg.note.present? %>
+            <div class="pt-1 border-t border-outline-variant/10">
+              <p class="text-sm text-on-surface leading-relaxed"><%= reg.note %></p>
+            </div>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>

@@ -40,7 +40,7 @@
         data-lat="<%= @listing_lat %>"
         data-lng="<%= @listing_lng %>"
       ></div>
-      <div class="absolute bottom-4 right-4 bg-white px-4 py-2 rounded-full shadow-sm text-xs font-bold uppercase">Bản đồ</div>
+      <a href="<%= map_path(lat: @listing_lat, lng: @listing_lng, listing_id: @listing.id) %>" class="absolute bottom-4 right-4 bg-white px-4 py-2 rounded-full shadow-sm text-xs font-bold uppercase hover:bg-surface-container-low transition-colors">Bản đồ</a>
     <% elsif has_coordinates %>
       <div class="absolute inset-0 p-4 text-sm text-amber-900 bg-amber-50 border border-amber-300">
         Thiếu cấu hình <code>GOOGLE_MAPS_API_KEY</code>, chưa thể hiển thị bản đồ.
@@ -152,5 +152,92 @@
 <% end %>
 
 <%= render Ui::FixedBottomBarComponent.new(with_border: true, inner_class: "max-w-3xl mx-auto px-5") do %>
-  <%= render Ui::ButtonComponent.new("Đăng ký tham gia", full_width: true) %>
+  <%
+    current_user = Current.session&.user
+    is_owner     = current_user && @listing.user_id == current_user.id
+    is_fb_scrape = @listing.source == Listing::SOURCE_FACEBOOK_SCRAPE
+    already_registered = current_user && @listing.registrations.exists?(user: current_user)
+  %>
+
+  <% if is_owner %>
+    <%# Chủ bài: xem danh sách người đăng ký %>
+    <%= render Ui::ButtonComponent.new(
+      "Xem người đăng ký (#{@listing.registrations.count})",
+      full_width: true,
+      icon: "group",
+      icon_position: :leading,
+      href: listing_registrations_path(@listing)
+    ) %>
+
+  <% elsif is_fb_scrape %>
+    <%# Bài từ admin / scraper: không hỗ trợ đăng ký trực tiếp %>
+    <a href="<%= @listing.contact_info %>" target="_blank" rel="noopener noreferrer"
+       class="flex items-center justify-center gap-2 w-full h-14 px-5 text-base bg-primary text-on-primary-container font-lexend font-bold rounded-xl hover:opacity-90 active:scale-[0.98] shadow-xl shadow-black/10">
+      <%= render Ui::IconComponent.new(name: "open_in_new", size_class: "text-xl") %>
+      Liên hệ qua Facebook
+    </a>
+
+  <% elsif current_user.nil? %>
+    <%# Chưa đăng nhập %>
+    <%= render Ui::ButtonComponent.new(
+      "Đăng nhập để đăng ký tham gia",
+      full_width: true,
+      icon: "login",
+      icon_position: :leading,
+      href: new_session_path
+    ) %>
+
+  <% elsif already_registered %>
+    <%# Đã đăng ký — cho huỷ %>
+    <div class="flex gap-3">
+      <span class="flex-1 flex items-center justify-center gap-2 h-14 px-5 rounded-xl bg-surface-container-high border border-outline-variant text-on-surface-variant text-sm font-semibold">
+        <%= render Ui::IconComponent.new(name: "check_circle", size_class: "text-xl text-green-600") %>
+        Đã đăng ký tham gia
+      </span>
+      <%= button_to(
+        listing_registration_path(@listing, @listing.registrations.find_by(user: current_user)),
+        method: :delete,
+        class: "h-14 px-5 rounded-xl bg-surface-container-high border border-outline-variant text-on-surface-variant text-sm font-semibold hover:bg-surface-container-highest flex items-center gap-2"
+      ) do %>
+        <%= render Ui::IconComponent.new(name: "close", size_class: "text-xl") %>
+        Huỷ
+      <% end %>
+    </div>
+
+  <% else %>
+    <%# Chưa đăng ký — hiển thị form %>
+    <details class="group">
+      <summary class="list-none cursor-pointer">
+        <div class="flex items-center justify-center gap-2 w-full h-14 px-5 text-base bg-primary text-on-primary-container font-lexend font-bold rounded-xl hover:opacity-90 active:scale-[0.98] shadow-xl shadow-black/10 group-open:rounded-b-none group-open:rounded-t-xl select-none">
+          <%= render Ui::IconComponent.new(name: "how_to_reg", size_class: "text-xl") %>
+          Đăng ký tham gia
+        </div>
+      </summary>
+
+      <%= form_with url: listing_registrations_path(@listing), method: :post,
+                    class: "p-4 bg-surface-container-lowest border border-t-0 border-outline-variant/20 rounded-b-2xl space-y-3" do |f| %>
+        <div>
+          <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wide mb-1">
+            Ghi chú (tuỳ chọn)
+          </label>
+          <%= f.text_area :note,
+            placeholder: "Trình độ, lịch rảnh, câu hỏi…",
+            rows: 2,
+            class: "w-full rounded-xl border border-outline-variant bg-surface px-4 py-2 text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary resize-none",
+            name: "registration[note]" %>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wide mb-1">
+            SĐT liên hệ (tuỳ chọn)
+          </label>
+          <%= f.telephone_field :phone,
+            placeholder: "0901 234 567",
+            class: "w-full rounded-xl border border-outline-variant bg-surface px-4 py-2 text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary",
+            name: "registration[phone]" %>
+        </div>
+        <%= f.submit "Xác nhận đăng ký",
+          class: "w-full h-12 bg-primary text-on-primary-container font-bold rounded-xl hover:opacity-90 cursor-pointer text-sm" %>
+      <% end %>
+    </details>
+  <% end %>
 <% end %>

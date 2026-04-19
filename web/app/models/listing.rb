@@ -35,6 +35,7 @@ class Listing < ApplicationRecord
   SOURCE_FACEBOOK_SCRAPE = "facebook_scrape"
 
   belongs_to :user, optional: true
+  has_many :registrations, dependent: :destroy
 
   validates :sport, inclusion: { in: SPORTS }
   validates :skill_level_min, :skill_level_max, inclusion: { in: SKILL_LEVELS }

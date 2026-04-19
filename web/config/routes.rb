@@ -3,7 +3,9 @@ Rails.application.routes.draw do
   resources :users, only: %i[new create]
   resources :passwords, param: :token
   root "home#index"
-  resources :listings, only: %i[index show new create edit update]
+  resources :listings, only: %i[index show new create edit update] do
+    resources :registrations, only: %i[index create destroy]
+  end
   get "geocoding/lookup", to: "geocoding#lookup"
   get "map", to: "listings#map"
   get "my-listings", to: "listings#my", as: :my_listings
