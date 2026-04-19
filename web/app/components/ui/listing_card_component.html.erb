@@ -2,7 +2,7 @@
   <div class="flex items-start justify-between gap-4">
     <div class="space-y-1 min-w-0">
       <div class="flex items-center gap-2 text-on-surface-variant">
-        <%= render Ui::SportIconComponent.new(sport: listing.sport, class: "text-sm") %>
+        <%= render Ui::SportIconComponent.new(sport: listing.sport, class: "w-4 h-4") %>
         <span class="text-[10px] font-semibold uppercase tracking-widest"><%= listing.sport.humanize %></span>
       </div>
       <h3 class="font-headline font-bold leading-tight <%= compact ? "text-base" : "text-lg" %>"><%= listing.title %></h3>

@@ -49,6 +49,21 @@ class Listing < ApplicationRecord
   scope :by_sport, ->(sport) { sport.present? ? where(sport:) : all }
   scope :from_time, ->(from) { from.present? ? where("start_at >= ?", from) : all }
   scope :to_time, ->(to) { to.present? ? where("start_at <= ?", to) : all }
+  scope :by_keyword, ->(q) {
+    return all if q.blank?
+    pattern = "%#{sanitize_sql_like(q)}%"
+    where("title ILIKE ? OR location_name ILIKE ?", pattern, pattern)
+  }
+  # Tìm listing có skill_level_max >= slug (listing chấp nhận trình độ tối thiểu slug)
+  scope :skill_min_filter, ->(slug) {
+    return all if slug.blank? || !SKILL_LEVEL_INDEX.key?(slug)
+    where(skill_level_max: SKILL_LEVELS[SKILL_LEVEL_INDEX[slug]..])
+  }
+  # Tìm listing có skill_level_min <= slug (listing chấp nhận trình độ tối đa slug)
+  scope :skill_max_filter, ->(slug) {
+    return all if slug.blank? || !SKILL_LEVEL_INDEX.key?(slug)
+    where(skill_level_min: SKILL_LEVELS[0..SKILL_LEVEL_INDEX[slug]])
+  }
 
   def self.skill_label_for(slug)
     SKILL_LEVEL_LABELS.fetch(slug, slug)
@@ -76,8 +91,15 @@ class Listing < ApplicationRecord
     )
   end
 
-  def self.map_rows_for(sport: nil, from: nil, to: nil)
-    rel = with_geom.by_sport(sport).from_time(from).to_time(to)
+  def self.map_rows_for(sport: nil, from: nil, to: nil, q: nil, skill_min: nil, skill_max: nil, lat: nil, lng: nil, radius_meters: nil)
+    rel = with_geom
+            .by_sport(sport)
+            .from_time(from)
+            .to_time(to)
+            .by_keyword(q)
+            .skill_min_filter(skill_min)
+            .skill_max_filter(skill_max)
+    rel = rel.within_radius(lat:, lng:, radius_meters:) if lat && lng && radius_meters
     rel.select(
       "id, sport, title, location_name, start_at, end_at, skill_level_min, skill_level_max, price_estimate, source, "\
       "ST_Y(geom::geometry) AS lat, ST_X(geom::geometry) AS lng"

@@ -10,10 +10,18 @@ module Api
         to = parse_time!(params[:to], "to")
         validate_time_range!(from:, to:)
 
+        lat, lng, radius_meters = parse_location_filter!
+
         listings = Listing.map_rows_for(
           sport: params[:sport],
           from:,
-          to:
+          to:,
+          q: params[:q].presence,
+          skill_min: params[:skill_min].presence,
+          skill_max: params[:skill_max].presence,
+          lat:,
+          lng:,
+          radius_meters:
         )
 
         render json: {
@@ -34,8 +42,10 @@ module Api
             }
           end
         }
-        Rails.logger.info("map_feed listings_count=#{listings.size} sport=#{params[:sport]}")
+        Rails.logger.info("map_feed listings_count=#{listings.size} sport=#{params[:sport]} q=#{params[:q]} radius_km=#{params[:radius_km]}")
       rescue InvalidTimeFilter => e
+        render json: { errors: [ { field: e.field, message: e.message } ] }, status: :unprocessable_entity
+      rescue InvalidLocationFilter => e
         render json: { errors: [ { field: e.field, message: e.message } ] }, status: :unprocessable_entity
       end
 
@@ -88,6 +98,34 @@ module Api
           @field = field
           super(message)
         end
+      end
+
+      class InvalidLocationFilter < StandardError
+        attr_reader :field
+
+        def initialize(field:, message:)
+          @field = field
+          super(message)
+        end
+      end
+
+      def parse_location_filter!
+        lat_raw  = params[:lat].presence
+        lng_raw  = params[:lng].presence
+        radius_raw = params[:radius_km].presence
+
+        return [ nil, nil, nil ] if lat_raw.nil? && lng_raw.nil?
+
+        lat = Float(lat_raw) rescue nil
+        lng = Float(lng_raw) rescue nil
+
+        raise InvalidLocationFilter.new(field: "lat", message: "must be a number between -90 and 90") unless lat&.between?(-90, 90)
+        raise InvalidLocationFilter.new(field: "lng", message: "must be a number between -180 and 180") unless lng&.between?(-180, 180)
+
+        radius_km = (Float(radius_raw) rescue 3.0).clamp(0.1, 100.0)
+        radius_meters = radius_km * 1000
+
+        [ lat, lng, radius_meters ]
       end
 
       def parse_time!(value, field)

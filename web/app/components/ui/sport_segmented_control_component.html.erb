@@ -6,14 +6,14 @@
   <label class="cursor-pointer relative">
     <input type="radio" name="<%= name %>" value="<%= value_badminton %>" class="peer sr-only" <%= "checked" if value == value_badminton %>>
     <span class="flex items-center justify-center gap-2 py-3 rounded-lg text-sm transition-all peer-checked:bg-surface-container-lowest peer-checked:shadow-sm peer-checked:font-semibold peer-checked:text-on-surface text-on-surface-variant hover:bg-outline-variant/20 font-medium">
-      <%= render Ui::SportIconComponent.new(sport: :badminton, class: "text-xl") %>
+      <%= render Ui::SportIconComponent.new(sport: :badminton, class: "w-5 h-5") %>
       Cầu lông
     </span>
   </label>
   <label class="cursor-pointer relative">
     <input type="radio" name="<%= name %>" value="<%= value_pickleball %>" class="peer sr-only" <%= "checked" if value == value_pickleball %>>
     <span class="flex items-center justify-center gap-2 py-3 rounded-lg text-sm transition-all peer-checked:bg-surface-container-lowest peer-checked:shadow-sm peer-checked:font-semibold peer-checked:text-on-surface text-on-surface-variant hover:bg-outline-variant/20 font-medium">
-      <%= render Ui::SportIconComponent.new(sport: :pickleball, class: "text-xl") %>
+      <%= render Ui::SportIconComponent.new(sport: :pickleball, class: "w-5 h-5") %>
       Pickleball
     </span>
   </label>

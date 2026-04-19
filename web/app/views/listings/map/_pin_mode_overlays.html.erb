@@ -1,0 +1,28 @@
+<%# Pin mode instruction overlay %>
+<div data-browse-map-target="pinModeOverlay"
+  class="hidden absolute inset-0 z-25 pointer-events-none">
+  <div class="absolute top-20 left-1/2 -translate-x-1/2 bg-on-surface/90 backdrop-blur-xl text-white text-sm font-medium px-4 py-2.5 rounded-2xl shadow-lg pointer-events-none">
+    Nhấn vào bản đồ để chọn điểm
+  </div>
+</div>
+
+<%# Pin mode confirm bar %>
+<div data-browse-map-target="pinConfirmBar"
+  class="hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex gap-3">
+  <button type="button"
+    data-action="click->browse-map#cancelPin"
+    class="h-11 px-5 bg-white rounded-2xl shadow-lg border border-outline-variant/20 text-sm font-semibold text-on-surface flex items-center gap-2">
+    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+    </svg>
+    Huỷ
+  </button>
+  <button type="button"
+    data-action="click->browse-map#confirmPin"
+    class="h-11 px-5 bg-primary rounded-2xl shadow-lg text-sm font-semibold text-white flex items-center gap-2">
+    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+    </svg>
+    Xác nhận
+  </button>
+</div>

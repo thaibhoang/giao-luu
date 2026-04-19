@@ -23,7 +23,7 @@
   </section>
 
   <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div class="flex items-start gap-3"><%= render Ui::IconComponent.new(name: "sports_tennis") %> <div><p class="text-xs uppercase text-on-surface-variant font-bold">Môn</p><p><%= @listing.sport.humanize %></p></div></div>
+    <div class="flex items-start gap-3"><%= render Ui::SportIconComponent.new(sport: @listing.sport, class: "w-6 h-6 mt-0.5 flex-shrink-0") %> <div><p class="text-xs uppercase text-on-surface-variant font-bold">Môn</p><p><%= @listing.sport.humanize %></p></div></div>
     <div class="flex items-start gap-3"><%= render Ui::IconComponent.new(name: "location_on") %> <div><p class="text-xs uppercase text-on-surface-variant font-bold">Địa điểm</p><p><%= @listing.location_name %></p></div></div>
     <div class="flex items-start gap-3"><%= render Ui::IconComponent.new(name: "schedule") %> <div><p class="text-xs uppercase text-on-surface-variant font-bold">Thời gian</p><p><%= l(@listing.start_at, format: :long) %> - <%= l(@listing.end_at, format: :short) %></p></div></div>
     <div class="flex items-start gap-3"><%= render Ui::IconComponent.new(name: "person_add") %> <div><p class="text-xs uppercase text-on-surface-variant font-bold">Cần thêm</p><p><%= @listing.slots_needed %> người</p></div></div>
