@@ -1,0 +1,129 @@
+<% content_for :title, "Xem lại & Lưu Listing — Admin" %>
+
+<div class="space-y-6">
+  <div class="flex items-center gap-3">
+    <%= link_to new_admin_facebook_import_path, class: "text-gray-400 hover:text-gray-700 text-sm" do %>
+      ← Import mới
+    <% end %>
+    <h1 class="text-xl font-bold text-gray-900">Xem lại kết quả AI & Lưu</h1>
+  </div>
+
+  <div class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 text-sm text-blue-700">
+    🤖 AI đã phân tích xong. Kiểm tra và chỉnh sửa nếu cần trước khi lưu.
+  </div>
+
+  <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+    <%= form_with url: confirm_admin_facebook_imports_path, method: :post, data: { turbo: false }, class: "space-y-5" do |f| %>
+
+      <%# Sport & Title %>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-widest mb-1">Môn thể thao *</label>
+          <select name="listing[sport]" required
+                  class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="badminton" <%= "selected" if @extracted["sport"] == "badminton" %>>🏸 Cầu lông</option>
+            <option value="pickleball" <%= "selected" if @extracted["sport"] == "pickleball" %>>🏓 Pickleball</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-widest mb-1">Slots cần *</label>
+          <input type="number" name="listing[slots_needed]" min="1"
+                 value="<%= @extracted['slots_needed'] %>" required
+                 class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-gray-600 uppercase tracking-widest mb-1">Tiêu đề *</label>
+        <input type="text" name="listing[title]" required
+               value="<%= @extracted['title'] %>"
+               class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-gray-600 uppercase tracking-widest mb-1">Mô tả</label>
+        <textarea name="listing[body]" rows="4"
+                  class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"><%= @extracted['body'] %></textarea>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-gray-600 uppercase tracking-widest mb-1">Địa điểm (để geocode) *</label>
+        <input type="text" name="listing[location_name]" required
+               value="<%= @extracted['location_name'] %>"
+               class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-widest mb-1">Bắt đầu *</label>
+          <input type="datetime-local" name="listing[start_at]" required
+                 value="<%= format_datetime_local(@extracted['start_at']) %>"
+                 class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-widest mb-1">Kết thúc *</label>
+          <input type="datetime-local" name="listing[end_at]" required
+                 value="<%= format_datetime_local(@extracted['end_at']) %>"
+                 class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+      </div>
+
+      <%# Skill levels %>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-widest mb-1">Trình độ tối thiểu *</label>
+          <select name="listing[skill_level_min]" required
+                  class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <% Listing::SKILL_LEVELS.each do |slug| %>
+              <option value="<%= slug %>" <%= "selected" if @extracted["skill_level_min"] == slug %>>
+                <%= Listing::SKILL_LEVEL_LABELS[slug] %>
+              </option>
+            <% end %>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-widest mb-1">Trình độ tối đa *</label>
+          <select name="listing[skill_level_max]" required
+                  class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <% Listing::SKILL_LEVELS.each do |slug| %>
+              <option value="<%= slug %>" <%= "selected" if @extracted["skill_level_max"] == slug %>>
+                <%= Listing::SKILL_LEVEL_LABELS[slug] %>
+              </option>
+            <% end %>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-widest mb-1">Giá ước tính (VND)</label>
+          <input type="number" name="listing[price_estimate]" min="0"
+                 value="<%= @extracted['price_estimate'] %>"
+                 placeholder="Để trống nếu không có"
+                 class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-widest mb-1">Link bài FB gốc (source_url)</label>
+          <input type="url" name="listing[source_url]"
+                 value="<%= @extracted['source_url'] %>"
+                 placeholder="https://www.facebook.com/..."
+                 class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-gray-600 uppercase tracking-widest mb-1">Link liên hệ (Facebook người đăng) *</label>
+        <input type="text" name="listing[contact_info]" required
+               value="<%= @extracted['contact_info'] %>"
+               class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      </div>
+
+      <div class="flex items-center gap-3 pt-2">
+        <%= submit_tag "💾 Lưu Listing",
+              class: "bg-green-600 text-white rounded-xl px-6 py-3 text-sm font-semibold hover:bg-green-700 transition cursor-pointer" %>
+        <%= link_to "← Nhập lại", new_admin_facebook_import_path,
+              class: "text-sm text-gray-500 hover:text-gray-800" %>
+      </div>
+    <% end %>
+  </div>
+</div>

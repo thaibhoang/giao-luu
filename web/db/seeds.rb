@@ -1,5 +1,21 @@
 # frozen_string_literal: true
 
+# --- Seed Admin ---
+if ActiveRecord::Base.connection.table_exists?("admin_users")
+  admin_email    = ENV.fetch("ADMIN_EMAIL")
+  admin_password = ENV.fetch("ADMIN_PASSWORD")
+
+  admin = AdminUser.find_or_initialize_by(email_address: admin_email)
+  if admin.new_record?
+    admin.password = admin_password
+    admin.password_confirmation = admin_password
+    admin.save!
+    puts "✅ Admin created: #{admin_email}"
+  else
+    puts "ℹ️  Admin already exists: #{admin_email}"
+  end
+end
+
 # Seed listings có geom cố định để kiểm map / ST_DWithin (docs/DATA_MODEL.md).
 return unless ActiveRecord::Base.connection.table_exists?("listings")
 return unless ActiveRecord::Base.connection.extension_enabled?("postgis")

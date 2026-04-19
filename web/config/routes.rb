@@ -11,6 +11,17 @@ Rails.application.routes.draw do
   get "error-page", to: "pages#error_page"
   get "policy", to: "pages#policy"
 
+  namespace :admin do
+    get "login", to: "sessions#new", as: :new_session
+    resource :session, only: %i[create destroy], path: "session"
+    get "dashboard", to: "dashboard#index", as: :dashboard
+    resources :facebook_imports, only: %i[new create] do
+      collection do
+        post :confirm
+      end
+    end
+  end
+
   namespace :api do
     namespace :v1 do
       resources :listings, only: %i[show create] do

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <title><%= content_for?(:title) ? yield(:title) : "Admin — SportMatch" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body class="bg-gray-50 min-h-screen">
+    <nav class="bg-gray-900 text-white px-6 py-3 flex items-center justify-between">
+      <span class="font-bold text-lg tracking-tight">⚙️ SportMatch Admin</span>
+      <% if current_admin %>
+        <div class="flex items-center gap-4 text-sm">
+          <span class="text-gray-400"><%= current_admin.email_address %></span>
+          <%= button_to "Đăng xuất", admin_session_path, method: :delete,
+                class: "text-red-400 hover:text-red-300 bg-transparent border-0 cursor-pointer" %>
+        </div>
+      <% end %>
+    </nav>
+
+    <% if notice.present? %>
+      <div class="max-w-3xl mx-auto mt-4 px-4">
+        <div class="bg-green-100 border border-green-300 text-green-800 rounded-lg px-4 py-3 text-sm"><%= notice %></div>
+      </div>
+    <% end %>
+    <% if alert.present? %>
+      <div class="max-w-3xl mx-auto mt-4 px-4">
+        <div class="bg-red-100 border border-red-300 text-red-800 rounded-lg px-4 py-3 text-sm"><%= alert %></div>
+      </div>
+    <% end %>
+
+    <main class="max-w-3xl mx-auto px-4 py-8">
+      <%= yield %>
+    </main>
+  </body>
+</html>
