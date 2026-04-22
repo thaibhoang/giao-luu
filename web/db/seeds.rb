@@ -30,6 +30,13 @@ if demo_user.new_record?
   demo_user.save!
 end
 
+demo_user2 = User.find_or_initialize_by(email_address: "demo2@example.com")
+if demo_user2.new_record?
+  demo_user2.password = "password"
+  demo_user2.password_confirmation = "password"
+  demo_user2.save!
+end
+
 10.times do |i|
   unless Listing.exists?(title: "Seed: Pickleball Sân #{i + 1}")
     Listing.insert_with_point!(

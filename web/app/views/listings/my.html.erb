@@ -10,17 +10,46 @@
 
 <%= render Ui::PageShellComponent.new(padding_top: "pt-24", padding_bottom: "pb-28", max_width: "max-w-2xl", horizontal_padding: "px-5") do %>
   <div class="flex gap-8 mb-8 overflow-x-auto py-2">
-    <button class="font-lexend font-bold text-primary border-b-2 border-primary pb-1 shrink-0">Đã đăng (<%= @published_listings.size %>)</button>
-    <button class="font-lexend font-medium text-on-surface-variant pb-1 shrink-0">Bản nháp</button>
-    <button class="font-lexend font-medium text-on-surface-variant pb-1 shrink-0">Đã kết thúc (<%= @finished_listings.size %>)</button>
+    <a href="/my-listings" class="<%= class_names(
+      "font-lexend pb-1 shrink-0",
+      "font-bold text-primary border-b-2 border-primary": !@status.present?, 
+      "font-medium text-on-surface-variant": @status.present?) %>">
+      Đã đăng (<%= @published_listings.size %>)
+    </a>
+    <a href="/my-listings?status=active" class="
+      <%= class_names(
+        "font-lexend pb-1 shrink-0",
+        "font-bold text-primary border-b-2 border-primary": @status == "active",
+        "font-medium text-on-surface-variant": @status != "active"
+      ) %>">
+      Hiện tại (<%= @active_listings&.size %>)</a>
+    <a href="/my-listings?status=finished" class="
+      <%= class_names(
+        "font-lexend pb-1 shrink-0",
+        "font-bold text-primary border-b-2 border-primary": @status == "finished",
+        "font-medium text-on-surface-variant": @status != "finished"
+      ) %>">
+      Đã kết thúc (<%= @finished_listings.size %>)</a>
   </div>
 
-  <% if @published_listings.any? %>
+  <% if @published_listings.any? && !@status.present? %>
     <div class="space-y-4">
       <% @published_listings.each do |listing| %>
         <%= render Ui::ListingCardComponent.new(listing: listing, show_actions: true) %>
       <% end %>
     </div>
+  <% elsif @active_listings.any? && @status == "active" %>
+    <div class="space-y-4">
+      <% @active_listings.each do |listing| %>
+        <%= render Ui::ListingCardComponent.new(listing: listing, show_actions: true) %>
+      <% end %>
+    </div>
+  <% elsif @finished_listings.any? && @status == "finished" %>
+    <div class="space-y-4">
+      <% @finished_listings.each do |listing| %>
+        <%= render Ui::ListingCardComponent.new(listing: listing, show_actions: true) %>
+      <% end %>
+     </div>
   <% else %>
     <%= render Ui::EmptyStateComponent.new(
       title: "Bạn chưa đăng tin nào",

@@ -25,8 +25,9 @@ class ListingsController < ApplicationController
   end
 
   def my
+    @status = my_listings_params[:status] if my_listings_params[:status].present?
     @published_listings = Current.session.user.listings.order(created_at: :desc)
-    @draft_listings = []
+    @active_listings = @published_listings.where("end_at >= ?", Time.current).order(end_at: :asc)
     @finished_listings = Current.session.user.listings.where("end_at < ?", Time.current).order(end_at: :desc)
   end
 
@@ -141,6 +142,10 @@ class ListingsController < ApplicationController
       :sport, :title, :body, :location_name, :lat, :lng, :start_at, :end_at,
       :slots_needed, :skill_level_min, :skill_level_max, :price_estimate, :contact_info
     )
+  end
+
+  def my_listings_params
+    params.permit(:status)
   end
 
   def listing_params_from_request
