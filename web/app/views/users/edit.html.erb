@@ -1,0 +1,127 @@
+<% content_for :title, "Chỉnh sửa hồ sơ | SportMatch" %>
+
+<%= render Ui::TopAppBarComponent.new(title: "Chỉnh sửa hồ sơ", back_href: profile_path, back_icon: "arrow_back") %>
+
+<%= render Ui::PageShellComponent.new(padding_top: "pt-24", padding_bottom: "pb-32", max_width: "max-w-lg", horizontal_padding: "px-5") do %>
+
+  <%= render Ui::FormErrorSummaryComponent.new(record: @user, title: "Không thể cập nhật hồ sơ") %>
+
+  <%= form_with model: @user, url: profile_path, method: :patch, class: "space-y-8" do |f| %>
+
+    <%# Thông tin cơ bản %>
+    <section class="space-y-4">
+      <h3 class="text-[10px] font-bold tracking-[0.2em] uppercase text-on-surface-variant">Thông tin cơ bản</h3>
+
+      <div class="space-y-2">
+        <%= render Ui::FieldLabelComponent.new("Tên hiển thị", for_id: "user_display_name") %>
+        <%= render Ui::TextFieldComponent.new(form: f, attribute: :display_name, id: "user_display_name", placeholder: "Nguyễn Văn A") %>
+      </div>
+
+      <div class="space-y-2">
+        <%= render Ui::FieldLabelComponent.new("Số điện thoại", for_id: "user_phone_number") %>
+        <%= render Ui::TextFieldComponent.new(form: f, attribute: :phone_number, type: "tel", id: "user_phone_number", placeholder: "0901 234 567") %>
+      </div>
+
+      <div class="space-y-2">
+        <%= render Ui::FieldLabelComponent.new("Ngày sinh", for_id: "user_date_of_birth") %>
+        <%= f.date_field :date_of_birth, id: "user_date_of_birth",
+              class: "w-full h-14 px-4 rounded-2xl bg-surface-container-low border border-outline-variant/30 text-on-surface text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" %>
+      </div>
+
+      <div class="space-y-2">
+        <%= render Ui::FieldLabelComponent.new("Giới tính", for_id: "user_gender") %>
+        <%= render Ui::SelectFieldComponent.new(
+          form: f,
+          attribute: :gender,
+          id: "user_gender",
+          prompt: "Chọn giới tính",
+          choices: [
+            ["Nam", "male"],
+            ["Nữ", "female"],
+            ["Khác", "other"],
+            ["Không muốn tiết lộ", "prefer_not_to_say"]
+          ]
+        ) %>
+      </div>
+
+      <div class="space-y-2">
+        <%= render Ui::FieldLabelComponent.new("Địa chỉ / Khu vực", for_id: "user_address") %>
+        <%= render Ui::TextFieldComponent.new(form: f, attribute: :address, id: "user_address", placeholder: "Quận 1, TP. Hồ Chí Minh") %>
+      </div>
+    </section>
+
+    <%# Môn thể thao %>
+    <section class="space-y-4">
+      <h3 class="text-[10px] font-bold tracking-[0.2em] uppercase text-on-surface-variant">Môn thể thao yêu thích</h3>
+
+      <%# Cầu lông %>
+      <div class="bg-surface-container-low rounded-2xl p-4 space-y-4">
+        <label class="flex items-center gap-3 cursor-pointer">
+          <%= f.check_box :sport_badminton, id: "user_sport_badminton",
+                class: "w-5 h-5 rounded border-outline-variant/30 text-primary focus:ring-0 bg-surface-container-low" %>
+          <span class="flex items-center gap-2 text-sm font-semibold text-on-surface">
+            <span>🏸</span> Cầu lông
+          </span>
+        </label>
+        <div class="space-y-2">
+          <%= render Ui::FieldLabelComponent.new("Trình độ cầu lông", for_id: "user_skill_level_badminton") %>
+          <%= render Ui::SelectFieldComponent.new(
+            form: f,
+            attribute: :skill_level_badminton,
+            id: "user_skill_level_badminton",
+            prompt: "Chọn trình độ",
+            choices: [
+              ["Mới bắt đầu", "beginner"],
+              ["Trung cấp", "intermediate"],
+              ["Khá", "advanced"],
+              ["Thi đấu", "competitive"]
+            ]
+          ) %>
+        </div>
+      </div>
+
+      <%# Pickleball %>
+      <div class="bg-surface-container-low rounded-2xl p-4 space-y-4">
+        <label class="flex items-center gap-3 cursor-pointer">
+          <%= f.check_box :sport_pickleball, id: "user_sport_pickleball",
+                class: "w-5 h-5 rounded border-outline-variant/30 text-primary focus:ring-0 bg-surface-container-low" %>
+          <span class="flex items-center gap-2 text-sm font-semibold text-on-surface">
+            <span>🏓</span> Pickleball
+          </span>
+        </label>
+        <div class="space-y-2">
+          <%= render Ui::FieldLabelComponent.new("Trình độ Pickleball (DUPR)", for_id: "user_skill_level_pickleball") %>
+          <%= render Ui::SelectFieldComponent.new(
+            form: f,
+            attribute: :skill_level_pickleball,
+            id: "user_skill_level_pickleball",
+            prompt: "Chọn mức DUPR",
+            choices: [
+              ["2.0 – 2.5 · Mới bắt đầu", "2.0-2.5"],
+              ["2.5 – 3.0 · Cơ bản", "2.5-3.0"],
+              ["3.0 – 3.5 · Trung cấp thấp", "3.0-3.5"],
+              ["3.5 – 4.0 · Trung cấp", "3.5-4.0"],
+              ["4.0 – 4.5 · Trung cấp cao", "4.0-4.5"],
+              ["4.5 – 5.0 · Nâng cao", "4.5-5.0"],
+              ["5.0+ · Chuyên nghiệp", "5.0+"]
+            ]
+          ) %>
+        </div>
+      </div>
+    </section>
+
+    <%# Giới thiệu %>
+    <section class="space-y-4">
+      <h3 class="text-[10px] font-bold tracking-[0.2em] uppercase text-on-surface-variant">Giới thiệu bản thân</h3>
+      <div class="space-y-2">
+        <%= render Ui::FieldLabelComponent.new("Bio (tối đa 500 ký tự)", for_id: "user_bio") %>
+        <%= render Ui::TextAreaFieldComponent.new(form: f, attribute: :bio, id: "user_bio",
+              placeholder: "Mình chơi cầu lông 5 năm, thích đánh đôi, khu vực Gò Vấp...",
+              rows: 4) %>
+      </div>
+    </section>
+
+    <%= render Ui::ButtonComponent.new("Lưu hồ sơ", type: "submit", icon: "check", full_width: true) %>
+  <% end %>
+
+<% end %>

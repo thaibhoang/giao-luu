@@ -2,6 +2,9 @@ Rails.application.routes.draw do
   resource :session
   resources :users, only: %i[new create]
   resources :passwords, param: :token
+  get "profile", to: "users#show", as: :profile
+  get "profile/edit", to: "users#edit", as: :edit_profile
+  patch "profile", to: "users#update"
   root "home#index"
   resources :listings, only: %i[index show new create edit update] do
     resources :registrations, only: %i[index create destroy]

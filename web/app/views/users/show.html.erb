@@ -1,0 +1,144 @@
+<% content_for :title, "Hồ sơ của tôi | SportMatch" %>
+<% content_for :head do %>
+  <meta name="turbo-cache-control" content="no-cache">
+<% end %>
+
+<%= render Ui::TopAppBarComponent.new(title: "Hồ sơ của tôi") do |bar| %>
+  <% bar.with_trailing do %>
+    <%= link_to edit_profile_path, class: "p-2 -mr-2 rounded-full hover:bg-surface-container-low transition-colors" do %>
+      <%= render Ui::IconComponent.new(name: "edit", size_class: "text-xl text-on-surface-variant") %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%= render Ui::PageShellComponent.new(padding_top: "pt-24", padding_bottom: "pb-28", max_width: "max-w-lg", horizontal_padding: "px-5") do %>
+
+  <% unless @user.profile_complete? %>
+    <div class="mb-6 flex items-start gap-3 bg-primary-container/10 border border-primary/20 rounded-2xl p-4">
+      <%= render Ui::IconComponent.new(name: "info", size_class: "text-primary text-xl shrink-0 mt-0.5") %>
+      <div>
+        <p class="text-sm font-semibold text-on-surface">Hồ sơ chưa đầy đủ</p>
+        <p class="text-xs text-on-surface-variant mt-0.5">Thêm tên và số điện thoại để người chơi khác dễ liên hệ bạn hơn.</p>
+        <%= link_to "Cập nhật ngay", edit_profile_path, class: "mt-2 inline-block text-xs font-bold text-primary underline" %>
+      </div>
+    </div>
+  <% end %>
+
+  <%# Avatar + tên %>
+  <div class="flex items-center gap-4 mb-8">
+    <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+      <span class="text-2xl font-bold text-primary uppercase"><%= @user.name_or_email.first %></span>
+    </div>
+    <div>
+      <h2 class="font-headline text-xl font-bold text-on-surface"><%= @user.name_or_email %></h2>
+      <p class="text-xs text-on-surface-variant mt-0.5"><%= @user.email_address %></p>
+      <% if @user.address.present? %>
+        <p class="text-xs text-on-surface-variant flex items-center gap-1 mt-0.5">
+          <%= render Ui::IconComponent.new(name: "location_on", size_class: "text-sm") %>
+          <%= @user.address %>
+        </p>
+      <% end %>
+    </div>
+  </div>
+
+  <%# Thông tin cơ bản %>
+  <section class="space-y-4 mb-8">
+    <h3 class="text-[10px] font-bold tracking-[0.2em] uppercase text-on-surface-variant">Thông tin cá nhân</h3>
+    <div class="bg-surface-container-low rounded-2xl divide-y divide-outline-variant/20">
+
+      <div class="flex items-center gap-3 px-4 py-3">
+        <%= render Ui::IconComponent.new(name: "phone", size_class: "text-lg text-on-surface-variant shrink-0") %>
+        <div class="min-w-0">
+          <p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Điện thoại</p>
+          <p class="text-sm font-medium text-on-surface"><%= @user.phone_number.presence || "—" %></p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 px-4 py-3">
+        <%= render Ui::IconComponent.new(name: "cake", size_class: "text-lg text-on-surface-variant shrink-0") %>
+        <div class="min-w-0">
+          <p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Ngày sinh</p>
+          <p class="text-sm font-medium text-on-surface">
+            <%= @user.date_of_birth&.strftime("%d/%m/%Y") || "—" %>
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 px-4 py-3">
+        <%= render Ui::IconComponent.new(name: "wc", size_class: "text-lg text-on-surface-variant shrink-0") %>
+        <div class="min-w-0">
+          <p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Giới tính</p>
+          <p class="text-sm font-medium text-on-surface">
+            <%= gender_label(@user.gender) %>
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <%# Môn thể thao & trình độ %>
+  <section class="space-y-4 mb-8">
+    <h3 class="text-[10px] font-bold tracking-[0.2em] uppercase text-on-surface-variant">Môn thể thao</h3>
+    <div class="grid grid-cols-2 gap-3">
+
+      <div class="<%= @user.sport_badminton? ? 'bg-primary/10 border border-primary/30' : 'bg-surface-container-low border border-transparent opacity-50' %> rounded-2xl p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xl">🏸</span>
+          <span class="text-sm font-semibold text-on-surface">Cầu lông</span>
+        </div>
+        <% if @user.sport_badminton? && @user.skill_level_badminton.present? %>
+          <span class="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full font-medium">
+            <%= badminton_skill_label(@user.skill_level_badminton) %>
+          </span>
+        <% elsif !@user.sport_badminton? %>
+          <span class="text-xs text-on-surface-variant">Không chơi</span>
+        <% else %>
+          <span class="text-xs text-on-surface-variant">Chưa cập nhật trình độ</span>
+        <% end %>
+      </div>
+
+      <div class="<%= @user.sport_pickleball? ? 'bg-primary/10 border border-primary/30' : 'bg-surface-container-low border border-transparent opacity-50' %> rounded-2xl p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xl">🏓</span>
+          <span class="text-sm font-semibold text-on-surface">Pickleball</span>
+        </div>
+        <% if @user.sport_pickleball? && @user.skill_level_pickleball.present? %>
+          <span class="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full font-medium">
+            DUPR <%= @user.skill_level_pickleball %>
+          </span>
+        <% elsif !@user.sport_pickleball? %>
+          <span class="text-xs text-on-surface-variant">Không chơi</span>
+        <% else %>
+          <span class="text-xs text-on-surface-variant">Chưa cập nhật trình độ</span>
+        <% end %>
+      </div>
+
+    </div>
+  </section>
+
+  <%# Giới thiệu %>
+  <% if @user.bio.present? %>
+    <section class="space-y-3 mb-8">
+      <h3 class="text-[10px] font-bold tracking-[0.2em] uppercase text-on-surface-variant">Giới thiệu</h3>
+      <p class="text-sm text-on-surface leading-relaxed bg-surface-container-low rounded-2xl px-4 py-3"><%= @user.bio %></p>
+    </section>
+  <% end %>
+
+  <%# Nút hành động %>
+  <div class="space-y-3">
+    <%= render Ui::ButtonComponent.new("Chỉnh sửa hồ sơ", href: edit_profile_path, icon: "edit", full_width: true) %>
+    <%= link_to "Đổi mật khẩu", edit_password_path(Current.user.password_reset_token),
+          class: "block w-full text-center text-sm text-on-surface-variant underline py-2" %>
+    <%= button_to "Đăng xuất", session_path, method: :delete,
+          class: "block w-full text-center text-sm text-error py-2 bg-transparent border-none cursor-pointer" %>
+  </div>
+
+<% end %>
+
+<%= render Ui::BottomNavComponent.new(items: [
+  { path: listings_path, icon: "explore", label: "Explore", active: false },
+  { path: map_path, icon: "map", label: "Map", active: false },
+  { path: my_listings_path, icon: "assignment", label: "Tin của tôi", active: false },
+  { path: profile_path, icon: "person", label: "Profile", active: true }
+]) %>

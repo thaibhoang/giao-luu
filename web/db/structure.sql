@@ -260,6 +260,40 @@ ALTER SEQUENCE public.listings_id_seq OWNED BY public.listings.id;
 
 
 --
+-- Name: registrations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.registrations (
+    id bigint NOT NULL,
+    listing_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    note text,
+    phone character varying,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: registrations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.registrations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: registrations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.registrations_id_seq OWNED BY public.registrations.id;
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -310,7 +344,17 @@ CREATE TABLE public.users (
     email_address character varying NOT NULL,
     password_digest character varying NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    display_name character varying,
+    phone_number character varying,
+    date_of_birth date,
+    gender character varying,
+    address character varying,
+    bio text,
+    sport_badminton boolean DEFAULT false NOT NULL,
+    sport_pickleball boolean DEFAULT false NOT NULL,
+    skill_level_badminton character varying,
+    skill_level_pickleball character varying
 );
 
 
@@ -359,6 +403,13 @@ ALTER TABLE ONLY public.geocoding_caches ALTER COLUMN id SET DEFAULT nextval('pu
 --
 
 ALTER TABLE ONLY public.listings ALTER COLUMN id SET DEFAULT nextval('public.listings_id_seq'::regclass);
+
+
+--
+-- Name: registrations id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.registrations ALTER COLUMN id SET DEFAULT nextval('public.registrations_id_seq'::regclass);
 
 
 --
@@ -413,6 +464,14 @@ ALTER TABLE ONLY public.geocoding_caches
 
 ALTER TABLE ONLY public.listings
     ADD CONSTRAINT listings_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: registrations registrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.registrations
+    ADD CONSTRAINT registrations_pkey PRIMARY KEY (id);
 
 
 --
@@ -503,6 +562,27 @@ CREATE INDEX index_listings_on_user_id ON public.listings USING btree (user_id);
 
 
 --
+-- Name: index_registrations_on_listing_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_registrations_on_listing_id ON public.registrations USING btree (listing_id);
+
+
+--
+-- Name: index_registrations_on_listing_id_and_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_registrations_on_listing_id_and_user_id ON public.registrations USING btree (listing_id, user_id);
+
+
+--
+-- Name: index_registrations_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_registrations_on_user_id ON public.registrations USING btree (user_id);
+
+
+--
 -- Name: index_sessions_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -514,6 +594,22 @@ CREATE INDEX index_sessions_on_user_id ON public.sessions USING btree (user_id);
 --
 
 CREATE UNIQUE INDEX index_users_on_email_address ON public.users USING btree (email_address);
+
+
+--
+-- Name: registrations fk_rails_2447744ad8; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.registrations
+    ADD CONSTRAINT fk_rails_2447744ad8 FOREIGN KEY (listing_id) REFERENCES public.listings(id);
+
+
+--
+-- Name: registrations fk_rails_2e0658f554; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.registrations
+    ADD CONSTRAINT fk_rails_2e0658f554 FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -547,6 +643,8 @@ ALTER TABLE ONLY public.admin_sessions
 SET search_path TO "$user", public, topology, tiger;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260422000001'),
+('20260419100001'),
 ('20260419000002'),
 ('20260419000001'),
 ('20260403110000'),

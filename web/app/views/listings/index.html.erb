@@ -2,7 +2,7 @@
 
 <%= render Ui::TopAppBarComponent.new(title: "SportMatch") do |bar| %>
   <% bar.with_trailing do %>
-    <%= link_to(authenticated? ? my_listings_path : new_session_path, class: "w-8 h-8 rounded-full bg-surface-container flex items-center justify-center") do %>
+    <%= link_to(authenticated? ? profile_path : new_session_path, class: "w-8 h-8 rounded-full bg-surface-container flex items-center justify-center") do %>
       <%= render Ui::IconComponent.new(name: "person", size_class: "text-base") %>
     <% end %>
   <% end %>
@@ -40,5 +40,5 @@
   { path: listings_path, icon: "explore", label: "Explore", active: true },
   { path: map_path, icon: "map", label: "Map", active: false },
   { path: my_listings_path, icon: "assignment", label: "Tin của tôi", active: false },
-  { path: authenticated? ? my_listings_path : new_session_path, icon: "person", label: "Profile", active: false }
+  { path: authenticated? ? profile_path : new_session_path, icon: "person", label: "Profile", active: false }
 ]) %>
