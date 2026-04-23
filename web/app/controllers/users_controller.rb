@@ -2,6 +2,7 @@
 
 class UsersController < ApplicationController
   allow_unauthenticated_access only: %i[new create]
+  before_action :set_user, only: %i[show edit update]
 
   def new
     @user = User.new
@@ -18,15 +19,12 @@ class UsersController < ApplicationController
   end
 
   def show
-    @user = Current.user
   end
 
   def edit
-    @user = Current.user
   end
 
   def update
-    @user = Current.user
     if @user.update(profile_params)
       redirect_to profile_path, status: :see_other, notice: "Cập nhật hồ sơ thành công."
     else
@@ -35,6 +33,11 @@ class UsersController < ApplicationController
   end
 
   private
+
+  def set_user
+    @user = Current.user
+    redirect_to new_session_path if @user.nil?
+  end
 
   def user_params
     params.require(:user).permit(:email_address, :password, :password_confirmation)

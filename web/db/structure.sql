@@ -175,6 +175,41 @@ CREATE TABLE public.ar_internal_metadata (
 
 
 --
+-- Name: court_pass_details; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.court_pass_details (
+    id bigint NOT NULL,
+    listing_id bigint NOT NULL,
+    court_name character varying NOT NULL,
+    original_price integer NOT NULL,
+    pass_price integer NOT NULL,
+    booking_proof character varying,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: court_pass_details_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.court_pass_details_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: court_pass_details_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.court_pass_details_id_seq OWNED BY public.court_pass_details.id;
+
+
+--
 -- Name: geocoding_caches; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -231,6 +266,7 @@ CREATE TABLE public.listings (
     updated_at timestamp(6) without time zone NOT NULL,
     geom public.geography(Point,4326),
     user_id bigint,
+    listing_type character varying DEFAULT 'match_finding'::character varying NOT NULL,
     CONSTRAINT listings_skill_level_max_valid CHECK (((skill_level_max)::text = ANY (ARRAY[('yeu'::character varying)::text, ('trung_binh_yeu'::character varying)::text, ('trung_binh_minus'::character varying)::text, ('trung_binh'::character varying)::text, ('trung_binh_plus'::character varying)::text, ('trung_binh_plus_plus'::character varying)::text, ('trung_binh_kha'::character varying)::text, ('kha'::character varying)::text, ('ban_chuyen'::character varying)::text, ('chuyen_nghiep'::character varying)::text]))),
     CONSTRAINT listings_skill_level_min_valid CHECK (((skill_level_min)::text = ANY (ARRAY[('yeu'::character varying)::text, ('trung_binh_yeu'::character varying)::text, ('trung_binh_minus'::character varying)::text, ('trung_binh'::character varying)::text, ('trung_binh_plus'::character varying)::text, ('trung_binh_plus_plus'::character varying)::text, ('trung_binh_kha'::character varying)::text, ('kha'::character varying)::text, ('ban_chuyen'::character varying)::text, ('chuyen_nghiep'::character varying)::text]))),
     CONSTRAINT listings_skill_level_range_valid CHECK ((array_position(ARRAY['yeu'::text, 'trung_binh_yeu'::text, 'trung_binh_minus'::text, 'trung_binh'::text, 'trung_binh_plus'::text, 'trung_binh_plus_plus'::text, 'trung_binh_kha'::text, 'kha'::text, 'ban_chuyen'::text, 'chuyen_nghiep'::text], (skill_level_min)::text) <= array_position(ARRAY['yeu'::text, 'trung_binh_yeu'::text, 'trung_binh_minus'::text, 'trung_binh'::text, 'trung_binh_plus'::text, 'trung_binh_plus_plus'::text, 'trung_binh_kha'::text, 'kha'::text, 'ban_chuyen'::text, 'chuyen_nghiep'::text], (skill_level_max)::text))),
@@ -336,6 +372,43 @@ ALTER SEQUENCE public.sessions_id_seq OWNED BY public.sessions.id;
 
 
 --
+-- Name: tournament_details; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.tournament_details (
+    id bigint NOT NULL,
+    listing_id bigint NOT NULL,
+    tournament_name character varying NOT NULL,
+    organizer character varying,
+    registration_deadline timestamp(6) without time zone NOT NULL,
+    format character varying NOT NULL,
+    prize_info character varying,
+    registration_link character varying,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: tournament_details_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.tournament_details_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: tournament_details_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.tournament_details_id_seq OWNED BY public.tournament_details.id;
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -392,6 +465,13 @@ ALTER TABLE ONLY public.admin_users ALTER COLUMN id SET DEFAULT nextval('public.
 
 
 --
+-- Name: court_pass_details id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.court_pass_details ALTER COLUMN id SET DEFAULT nextval('public.court_pass_details_id_seq'::regclass);
+
+
+--
 -- Name: geocoding_caches id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -417,6 +497,13 @@ ALTER TABLE ONLY public.registrations ALTER COLUMN id SET DEFAULT nextval('publi
 --
 
 ALTER TABLE ONLY public.sessions ALTER COLUMN id SET DEFAULT nextval('public.sessions_id_seq'::regclass);
+
+
+--
+-- Name: tournament_details id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tournament_details ALTER COLUMN id SET DEFAULT nextval('public.tournament_details_id_seq'::regclass);
 
 
 --
@@ -448,6 +535,14 @@ ALTER TABLE ONLY public.admin_users
 
 ALTER TABLE ONLY public.ar_internal_metadata
     ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
+
+
+--
+-- Name: court_pass_details court_pass_details_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.court_pass_details
+    ADD CONSTRAINT court_pass_details_pkey PRIMARY KEY (id);
 
 
 --
@@ -491,6 +586,14 @@ ALTER TABLE ONLY public.sessions
 
 
 --
+-- Name: tournament_details tournament_details_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tournament_details
+    ADD CONSTRAINT tournament_details_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -513,6 +616,13 @@ CREATE UNIQUE INDEX index_admin_users_on_email_address ON public.admin_users USI
 
 
 --
+-- Name: index_court_pass_details_on_listing_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_court_pass_details_on_listing_id ON public.court_pass_details USING btree (listing_id);
+
+
+--
 -- Name: index_geocoding_caches_on_geom; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -531,6 +641,13 @@ CREATE UNIQUE INDEX index_geocoding_caches_on_location_query ON public.geocoding
 --
 
 CREATE INDEX index_listings_on_geom ON public.listings USING gist (geom);
+
+
+--
+-- Name: index_listings_on_listing_type; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_listings_on_listing_type ON public.listings USING btree (listing_type);
 
 
 --
@@ -590,10 +707,25 @@ CREATE INDEX index_sessions_on_user_id ON public.sessions USING btree (user_id);
 
 
 --
+-- Name: index_tournament_details_on_listing_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_tournament_details_on_listing_id ON public.tournament_details USING btree (listing_id);
+
+
+--
 -- Name: index_users_on_email_address; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_users_on_email_address ON public.users USING btree (email_address);
+
+
+--
+-- Name: tournament_details fk_rails_098aa17f52; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tournament_details
+    ADD CONSTRAINT fk_rails_098aa17f52 FOREIGN KEY (listing_id) REFERENCES public.listings(id);
 
 
 --
@@ -629,6 +761,14 @@ ALTER TABLE ONLY public.listings
 
 
 --
+-- Name: court_pass_details fk_rails_dcc75b9607; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.court_pass_details
+    ADD CONSTRAINT fk_rails_dcc75b9607 FOREIGN KEY (listing_id) REFERENCES public.listings(id);
+
+
+--
 -- Name: admin_sessions fk_rails_e5862922c9; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -643,6 +783,7 @@ ALTER TABLE ONLY public.admin_sessions
 SET search_path TO "$user", public, topology, tiger;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260423000001'),
 ('20260422000001'),
 ('20260419100001'),
 ('20260419000002'),

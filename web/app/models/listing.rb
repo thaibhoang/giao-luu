@@ -34,20 +34,48 @@ class Listing < ApplicationRecord
   SOURCE_USER_SUBMITTED = "user_submitted"
   SOURCE_FACEBOOK_SCRAPE = "facebook_scrape"
 
+  LISTING_TYPES = %w[match_finding court_pass tournament].freeze
+  LISTING_TYPE_LABELS = {
+    "match_finding" => "Tuyển giao lưu",
+    "court_pass"    => "Pass sân",
+    "tournament"    => "Tuyển giải đấu"
+  }.freeze
+  LISTING_TYPE_BADGES = {
+    "match_finding" => "green",
+    "court_pass"    => "orange",
+    "tournament"    => "purple"
+  }.freeze
+
   belongs_to :user, optional: true
   has_many :registrations, dependent: :destroy
+  has_one  :court_pass_detail, dependent: :destroy
+  has_one  :tournament_detail, dependent: :destroy
+
+  accepts_nested_attributes_for :court_pass_detail, update_only: true, reject_if: :all_blank
+  accepts_nested_attributes_for :tournament_detail, update_only: true, reject_if: :all_blank
 
   validates :sport, inclusion: { in: SPORTS }
-  validates :skill_level_min, :skill_level_max, inclusion: { in: SKILL_LEVELS }
+  validates :skill_level_min, :skill_level_max, inclusion: { in: SKILL_LEVELS }, unless: :court_pass?
   validates :title, :location_name, :contact_info, :source, presence: true
-  validates :slots_needed, numericality: { only_integer: true, greater_than_or_equal_to: 1 }
+  validates :listing_type, inclusion: { in: LISTING_TYPES }
+  validates :slots_needed, numericality: { only_integer: true, greater_than_or_equal_to: 1 }, unless: :court_pass?
   validates :schema_version, numericality: { only_integer: true, greater_than_or_equal_to: 1 }
   validate :end_at_not_before_start_at
   validate :user_present_for_user_submitted
   validate :skill_level_range_order
+  validate :detail_record_present
+
+  def match_finding? = listing_type == "match_finding"
+  def court_pass?    = listing_type == "court_pass"
+  def tournament?    = listing_type == "tournament"
+
+  def listing_type_label
+    LISTING_TYPE_LABELS.fetch(listing_type, listing_type)
+  end
 
   scope :with_geom, -> { where.not(geom: nil) }
   scope :by_sport, ->(sport) { sport.present? ? where(sport:) : all }
+  scope :by_listing_type, ->(type) { type.present? ? where(listing_type: type) : all }
   scope :from_time, ->(from) { from.present? ? where("start_at >= ?", from) : all }
   scope :to_time, ->(to) { to.present? ? where("start_at <= ?", to) : all }
   scope :by_keyword, ->(q) {
@@ -92,9 +120,10 @@ class Listing < ApplicationRecord
     )
   end
 
-  def self.map_rows_for(sport: nil, from: nil, to: nil, q: nil, skill_min: nil, skill_max: nil, lat: nil, lng: nil, radius_meters: nil)
+  def self.map_rows_for(sport: nil, listing_type: nil, from: nil, to: nil, q: nil, skill_min: nil, skill_max: nil, lat: nil, lng: nil, radius_meters: nil)
     rel = with_geom
             .by_sport(sport)
+            .by_listing_type(listing_type)
             .from_time(from)
             .to_time(to)
             .by_keyword(q)
@@ -102,7 +131,7 @@ class Listing < ApplicationRecord
             .skill_max_filter(skill_max)
     rel = rel.within_radius(lat:, lng:, radius_meters:) if lat && lng && radius_meters
     rel.select(
-      "id, sport, title, location_name, start_at, end_at, skill_level_min, skill_level_max, price_estimate, source, "\
+      "id, sport, listing_type, title, location_name, start_at, end_at, skill_level_min, skill_level_max, price_estimate, source, "\
       "ST_Y(geom::geometry) AS lat, ST_X(geom::geometry) AS lng"
     )
   end
@@ -110,7 +139,7 @@ class Listing < ApplicationRecord
   # geography(Point,4326) is not mapped by ActiveRecord (ADR-004); use SQL for writes.
   def self.insert_with_point!(attributes, longitude:, latitude:)
     cols = %i[
-      sport title body location_name start_at end_at slots_needed skill_level_min skill_level_max
+      sport listing_type title body location_name start_at end_at slots_needed skill_level_min skill_level_max
       price_estimate contact_info source source_url schema_version user_id
       created_at updated_at
     ]
@@ -130,7 +159,7 @@ class Listing < ApplicationRecord
 
   def self.update_with_point!(id:, attributes:, longitude:, latitude:)
     cols = %i[
-      sport title body location_name start_at end_at slots_needed skill_level_min skill_level_max
+      sport listing_type title body location_name start_at end_at slots_needed skill_level_min skill_level_max
       price_estimate contact_info source source_url schema_version user_id
       updated_at
     ]
@@ -162,6 +191,7 @@ class Listing < ApplicationRecord
   end
 
   def skill_level_range_order
+    return if court_pass?
     return if skill_level_min.blank? || skill_level_max.blank?
 
     min_index = SKILL_LEVEL_INDEX[skill_level_min]
@@ -170,5 +200,18 @@ class Listing < ApplicationRecord
     return if min_index <= max_index
 
     errors.add(:skill_level_max, "phải lớn hơn hoặc bằng mức bắt đầu")
+  end
+
+  def detail_record_present
+    case listing_type
+    when "court_pass"
+      if court_pass_detail.nil? || court_pass_detail.marked_for_destruction?
+        errors.add(:base, "Vui lòng điền thông tin Pass sân")
+      end
+    when "tournament"
+      if tournament_detail.nil? || tournament_detail.marked_for_destruction?
+        errors.add(:base, "Vui lòng điền thông tin giải đấu")
+      end
+    end
   end
 end

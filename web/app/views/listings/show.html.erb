@@ -18,7 +18,17 @@
 
 <article class="pt-20 pb-28 px-5 max-w-3xl mx-auto space-y-8">
   <section class="space-y-4">
-    <%= render Ui::BadgeComponent.new(@listing.source == Listing::SOURCE_USER_SUBMITTED ? "Người dùng đăng" : "Từ scraper", tone: :neutral) %>
+    <div class="flex flex-wrap gap-2">
+      <%= render Ui::BadgeComponent.new(@listing.source == Listing::SOURCE_USER_SUBMITTED ? "Người dùng đăng" : "Từ scraper", tone: :neutral) %>
+      <%
+        badge_tone = case @listing.listing_type
+                     when "court_pass" then :warning
+                     when "tournament" then :info
+                     else :success
+                     end
+      %>
+      <%= render Ui::BadgeComponent.new(@listing.listing_type_label, tone: badge_tone) %>
+    </div>
     <h1 class="text-3xl font-extrabold leading-tight tracking-tight text-primary"><%= @listing.title %></h1>
   </section>
 
@@ -26,9 +36,13 @@
     <div class="flex items-start gap-3"><%= render Ui::SportIconComponent.new(sport: @listing.sport, class: "w-6 h-6 mt-0.5 flex-shrink-0") %> <div><p class="text-xs uppercase text-on-surface-variant font-bold">Môn</p><p><%= @listing.sport.humanize %></p></div></div>
     <div class="flex items-start gap-3"><%= render Ui::IconComponent.new(name: "location_on") %> <div><p class="text-xs uppercase text-on-surface-variant font-bold">Địa điểm</p><p><%= @listing.location_name %></p></div></div>
     <div class="flex items-start gap-3"><%= render Ui::IconComponent.new(name: "schedule") %> <div><p class="text-xs uppercase text-on-surface-variant font-bold">Thời gian</p><p><%= l(@listing.start_at, format: :long) %> - <%= l(@listing.end_at, format: :short) %></p></div></div>
+    <% unless @listing.court_pass? %>
     <div class="flex items-start gap-3"><%= render Ui::IconComponent.new(name: "person_add") %> <div><p class="text-xs uppercase text-on-surface-variant font-bold">Cần thêm</p><p><%= @listing.slots_needed %> người</p></div></div>
     <div class="flex items-start gap-3"><%= render Ui::IconComponent.new(name: "trending_up") %> <div><p class="text-xs uppercase text-on-surface-variant font-bold">Trình độ</p><p><%= @listing.skill_range_label %></p></div></div>
+    <% end %>
+    <% unless @listing.court_pass? %>
     <div class="flex items-start gap-3"><%= render Ui::IconComponent.new(name: "payments") %> <div><p class="text-xs uppercase text-on-surface-variant font-bold">Giá</p><p><%= number_with_delimiter(@listing.price_estimate || 0) %> VND</p></div></div>
+    <% end %>
   </section>
 
   <% has_coordinates = @listing_lat.present? && @listing_lng.present? %>
@@ -59,6 +73,73 @@
       <p class="text-on-surface leading-relaxed"><%= @listing.body.presence || "Không có mô tả thêm." %></p>
     </div>
   </section>
+
+  <% if @listing.court_pass? && (d = @listing.court_pass_detail) %>
+  <section class="space-y-3">
+    <h3 class="text-[10px] font-bold text-on-surface-variant tracking-[0.2em] uppercase">🏟️ Thông tin Pass sân</h3>
+    <div class="p-6 bg-surface-container-lowest border border-outline-variant/10 rounded-3xl space-y-3">
+      <div class="flex justify-between text-sm">
+        <span class="text-on-surface-variant font-medium">Tên sân</span>
+        <span class="font-semibold text-on-surface"><%= d.court_name %></span>
+      </div>
+      <div class="flex justify-between text-sm">
+        <span class="text-on-surface-variant font-medium">Giá gốc</span>
+        <span class="font-semibold text-on-surface line-through text-on-surface-variant"><%= number_with_delimiter(d.original_price) %> VND</span>
+      </div>
+      <div class="flex justify-between text-sm">
+        <span class="text-on-surface-variant font-medium">Giá nhượng</span>
+        <span class="font-bold text-primary text-base"><%= number_with_delimiter(d.pass_price) %> VND</span>
+      </div>
+      <% if d.booking_proof.present? %>
+      <div class="flex justify-between text-sm">
+        <span class="text-on-surface-variant font-medium">Xác nhận đặt sân</span>
+        <a href="<%= d.booking_proof %>" target="_blank" rel="noopener noreferrer"
+           class="text-primary font-semibold underline">Xem link</a>
+      </div>
+      <% end %>
+    </div>
+  </section>
+  <% end %>
+
+  <% if @listing.tournament? && (d = @listing.tournament_detail) %>
+  <section class="space-y-3">
+    <h3 class="text-[10px] font-bold text-on-surface-variant tracking-[0.2em] uppercase">🏆 Thông tin giải đấu</h3>
+    <div class="p-6 bg-surface-container-lowest border border-outline-variant/10 rounded-3xl space-y-3">
+      <div class="flex justify-between text-sm">
+        <span class="text-on-surface-variant font-medium">Tên giải</span>
+        <span class="font-bold text-on-surface"><%= d.tournament_name %></span>
+      </div>
+      <% if d.organizer.present? %>
+      <div class="flex justify-between text-sm">
+        <span class="text-on-surface-variant font-medium">Đơn vị tổ chức</span>
+        <span class="font-semibold text-on-surface"><%= d.organizer %></span>
+      </div>
+      <% end %>
+      <div class="flex justify-between text-sm">
+        <span class="text-on-surface-variant font-medium">Hạn đăng ký</span>
+        <span class="font-semibold text-on-surface"><%= l(d.registration_deadline, format: :long) %></span>
+      </div>
+      <div class="flex justify-between text-sm">
+        <span class="text-on-surface-variant font-medium">Thể thức</span>
+        <span class="font-semibold text-on-surface"><%= TournamentDetail::FORMAT_LABELS.fetch(d.format, d.format) %></span>
+      </div>
+      <% if d.prize_info.present? %>
+      <div class="flex justify-between text-sm">
+        <span class="text-on-surface-variant font-medium">Giải thưởng</span>
+        <span class="font-semibold text-on-surface"><%= d.prize_info %></span>
+      </div>
+      <% end %>
+      <% if d.registration_link.present? %>
+      <div class="pt-1">
+        <a href="<%= d.registration_link %>" target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-2 text-sm text-primary font-bold underline">
+          Đăng ký tham gia chính thức →
+        </a>
+      </div>
+      <% end %>
+    </div>
+  </section>
+  <% end %>
 
   <section class="space-y-3 pb-10">
     <a class="inline-flex items-center gap-2 text-primary font-bold text-sm border-b border-surface-variant pb-1" href="<%= @listing.contact_info %>">Xem thêm thông tin liên hệ</a>

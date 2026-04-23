@@ -29,7 +29,7 @@ export default class extends Controller {
     "panel", "panelToggle", "panelExpand",
     "tabListBtn", "tabDetailBtn", "tabListContent", "tabDetailContent",
     "resultList", "resultCount",
-    "sportBtn", "radiusBtn",
+    "sportBtn", "radiusBtn", "listingTypeBtn",
   ]
 
   // ── Private state ──────────────────────────────────────────
@@ -39,7 +39,8 @@ export default class extends Controller {
   #activeMarkerIds = new Set()
   #lastRenderedKey = ""
   #sourceListings = []
-  #filterSport    = ""
+  #filterSport       = ""
+  #filterListingType = "match_finding"
   #filterRadiusKm = 3
   #filterLat      = null
   #filterLng      = null
@@ -91,6 +92,10 @@ export default class extends Controller {
 
   selectSport(event) {
     this.#updateSportButtons(event.currentTarget.dataset.sport ?? "")
+  }
+
+  selectListingType(event) {
+    this.#updateListingTypeButtons(event.currentTarget.dataset.listingType ?? "")
   }
 
   selectRadius(event) {
@@ -162,6 +167,7 @@ export default class extends Controller {
   doSearch() {
     const params = new URLSearchParams()
 
+    if (this.#filterListingType) params.set("listing_type", this.#filterListingType)
     if (this.#filterSport) params.set("sport", this.#filterSport)
 
     const q = this.qInputTarget.value.trim()
@@ -275,6 +281,19 @@ export default class extends Controller {
     })
   }
 
+  #updateListingTypeButtons(value) {
+    this.#filterListingType = value
+    this.listingTypeBtnTargets.forEach(btn => {
+      const isActive = (btn.dataset.listingType ?? "") === value
+      btn.classList.toggle("bg-primary",              isActive)
+      btn.classList.toggle("text-white",              isActive)
+      btn.classList.toggle("border-primary",          isActive)
+      btn.classList.toggle("bg-white",               !isActive)
+      btn.classList.toggle("text-on-surface",        !isActive)
+      btn.classList.toggle("border-outline-variant/40", !isActive)
+    })
+  }
+
   #updateRadiusButtons(value) {
     this.#filterRadiusKm = Number(value)
     this.radiusBtnTargets.forEach(btn => {
@@ -325,7 +344,9 @@ export default class extends Controller {
 
   #updateSearchBarLabel() {
     const sportMap = { badminton: "Cầu lông", pickleball: "Pickleball" }
+    const typeMap  = { match_finding: "Tuyển giao lưu", court_pass: "Pass sân", tournament: "Tuyển giải đấu" }
     const parts = []
+    if (this.#filterListingType && typeMap[this.#filterListingType]) parts.push(typeMap[this.#filterListingType])
     if (this.#filterSport && sportMap[this.#filterSport]) parts.push(sportMap[this.#filterSport])
     if (this.qInputTarget.value.trim()) parts.push(`"${this.qInputTarget.value.trim()}"`)
     if (this.#filterLat !== null) parts.push(`📍 ${this.#filterRadiusKm}km`)
@@ -334,6 +355,8 @@ export default class extends Controller {
 
   #prefillFromUrl() {
     const sp = new URLSearchParams(window.location.search)
+    if (sp.get("listing_type")) this.#updateListingTypeButtons(sp.get("listing_type"))
+    else this.#updateListingTypeButtons("match_finding") // default
     if (sp.get("sport"))     this.#updateSportButtons(sp.get("sport"))
     if (sp.get("q"))         this.qInputTarget.value = sp.get("q")
     if (sp.get("from"))      { try { this.fromInputTarget.value = this.#toLocalDatetimeValue(new Date(sp.get("from"))) } catch {} }
@@ -386,10 +409,18 @@ export default class extends Controller {
       ? startAt.toLocaleString("vi-VN", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })
       : "Chưa cập nhật"
     const sportLabel = item.sport === "pickleball" ? "Pickleball" : "Cầu lông"
+    const typeLabels = { match_finding: "Tuyển giao lưu", court_pass: "Pass sân", tournament: "Tuyển giải đấu" }
+    const typeLabel  = typeLabels[item.listing_type] || ""
+    const typeBadgeColor = item.listing_type === "court_pass" ? "bg-orange-100 text-orange-700"
+                         : item.listing_type === "tournament" ? "bg-purple-100 text-purple-700"
+                         : "bg-green-100 text-green-700"
     return `
       <div data-listing-card data-listing-id="${item.id}" data-lat="${item.lat}" data-lng="${item.lng}"
         class="cursor-pointer min-w-[240px] max-w-[260px] rounded-2xl border border-outline-variant/30 bg-white p-3 shadow-sm active:bg-surface-container hover:shadow-md transition-shadow">
-        <p class="text-[11px] text-on-surface-variant font-semibold">${sportLabel}</p>
+        <div class="flex items-center gap-2 mb-1">
+          <p class="text-[11px] text-on-surface-variant font-semibold">${sportLabel}</p>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${typeBadgeColor}">${typeLabel}</span>
+        </div>
         <p class="mt-1 text-sm font-semibold text-on-surface line-clamp-2">${item.title || ""}</p>
         <p class="mt-1 text-xs text-on-surface-variant line-clamp-1">${item.location_name || ""}</p>
         <p class="mt-2 text-xs text-on-surface-variant">${timeLabel}</p>
@@ -534,7 +565,7 @@ export default class extends Controller {
   async #fetchListings() {
     const sp = new URLSearchParams(window.location.search)
     const apiParams = new URLSearchParams()
-    for (const key of ["from", "to", "sport", "q", "lat", "lng", "radius_km"]) {
+    for (const key of ["from", "to", "sport", "listing_type", "q", "lat", "lng", "radius_km"]) {
       if (sp.get(key)) apiParams.set(key, sp.get(key))
     }
     const resp = await fetch("/api/v1/listings/map?" + apiParams.toString())

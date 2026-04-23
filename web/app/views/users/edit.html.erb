@@ -10,7 +10,7 @@
 
     <%# Thông tin cơ bản %>
     <section class="space-y-4">
-      <h3 class="text-[10px] font-bold tracking-[0.2em] uppercase text-on-surface-variant">Thông tin cơ bản</h3>
+      <h3 class="font-lexend text-[10px] font-bold tracking-[0.2em] uppercase text-on-surface-variant">Thông tin cơ bản</h3>
 
       <div class="space-y-2">
         <%= render Ui::FieldLabelComponent.new("Tên hiển thị", for_id: "user_display_name") %>
@@ -24,8 +24,7 @@
 
       <div class="space-y-2">
         <%= render Ui::FieldLabelComponent.new("Ngày sinh", for_id: "user_date_of_birth") %>
-        <%= f.date_field :date_of_birth, id: "user_date_of_birth",
-              class: "w-full h-14 px-4 rounded-2xl bg-surface-container-low border border-outline-variant/30 text-on-surface text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" %>
+        <%= render Ui::DateTimeFieldComponent.new(form: f, attribute: :date_of_birth, id: "user_date_of_birth", type: :date) %>
       </div>
 
       <div class="space-y-2">
@@ -52,15 +51,15 @@
 
     <%# Môn thể thao %>
     <section class="space-y-4">
-      <h3 class="text-[10px] font-bold tracking-[0.2em] uppercase text-on-surface-variant">Môn thể thao yêu thích</h3>
+      <h3 class="font-lexend text-[10px] font-bold tracking-[0.2em] uppercase text-on-surface-variant">Môn thể thao yêu thích</h3>
 
       <%# Cầu lông %>
       <div class="bg-surface-container-low rounded-2xl p-4 space-y-4">
         <label class="flex items-center gap-3 cursor-pointer">
           <%= f.check_box :sport_badminton, id: "user_sport_badminton",
-                class: "w-5 h-5 rounded border-outline-variant/30 text-primary focus:ring-0 bg-surface-container-low" %>
+                class: "w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary bg-surface-container-low" %>
           <span class="flex items-center gap-2 text-sm font-semibold text-on-surface">
-            <span>🏸</span> Cầu lông
+            <%= render Ui::SportIconComponent.new(sport: :badminton, class: "w-5 h-5") %> Cầu lông
           </span>
         </label>
         <div class="space-y-2">
@@ -84,9 +83,9 @@
       <div class="bg-surface-container-low rounded-2xl p-4 space-y-4">
         <label class="flex items-center gap-3 cursor-pointer">
           <%= f.check_box :sport_pickleball, id: "user_sport_pickleball",
-                class: "w-5 h-5 rounded border-outline-variant/30 text-primary focus:ring-0 bg-surface-container-low" %>
+                class: "w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary bg-surface-container-low" %>
           <span class="flex items-center gap-2 text-sm font-semibold text-on-surface">
-            <span>🏓</span> Pickleball
+            <%= render Ui::SportIconComponent.new(sport: :pickleball, class: "w-5 h-5") %> Pickleball
           </span>
         </label>
         <div class="space-y-2">
@@ -112,7 +111,7 @@
 
     <%# Giới thiệu %>
     <section class="space-y-4">
-      <h3 class="text-[10px] font-bold tracking-[0.2em] uppercase text-on-surface-variant">Giới thiệu bản thân</h3>
+      <h3 class="font-lexend text-[10px] font-bold tracking-[0.2em] uppercase text-on-surface-variant">Giới thiệu bản thân</h3>
       <div class="space-y-2">
         <%= render Ui::FieldLabelComponent.new("Bio (tối đa 500 ký tự)", for_id: "user_bio") %>
         <%= render Ui::TextAreaFieldComponent.new(form: f, attribute: :bio, id: "user_bio",

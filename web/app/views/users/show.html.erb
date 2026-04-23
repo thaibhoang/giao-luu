@@ -43,7 +43,7 @@
 
   <%# Thông tin cơ bản %>
   <section class="space-y-4 mb-8">
-    <h3 class="text-[10px] font-bold tracking-[0.2em] uppercase text-on-surface-variant">Thông tin cá nhân</h3>
+    <h3 class="font-lexend text-[10px] font-bold tracking-[0.2em] uppercase text-on-surface-variant">Thông tin cá nhân</h3>
     <div class="bg-surface-container-low rounded-2xl divide-y divide-outline-variant/20">
 
       <div class="flex items-center gap-3 px-4 py-3">
@@ -79,12 +79,12 @@
 
   <%# Môn thể thao & trình độ %>
   <section class="space-y-4 mb-8">
-    <h3 class="text-[10px] font-bold tracking-[0.2em] uppercase text-on-surface-variant">Môn thể thao</h3>
+    <h3 class="font-lexend text-[10px] font-bold tracking-[0.2em] uppercase text-on-surface-variant">Môn thể thao</h3>
     <div class="grid grid-cols-2 gap-3">
 
       <div class="<%= @user.sport_badminton? ? 'bg-primary/10 border border-primary/30' : 'bg-surface-container-low border border-transparent opacity-50' %> rounded-2xl p-4">
         <div class="flex items-center gap-2 mb-2">
-          <span class="text-xl">🏸</span>
+          <%= render Ui::SportIconComponent.new(sport: :badminton, class: "w-5 h-5") %>
           <span class="text-sm font-semibold text-on-surface">Cầu lông</span>
         </div>
         <% if @user.sport_badminton? && @user.skill_level_badminton.present? %>
@@ -100,7 +100,7 @@
 
       <div class="<%= @user.sport_pickleball? ? 'bg-primary/10 border border-primary/30' : 'bg-surface-container-low border border-transparent opacity-50' %> rounded-2xl p-4">
         <div class="flex items-center gap-2 mb-2">
-          <span class="text-xl">🏓</span>
+          <%= render Ui::SportIconComponent.new(sport: :pickleball, class: "w-5 h-5") %>
           <span class="text-sm font-semibold text-on-surface">Pickleball</span>
         </div>
         <% if @user.sport_pickleball? && @user.skill_level_pickleball.present? %>
@@ -120,7 +120,7 @@
   <%# Giới thiệu %>
   <% if @user.bio.present? %>
     <section class="space-y-3 mb-8">
-      <h3 class="text-[10px] font-bold tracking-[0.2em] uppercase text-on-surface-variant">Giới thiệu</h3>
+      <h3 class="font-lexend text-[10px] font-bold tracking-[0.2em] uppercase text-on-surface-variant">Giới thiệu</h3>
       <p class="text-sm text-on-surface leading-relaxed bg-surface-container-low rounded-2xl px-4 py-3"><%= @user.bio %></p>
     </section>
   <% end %>

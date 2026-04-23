@@ -1,7 +1,9 @@
 <div class="<%= @html_options[:wrapper_class] %>">
-  <%= @form.datetime_local_field @attribute,
-        id: field_id,
-        class: input_classes %>
+  <% if @type == :date %>
+    <%= @form.date_field @attribute, id: field_id, class: input_classes %>
+  <% else %>
+    <%= @form.datetime_local_field @attribute, id: field_id, class: input_classes %>
+  <% end %>
   <% if error.present? %>
     <%= render Ui::InlineErrorComponent.new(error) %>
   <% end %>

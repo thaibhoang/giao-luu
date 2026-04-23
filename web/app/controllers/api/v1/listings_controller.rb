@@ -14,6 +14,7 @@ module Api
 
         listings = Listing.map_rows_for(
           sport: params[:sport],
+          listing_type: params[:listing_type].presence,
           from:,
           to:,
           q: params[:q].presence,
@@ -29,6 +30,7 @@ module Api
             {
               id: l.id,
               sport: l.sport,
+              listing_type: l.listing_type,
               title: l.title,
               location_name: l.location_name,
               lat: l.attributes["lat"].to_f,
@@ -52,7 +54,7 @@ module Api
       def show
         listing = Listing.find(params[:id])
         render json: listing.as_json(only: %i[
-                                       id sport title body location_name start_at end_at slots_needed
+                                       id sport listing_type title body location_name start_at end_at slots_needed
                                        skill_level_min skill_level_max price_estimate contact_info source source_url schema_version
                                      ])
       end
@@ -67,7 +69,7 @@ module Api
         if listing.valid?
           created = Listing.insert_with_point!(
             listing.attributes.symbolize_keys.slice(
-              :sport, :title, :body, :location_name, :start_at, :end_at,
+              :sport, :listing_type, :title, :body, :location_name, :start_at, :end_at,
               :slots_needed, :skill_level_min, :skill_level_max, :price_estimate, :contact_info,
               :source, :source_url, :schema_version, :user_id
             ),
@@ -86,7 +88,7 @@ module Api
 
       def listing_create_params
         params.require(:listing).permit(
-          :sport, :title, :body, :location_name, :lat, :lng, :start_at, :end_at,
+          :listing_type, :sport, :title, :body, :location_name, :lat, :lng, :start_at, :end_at,
           :slots_needed, :skill_level_min, :skill_level_max, :price_estimate, :contact_info
         )
       end

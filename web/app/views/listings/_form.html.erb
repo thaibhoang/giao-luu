@@ -1,5 +1,28 @@
-<%= form_with model: listing, url: url, method: method, class: "space-y-8" do |f| %>
+<%= form_with model: listing, url: url, method: method, class: "space-y-8",
+             data: { controller: "listing-type" } do |f| %>
   <%= render Ui::FormErrorSummaryComponent.new(record: listing, title: "Không thể lưu tin") %>
+
+  <%# ── Chọn loại tin ──────────────────────────────────── %>
+  <section class="space-y-3">
+    <%= render Ui::FieldLabelComponent.new("Loại tin") %>
+    <div class="grid grid-cols-3 gap-3">
+      <% Listing::LISTING_TYPES.each do |type| %>
+        <% is_active = listing.listing_type == type %>
+        <label class="relative cursor-pointer">
+          <%= f.radio_button :listing_type, type,
+                class: "sr-only peer",
+                data: { action: "change->listing-type#onChange" } %>
+          <div class="flex flex-col items-center justify-center gap-1.5 px-2 py-3 rounded-2xl border-2 transition-all
+                      <%= is_active ? 'border-primary bg-primary/5 text-primary' : 'border-outline-variant/40 text-on-surface-variant hover:border-primary/40' %>
+                      peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary">
+            <% icon = case type; when "court_pass" then "🏟️"; when "tournament" then "🏆"; else "🏸"; end %>
+            <span class="text-2xl"><%= icon %></span>
+            <span class="text-xs font-bold text-center leading-tight"><%= Listing::LISTING_TYPE_LABELS[type] %></span>
+          </div>
+        </label>
+      <% end %>
+    </div>
+  </section>
 
   <section class="space-y-4">
     <%= render Ui::FieldLabelComponent.new("Chọn môn") %>
@@ -38,17 +61,18 @@
     <%= render Ui::FieldLabelComponent.new("Thời gian") %>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="space-y-2">
-        <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider ml-1">Bắt đầu</span>
+        <label class="font-lexend font-bold text-sm tracking-wide text-primary uppercase">Bắt đầu</label>
         <%= render Ui::DateTimeFieldComponent.new(form: f, attribute: :start_at, error: listing.errors[:start_at].first) %>
       </div>
       <div class="space-y-2">
-        <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider ml-1">Kết thúc</span>
+        <label class="font-lexend font-bold text-sm tracking-wide text-primary uppercase">Kết thúc</label>
         <%= render Ui::DateTimeFieldComponent.new(form: f, attribute: :end_at, error: listing.errors[:end_at].first) %>
       </div>
     </div>
   </section>
 
-  <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+  <section data-listing-type-target="matchSection"
+           class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 <%= (listing.listing_type == 'court_pass') ? 'hidden' : '' %>">
     <div class="space-y-2">
       <%= render Ui::FieldLabelComponent.new("Số người cần", for_id: "listing_slots_needed") %>
       <%= render Ui::NumberStepperComponent.new(form: f, attribute: :slots_needed, value: listing.slots_needed || 1, min: 1, max: 20) %>
@@ -67,9 +91,79 @@
     </div>
   </section>
 
-  <section class="space-y-4 pb-24">
+  <section class="space-y-4 pb-8">
     <%= render Ui::FieldLabelComponent.new("Thông tin liên hệ", for_id: "listing_contact_info") %>
     <%= render Ui::TextFieldComponent.new(form: f, attribute: :contact_info, id: "listing_contact_info", icon: "contact_support", placeholder: "Số điện thoại hoặc link cá nhân", error: listing.errors[:contact_info].first) %>
+  </section>
+
+  <%# ── Trường riêng: Pass sân ─────────────────────────── %>
+  <section data-listing-type-target="courtPassSection"
+           class="space-y-4 <%= (listing.listing_type == 'court_pass') ? '' : 'hidden' %>">
+    <div class="border-t border-outline-variant/20 pt-4">
+      <p class="text-sm font-bold text-on-surface mb-4">🏟️ Thông tin Pass sân</p>
+      <div class="space-y-4">
+        <%= f.fields_for :court_pass_detail, (listing.court_pass_detail || listing.build_court_pass_detail) do |cf| %>
+          <div class="space-y-2">
+            <%= render Ui::FieldLabelComponent.new("Tên sân", for_id: "listing_court_pass_detail_court_name", required_badge: true) %>
+            <%= render Ui::TextFieldComponent.new(form: cf, attribute: :court_name, id: "listing_court_pass_detail_court_name", placeholder: "VD: Sân cầu lông Tân Bình", error: listing.court_pass_detail&.errors[:court_name]&.first) %>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <%= render Ui::FieldLabelComponent.new("Giá gốc (VND)", for_id: "listing_court_pass_detail_original_price", required_badge: true) %>
+              <%= render Ui::TextFieldComponent.new(form: cf, attribute: :original_price, type: "number", id: "listing_court_pass_detail_original_price", icon: "payments", placeholder: "200000") %>
+            </div>
+            <div class="space-y-2">
+              <%= render Ui::FieldLabelComponent.new("Giá nhượng (VND)", for_id: "listing_court_pass_detail_pass_price", required_badge: true) %>
+              <%= render Ui::TextFieldComponent.new(form: cf, attribute: :pass_price, type: "number", id: "listing_court_pass_detail_pass_price", icon: "sell", placeholder: "150000") %>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <%= render Ui::FieldLabelComponent.new("Link / ảnh xác nhận đặt sân", for_id: "listing_court_pass_detail_booking_proof", optional_badge: true) %>
+            <%= render Ui::TextFieldComponent.new(form: cf, attribute: :booking_proof, id: "listing_court_pass_detail_booking_proof", icon: "link", placeholder: "https://...") %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </section>
+
+  <%# ── Trường riêng: Tuyển giải đấu ──────────────────── %>
+  <section data-listing-type-target="tournamentSection"
+           class="space-y-4 <%= (listing.listing_type == 'tournament') ? '' : 'hidden' %>">
+    <div class="border-t border-outline-variant/20 pt-4">
+      <p class="text-sm font-bold text-on-surface mb-4">🏆 Thông tin giải đấu</p>
+      <div class="space-y-4">
+        <%= f.fields_for :tournament_detail, (listing.tournament_detail || listing.build_tournament_detail) do |tf| %>
+          <div class="space-y-2">
+            <%= render Ui::FieldLabelComponent.new("Tên giải", for_id: "listing_tournament_detail_tournament_name", required_badge: true) %>
+            <%= render Ui::TextFieldComponent.new(form: tf, attribute: :tournament_name, id: "listing_tournament_detail_tournament_name", placeholder: "VD: Giải cầu lông mở rộng HCM 2026", error: listing.tournament_detail&.errors[:tournament_name]&.first) %>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <%= render Ui::FieldLabelComponent.new("Đơn vị tổ chức", for_id: "listing_tournament_detail_organizer", optional_badge: true) %>
+              <%= render Ui::TextFieldComponent.new(form: tf, attribute: :organizer, id: "listing_tournament_detail_organizer", placeholder: "CLB / Công ty...") %>
+            </div>
+            <div class="space-y-2">
+              <%= render Ui::FieldLabelComponent.new("Hạn đăng ký", for_id: "listing_tournament_detail_registration_deadline", required_badge: true) %>
+              <%= render Ui::DateTimeFieldComponent.new(form: tf, attribute: :registration_deadline) %>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <%= render Ui::FieldLabelComponent.new("Thể thức thi đấu", for_id: "listing_tournament_detail_format", required_badge: true) %>
+            <%= render Ui::SelectFieldComponent.new(form: tf, attribute: :format,
+                  choices: TournamentDetail::FORMATS.map { |f| [TournamentDetail::FORMAT_LABELS[f], f] },
+                  error: listing.tournament_detail&.errors[:format]&.first) %>
+          </div>
+          <div class="space-y-2">
+            <%= render Ui::FieldLabelComponent.new("Thông tin giải thưởng", for_id: "listing_tournament_detail_prize_info", optional_badge: true) %>
+            <%= render Ui::TextFieldComponent.new(form: tf, attribute: :prize_info, id: "listing_tournament_detail_prize_info", icon: "emoji_events", placeholder: "Tiền thưởng, cup, hiện vật...") %>
+          </div>
+          <div class="space-y-2">
+            <%= render Ui::FieldLabelComponent.new("Link đăng ký chính thức", for_id: "listing_tournament_detail_registration_link", optional_badge: true) %>
+            <%= render Ui::TextFieldComponent.new(form: tf, attribute: :registration_link, id: "listing_tournament_detail_registration_link", icon: "link", placeholder: "https://...") %>
+          </div>
+        <% end %>
+      </div>
+    </div>
   </section>
 
   <%= render Ui::FixedBottomBarComponent.new(inner_class: "max-w-2xl mx-auto px-5") do %>
