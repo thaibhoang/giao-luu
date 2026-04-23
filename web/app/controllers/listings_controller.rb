@@ -7,7 +7,8 @@ class ListingsController < ApplicationController
 
   def index
     @pagy, @listings = pagy(
-      Listing.by_sport(params[:sport])
+      Listing.upcoming
+             .by_sport(params[:sport])
              .by_listing_type(params[:listing_type])
              .by_gender(params[:gender])
              .by_play_format(params[:play_format])
@@ -18,7 +19,7 @@ class ListingsController < ApplicationController
   end
 
   def map
-    @pagy, @listings = pagy(Listing.order(start_at: :asc), items: 20)
+    @pagy, @listings = pagy(Listing.upcoming.order(start_at: :asc), items: 20)
     @map_center_lat = parse_coordinate(params[:lat], default: 10.8231, range: -90.0..90.0)
     @map_center_lng = parse_coordinate(params[:lng], default: 106.6297, range: -180.0..180.0)
     @map_focus_listing_id = params[:listing_id]

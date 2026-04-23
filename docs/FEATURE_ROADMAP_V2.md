@@ -28,7 +28,6 @@ Hiện tại chỉ có **Tuyển giao lưu**. Nâng lên 3 loại tin ngang hàn
   - `court_name` — tên sân cụ thể
   - `original_price` — giá gốc (VND)
   - `pass_price` — giá nhượng lại
-  - `slots_available` — số suất còn lại
   - `booking_proof` *(optional)* — link / ảnh xác nhận đặt sân
 
 ### 1.2 Tin Tuyển giải đấu (`tournament`)
@@ -37,7 +36,7 @@ Hiện tại chỉ có **Tuyển giao lưu**. Nâng lên 3 loại tin ngang hàn
   - `tournament_name` — tên giải
   - `organizer` — đơn vị tổ chức
   - `registration_deadline` — hạn đăng ký
-  - `format` — đơn / đôi / đồng đội
+  - `format` — đơn / đôi nam /đôi nữ / đôi nam nữ / đồng đội
   - `prize_info` *(optional)* — thông tin giải thưởng
   - `registration_link` *(optional)* — link đăng ký chính thức
 

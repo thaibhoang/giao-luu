@@ -99,6 +99,8 @@ class Listing < ApplicationRecord
     PLAY_FORMAT_LABELS.fetch(play_format, play_format)
   end
 
+  # Tin đang active và thời điểm bắt đầu >= hiện tại — scope mặc định cho trang chủ/bản đồ
+  scope :upcoming, -> { where(active: true).where("start_at >= ?", Time.current) }
   scope :with_geom, -> { where.not(geom: nil) }
   scope :by_sport, ->(sport) { sport.present? ? where(sport:) : all }
   scope :by_listing_type, ->(type) { type.present? ? where(listing_type: type) : all }
@@ -150,9 +152,10 @@ class Listing < ApplicationRecord
 
   def self.map_rows_for(sport: nil, listing_type: nil, from: nil, to: nil, q: nil, skill_min: nil, skill_max: nil, lat: nil, lng: nil, radius_meters: nil, gender: nil, play_format: nil)
     rel = with_geom
+            .where(active: true)
             .by_sport(sport)
             .by_listing_type(listing_type)
-            .from_time(from)
+            .from_time(from || Time.current)
             .to_time(to)
             .by_keyword(q)
             .skill_min_filter(skill_min)
@@ -171,10 +174,10 @@ class Listing < ApplicationRecord
     cols = %i[
       sport listing_type title body location_name start_at end_at slots_needed skill_level_min skill_level_max
       price_estimate contact_info source source_url schema_version user_id gender_requirement play_format
-      created_at updated_at
+      active created_at updated_at
     ]
     now = Time.current
-    h = attributes.symbolize_keys.reverse_merge(created_at: now, updated_at: now, user_id: nil)
+    h = attributes.symbolize_keys.reverse_merge(created_at: now, updated_at: now, user_id: nil, active: true)
     values = cols.map { |c| h[c] }
     placeholders = ([ "?" ] * cols.size).join(", ")
     sql = <<~SQL.squish
@@ -191,7 +194,7 @@ class Listing < ApplicationRecord
     cols = %i[
       sport listing_type title body location_name start_at end_at slots_needed skill_level_min skill_level_max
       price_estimate contact_info source source_url schema_version user_id gender_requirement play_format
-      updated_at
+      active updated_at
     ]
     now = Time.current
     h = attributes.symbolize_keys.merge(updated_at: now)

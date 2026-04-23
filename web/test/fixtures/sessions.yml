@@ -1,0 +1,3 @@
+# No fixtures needed for sessions in test suite.
+# This file exists to prevent Rails from auto-generating an empty fixture
+# that causes FK validation errors (sessions.user_id FK → users).
