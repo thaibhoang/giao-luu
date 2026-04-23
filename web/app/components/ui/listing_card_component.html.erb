@@ -13,6 +13,22 @@
     <p class="flex items-center gap-2"><%= render Ui::IconComponent.new(name: "schedule", size_class: "text-base") %><%= l(listing.start_at, format: :short) %></p>
     <p class="flex items-center gap-2"><%= render Ui::IconComponent.new(name: "location_on", size_class: "text-base") %><%= listing.location_name %></p>
   </div>
+  <% if listing.gender_requirement.present? || listing.play_format.present? %>
+    <div class="mt-3 flex flex-wrap gap-2">
+      <% if listing.gender_requirement.present? %>
+        <span class="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-secondary-container/40 text-on-secondary-container">
+          <%= render Ui::IconComponent.new(name: "wc", size_class: "text-[10px]") %>
+          <%= listing.gender_requirement_label %>
+        </span>
+      <% end %>
+      <% if listing.play_format.present? %>
+        <span class="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-tertiary-container/40 text-on-tertiary-container">
+          <%= render Ui::IconComponent.new(name: "sports_tennis", size_class: "text-[10px]") %>
+          <%= listing.play_format_label %>
+        </span>
+      <% end %>
+    </div>
+  <% end %>
   <% if show_actions %>
     <div class="mt-4 flex items-center justify-end gap-4">
       <%= link_to "Sửa", edit_listing_path(listing), class: "text-sm font-bold text-primary" %>

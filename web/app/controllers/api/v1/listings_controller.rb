@@ -22,7 +22,9 @@ module Api
           skill_max: params[:skill_max].presence,
           lat:,
           lng:,
-          radius_meters:
+          radius_meters:,
+          gender: params[:gender].presence,
+          play_format: params[:play_format].presence
         )
 
         render json: {
@@ -40,7 +42,9 @@ module Api
               skill_level_min: l.skill_level_min,
               skill_level_max: l.skill_level_max,
               price_estimate: l.price_estimate,
-              source: l.source
+              source: l.source,
+              gender_requirement: l.gender_requirement,
+              play_format: l.play_format
             }
           end
         }

@@ -6,7 +6,15 @@ class ListingsController < ApplicationController
   allow_unauthenticated_access only: %i[index show map]
 
   def index
-    @pagy, @listings = pagy(Listing.order(start_at: :asc), items: 20)
+    @pagy, @listings = pagy(
+      Listing.by_sport(params[:sport])
+             .by_listing_type(params[:listing_type])
+             .by_gender(params[:gender])
+             .by_play_format(params[:play_format])
+             .by_keyword(params[:q])
+             .order(start_at: :asc),
+      items: 20
+    )
   end
 
   def map
@@ -85,7 +93,7 @@ class ListingsController < ApplicationController
         @listing.attributes.symbolize_keys.slice(
           :sport, :listing_type, :title, :body, :location_name, :start_at, :end_at,
           :slots_needed, :skill_level_min, :skill_level_max, :price_estimate, :contact_info,
-          :source, :source_url, :schema_version, :user_id
+          :source, :source_url, :schema_version, :user_id, :gender_requirement, :play_format
         ),
         longitude: lng,
         latitude: lat
@@ -131,7 +139,7 @@ class ListingsController < ApplicationController
         attributes: attrs.symbolize_keys.slice(
           :sport, :listing_type, :title, :body, :location_name, :start_at, :end_at,
           :slots_needed, :skill_level_min, :skill_level_max, :price_estimate, :contact_info,
-          :source, :source_url, :schema_version, :user_id
+          :source, :source_url, :schema_version, :user_id, :gender_requirement, :play_format
         ),
         longitude: lng,
         latitude: lat
@@ -150,6 +158,7 @@ class ListingsController < ApplicationController
     params.require(:listing).permit(
       :listing_type, :sport, :title, :body, :location_name, :lat, :lng, :start_at, :end_at,
       :slots_needed, :skill_level_min, :skill_level_max, :price_estimate, :contact_info,
+      :gender_requirement, :play_format,
       court_pass_detail_attributes: %i[id court_name original_price pass_price booking_proof],
       tournament_detail_attributes: %i[id tournament_name organizer registration_deadline format prize_info registration_link]
     )

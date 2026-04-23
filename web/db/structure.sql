@@ -267,6 +267,8 @@ CREATE TABLE public.listings (
     geom public.geography(Point,4326),
     user_id bigint,
     listing_type character varying DEFAULT 'match_finding'::character varying NOT NULL,
+    gender_requirement character varying,
+    play_format character varying,
     CONSTRAINT listings_skill_level_max_valid CHECK (((skill_level_max)::text = ANY (ARRAY[('yeu'::character varying)::text, ('trung_binh_yeu'::character varying)::text, ('trung_binh_minus'::character varying)::text, ('trung_binh'::character varying)::text, ('trung_binh_plus'::character varying)::text, ('trung_binh_plus_plus'::character varying)::text, ('trung_binh_kha'::character varying)::text, ('kha'::character varying)::text, ('ban_chuyen'::character varying)::text, ('chuyen_nghiep'::character varying)::text]))),
     CONSTRAINT listings_skill_level_min_valid CHECK (((skill_level_min)::text = ANY (ARRAY[('yeu'::character varying)::text, ('trung_binh_yeu'::character varying)::text, ('trung_binh_minus'::character varying)::text, ('trung_binh'::character varying)::text, ('trung_binh_plus'::character varying)::text, ('trung_binh_plus_plus'::character varying)::text, ('trung_binh_kha'::character varying)::text, ('kha'::character varying)::text, ('ban_chuyen'::character varying)::text, ('chuyen_nghiep'::character varying)::text]))),
     CONSTRAINT listings_skill_level_range_valid CHECK ((array_position(ARRAY['yeu'::text, 'trung_binh_yeu'::text, 'trung_binh_minus'::text, 'trung_binh'::text, 'trung_binh_plus'::text, 'trung_binh_plus_plus'::text, 'trung_binh_kha'::text, 'kha'::text, 'ban_chuyen'::text, 'chuyen_nghiep'::text], (skill_level_min)::text) <= array_position(ARRAY['yeu'::text, 'trung_binh_yeu'::text, 'trung_binh_minus'::text, 'trung_binh'::text, 'trung_binh_plus'::text, 'trung_binh_plus_plus'::text, 'trung_binh_kha'::text, 'kha'::text, 'ban_chuyen'::text, 'chuyen_nghiep'::text], (skill_level_max)::text))),
@@ -637,6 +639,13 @@ CREATE UNIQUE INDEX index_geocoding_caches_on_location_query ON public.geocoding
 
 
 --
+-- Name: index_listings_on_gender_requirement; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_listings_on_gender_requirement ON public.listings USING btree (gender_requirement);
+
+
+--
 -- Name: index_listings_on_geom; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -648,6 +657,13 @@ CREATE INDEX index_listings_on_geom ON public.listings USING gist (geom);
 --
 
 CREATE INDEX index_listings_on_listing_type ON public.listings USING btree (listing_type);
+
+
+--
+-- Name: index_listings_on_play_format; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_listings_on_play_format ON public.listings USING btree (play_format);
 
 
 --
@@ -783,6 +799,8 @@ ALTER TABLE ONLY public.admin_sessions
 SET search_path TO "$user", public, topology, tiger;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260423000003'),
+('20260423000002'),
 ('20260423000001'),
 ('20260422000001'),
 ('20260419100001'),

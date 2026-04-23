@@ -91,6 +91,27 @@
     </div>
   </section>
 
+  <%# ── Giới tính & Thể thức (không áp dụng cho court_pass) ── %>
+  <section data-listing-type-target="matchSection"
+           class="grid grid-cols-1 md:grid-cols-2 gap-4 <%= (listing.listing_type == 'court_pass') ? 'hidden' : '' %>">
+    <div class="space-y-2">
+      <%= render Ui::FieldLabelComponent.new("Yêu cầu giới tính", for_id: "listing_gender_requirement", optional_badge: true) %>
+      <%= render Ui::SelectFieldComponent.new(
+            form: f,
+            attribute: :gender_requirement,
+            choices: [["-- Không giới hạn --", ""]] + Listing::GENDER_REQUIREMENTS.map { |g| [Listing::GENDER_REQUIREMENT_LABELS[g], g] }
+          ) %>
+    </div>
+    <div class="space-y-2" data-listing-type-target="playFormatSection">
+      <%= render Ui::FieldLabelComponent.new("Thể thức đánh", for_id: "listing_play_format", optional_badge: true) %>
+      <%= render Ui::SelectFieldComponent.new(
+            form: f,
+            attribute: :play_format,
+            choices: [["-- Không xác định --", ""]] + Listing::PLAY_FORMATS.map { |pf| [Listing::PLAY_FORMAT_LABELS[pf], pf] }
+          ) %>
+    </div>
+  </section>
+
   <section class="space-y-4 pb-8">
     <%= render Ui::FieldLabelComponent.new("Thông tin liên hệ", for_id: "listing_contact_info") %>
     <%= render Ui::TextFieldComponent.new(form: f, attribute: :contact_info, id: "listing_contact_info", icon: "contact_support", placeholder: "Số điện thoại hoặc link cá nhân", error: listing.errors[:contact_info].first) %>

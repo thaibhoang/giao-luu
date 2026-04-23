@@ -46,6 +46,21 @@ class Listing < ApplicationRecord
     "tournament"    => "purple"
   }.freeze
 
+  GENDER_REQUIREMENTS = %w[any male female mixed].freeze
+  GENDER_REQUIREMENT_LABELS = {
+    "any"    => "Không giới hạn",
+    "male"   => "Nam",
+    "female" => "Nữ",
+    "mixed"  => "Nam & Nữ"
+  }.freeze
+
+  PLAY_FORMATS = %w[singles doubles both].freeze
+  PLAY_FORMAT_LABELS = {
+    "singles" => "Đánh đơn",
+    "doubles" => "Đánh đôi",
+    "both"    => "Đơn & Đôi"
+  }.freeze
+
   belongs_to :user, optional: true
   has_many :registrations, dependent: :destroy
   has_one  :court_pass_detail, dependent: :destroy
@@ -58,6 +73,9 @@ class Listing < ApplicationRecord
   validates :skill_level_min, :skill_level_max, inclusion: { in: SKILL_LEVELS }, unless: :court_pass?
   validates :title, :location_name, :contact_info, :source, presence: true
   validates :listing_type, inclusion: { in: LISTING_TYPES }
+  validates :gender_requirement, inclusion: { in: GENDER_REQUIREMENTS }, allow_nil: true
+  validates :play_format, inclusion: { in: PLAY_FORMATS }, allow_nil: true
+  validate  :play_format_not_for_court_pass
   validates :slots_needed, numericality: { only_integer: true, greater_than_or_equal_to: 1 }, unless: :court_pass?
   validates :schema_version, numericality: { only_integer: true, greater_than_or_equal_to: 1 }
   validate :end_at_not_before_start_at
@@ -73,6 +91,14 @@ class Listing < ApplicationRecord
     LISTING_TYPE_LABELS.fetch(listing_type, listing_type)
   end
 
+  def gender_requirement_label
+    GENDER_REQUIREMENT_LABELS.fetch(gender_requirement, gender_requirement)
+  end
+
+  def play_format_label
+    PLAY_FORMAT_LABELS.fetch(play_format, play_format)
+  end
+
   scope :with_geom, -> { where.not(geom: nil) }
   scope :by_sport, ->(sport) { sport.present? ? where(sport:) : all }
   scope :by_listing_type, ->(type) { type.present? ? where(listing_type: type) : all }
@@ -83,6 +109,8 @@ class Listing < ApplicationRecord
     pattern = "%#{sanitize_sql_like(q)}%"
     where("title ILIKE ? OR location_name ILIKE ?", pattern, pattern)
   }
+  scope :by_gender, ->(g) { g.present? ? where(gender_requirement: g) : all }
+  scope :by_play_format, ->(pf) { pf.present? ? where(play_format: pf) : all }
   # Tìm listing có skill_level_max >= slug (listing chấp nhận trình độ tối thiểu slug)
   scope :skill_min_filter, ->(slug) {
     return all if slug.blank? || !SKILL_LEVEL_INDEX.key?(slug)
@@ -120,7 +148,7 @@ class Listing < ApplicationRecord
     )
   end
 
-  def self.map_rows_for(sport: nil, listing_type: nil, from: nil, to: nil, q: nil, skill_min: nil, skill_max: nil, lat: nil, lng: nil, radius_meters: nil)
+  def self.map_rows_for(sport: nil, listing_type: nil, from: nil, to: nil, q: nil, skill_min: nil, skill_max: nil, lat: nil, lng: nil, radius_meters: nil, gender: nil, play_format: nil)
     rel = with_geom
             .by_sport(sport)
             .by_listing_type(listing_type)
@@ -129,9 +157,11 @@ class Listing < ApplicationRecord
             .by_keyword(q)
             .skill_min_filter(skill_min)
             .skill_max_filter(skill_max)
+            .by_gender(gender)
+            .by_play_format(play_format)
     rel = rel.within_radius(lat:, lng:, radius_meters:) if lat && lng && radius_meters
     rel.select(
-      "id, sport, listing_type, title, location_name, start_at, end_at, skill_level_min, skill_level_max, price_estimate, source, "\
+      "id, sport, listing_type, title, location_name, start_at, end_at, skill_level_min, skill_level_max, price_estimate, source, gender_requirement, play_format, "\
       "ST_Y(geom::geometry) AS lat, ST_X(geom::geometry) AS lng"
     )
   end
@@ -140,7 +170,7 @@ class Listing < ApplicationRecord
   def self.insert_with_point!(attributes, longitude:, latitude:)
     cols = %i[
       sport listing_type title body location_name start_at end_at slots_needed skill_level_min skill_level_max
-      price_estimate contact_info source source_url schema_version user_id
+      price_estimate contact_info source source_url schema_version user_id gender_requirement play_format
       created_at updated_at
     ]
     now = Time.current
@@ -160,7 +190,7 @@ class Listing < ApplicationRecord
   def self.update_with_point!(id:, attributes:, longitude:, latitude:)
     cols = %i[
       sport listing_type title body location_name start_at end_at slots_needed skill_level_min skill_level_max
-      price_estimate contact_info source source_url schema_version user_id
+      price_estimate contact_info source source_url schema_version user_id gender_requirement play_format
       updated_at
     ]
     now = Time.current
@@ -213,5 +243,12 @@ class Listing < ApplicationRecord
         errors.add(:base, "Vui lòng điền thông tin giải đấu")
       end
     end
+  end
+
+  def play_format_not_for_court_pass
+    return unless court_pass?
+    return if play_format.blank?
+
+    errors.add(:play_format, "không áp dụng cho loại tin Pass sân")
   end
 end

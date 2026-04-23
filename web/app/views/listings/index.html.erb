@@ -26,6 +26,85 @@
       </div>
     </section>
 
+    <%# ── Bộ lọc tìm kiếm ──────────────────────────────── %>
+    <section>
+      <%= form_with url: listings_path, method: :get, class: "space-y-3" do |f| %>
+        <div class="relative flex items-center gap-2">
+          <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-on-surface-variant">
+            <%= render Ui::IconComponent.new(name: "search", size_class: "text-base") %>
+          </span>
+          <%= f.search_field :q, value: params[:q],
+                placeholder: "Tìm theo tên sân, quận, thành phố...",
+                class: "w-full pl-9 pr-4 h-11 rounded-xl border border-outline-variant/40 bg-surface-container-low text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" %>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <%= f.select :sport,
+                [["Tất cả môn", ""], ["Cầu lông", "badminton"], ["Pickleball", "pickleball"]],
+                { selected: params[:sport] },
+                class: "h-9 px-3 rounded-xl border border-outline-variant/40 bg-surface-container-low text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" %>
+          <%= f.select :listing_type,
+                [["Tất cả loại tin", ""]] + Listing::LISTING_TYPES.map { |t| [Listing::LISTING_TYPE_LABELS[t], t] },
+                { selected: params[:listing_type] },
+                class: "h-9 px-3 rounded-xl border border-outline-variant/40 bg-surface-container-low text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" %>
+          <%= f.select :gender,
+                [["Giới tính", ""]] + Listing::GENDER_REQUIREMENTS.map { |g| [Listing::GENDER_REQUIREMENT_LABELS[g], g] },
+                { selected: params[:gender] },
+                class: "h-9 px-3 rounded-xl border border-outline-variant/40 bg-surface-container-low text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" %>
+          <%= f.select :play_format,
+                [["Đơn / Đôi", ""]] + Listing::PLAY_FORMATS.map { |pf| [Listing::PLAY_FORMAT_LABELS[pf], pf] },
+                { selected: params[:play_format] },
+                class: "h-9 px-3 rounded-xl border border-outline-variant/40 bg-surface-container-low text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" %>
+          <%= f.submit "Lọc", class: "h-9 px-4 rounded-xl bg-primary text-on-primary text-sm font-semibold cursor-pointer hover:bg-primary/90 transition-colors text-white" %>
+          <% if params.slice(:q, :sport, :listing_type, :gender, :play_format).values.any?(&:present?) %>
+            <%= link_to "Xoá bộ lọc", listings_path, class: "h-9 px-4 rounded-xl border border-outline-variant/40 text-sm text-on-surface-variant flex items-center hover:bg-surface-container transition-colors" %>
+          <% end %>
+        </div>
+      <% end %>
+    </section>
+
+    <section class="grid grid-cols-2 gap-4">
+      <% @listings.first(20).each do |listing| %>
+        <%= render Ui::ListingCardComponent.new(listing: listing, compact: true) %>
+      <% end %>
+    </section>
+
+    <%== @pagy.series_nav %>
+  </div>
+<% end %>
+
+<%= render Ui::BottomNavComponent.new(items: [
+  { path: listings_path, icon: "explore", label: "Explore", active: true },
+  { path: map_path, icon: "map", label: "Map", active: false },
+  { path: my_listings_path, icon: "assignment", label: "Tin của tôi", active: false },
+  { path: authenticated? ? profile_path : new_session_path, icon: "person", label: "Profile", active: false }
+]) %>
+
+<%= render Ui::TopAppBarComponent.new(title: "SportMatch") do |bar| %>
+  <% bar.with_trailing do %>
+    <%= link_to(authenticated? ? profile_path : new_session_path, class: "w-8 h-8 rounded-full bg-surface-container flex items-center justify-center") do %>
+      <%= render Ui::IconComponent.new(name: "person", size_class: "text-base") %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%= render Ui::PageShellComponent.new(padding_top: "pt-24", padding_bottom: "pb-28", max_width: "max-w-6xl", horizontal_padding: "px-5") do %>
+  <div class="grid grid-cols-1 gap-10 items-center">
+    <section class="space-y-4">
+      <div class="inline-flex items-center gap-2 bg-primary-container/5 px-3 py-1 rounded-full">
+        <span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+        <span class="text-[10px] font-bold tracking-widest uppercase text-on-surface-variant">Live Community</span>
+      </div>
+      <h1 class="font-headline text-4xl lg:text-5xl font-black leading-tight tracking-tight text-primary">
+        Tìm đối cầu lông & pickleball gần bạn
+      </h1>
+      <div class="h-1 w-12 bg-primary"></div>
+      <p class="text-on-surface-variant">Khám phá kèo quanh bạn trên bản đồ, lọc theo bán kính và trình độ phù hợp.</p>
+      <div class="pt-2 flex flex-wrap gap-3">
+        <%= render Ui::ButtonComponent.new("Xem bản đồ", href: map_path, full_width: false, size_class: "h-14 px-6 text-base") %>
+        <%= render Ui::ButtonComponent.new(authenticated? ? "Đăng tin mới" : "Đăng nhập", href: (authenticated? ? new_listing_path : new_session_path), variant: :secondary, full_width: false, size_class: "h-14 px-6 text-base") %>
+      </div>
+    </section>
+
     <section class="grid grid-cols-2 gap-4">
       <% @listings.first(20).each do |listing| %>
         <%= render Ui::ListingCardComponent.new(listing: listing, compact: true) %>
