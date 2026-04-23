@@ -4,6 +4,7 @@ class ListingsController < ApplicationController
   include Pagy::Method
 
   allow_unauthenticated_access only: %i[index show map]
+  before_action :require_authentication, only: %i[my new create edit update]
 
   def index
     @pagy, @listings = pagy(
