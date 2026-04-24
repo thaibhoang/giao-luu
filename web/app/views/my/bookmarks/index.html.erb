@@ -1,0 +1,35 @@
+<% content_for :title, "Tin đã lưu | SportMatch" %>
+
+<%= render Ui::TopAppBarComponent.new(title: "Tin đã lưu", back_href: listings_path) %>
+
+<%= render Ui::PageShellComponent.new(padding_top: "pt-24", padding_bottom: "pb-28", max_width: "max-w-2xl", horizontal_padding: "px-5") do %>
+  <% if @listings.empty? %>
+    <%= render Ui::EmptyStateComponent.new(
+      icon: "bookmark",
+      title: "Chưa có tin nào được lưu",
+      description: "Bấm ♡ trên bất kỳ tin nào để lưu vào đây.",
+      primary_label: "Khám phá tin",
+      primary_href: listings_path
+    ) %>
+  <% else %>
+    <div class="grid grid-cols-1 gap-4">
+      <% @listings.each do |listing| %>
+        <div id="<%= dom_id(listing, :bookmark_row) %>">
+          <%= render Ui::ListingCardComponent.new(
+            listing: listing,
+            bookmarked: true,
+            current_user: current_user
+          ) %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>
+
+<%= render Ui::BottomNavComponent.new(items: [
+  { path: listings_path, icon: "explore", label: "Explore", active: false },
+  { path: map_path, icon: "map", label: "Map", active: false },
+  { path: my_listings_path, icon: "assignment", label: "Tin của tôi", active: false },
+  { path: my_bookmarks_path, icon: "bookmark", label: "Đã lưu", active: true },
+  { path: authenticated? ? profile_path : new_session_path, icon: "person", label: "Profile", active: false }
+]) %>

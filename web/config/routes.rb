@@ -8,10 +8,12 @@ Rails.application.routes.draw do
   root "home#index"
   resources :listings, only: %i[index show new create edit update] do
     resources :registrations, only: %i[index create destroy]
+    resource :bookmark, only: %i[create destroy]
   end
   get "geocoding/lookup", to: "geocoding#lookup"
   get "map", to: "listings#map"
   get "my-listings", to: "listings#my", as: :my_listings
+  get "my/bookmarks", to: "my/bookmarks#index", as: :my_bookmarks
   get "empty-map", to: "pages#empty_map"
   get "error-page", to: "pages#error_page"
   get "policy", to: "pages#policy"

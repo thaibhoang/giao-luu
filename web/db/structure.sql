@@ -175,6 +175,37 @@ CREATE TABLE public.ar_internal_metadata (
 
 
 --
+-- Name: bookmarks; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.bookmarks (
+    id bigint NOT NULL,
+    listing_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: bookmarks_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.bookmarks_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: bookmarks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.bookmarks_id_seq OWNED BY public.bookmarks.id;
+
+
+--
 -- Name: court_pass_details; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -468,6 +499,13 @@ ALTER TABLE ONLY public.admin_users ALTER COLUMN id SET DEFAULT nextval('public.
 
 
 --
+-- Name: bookmarks id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.bookmarks ALTER COLUMN id SET DEFAULT nextval('public.bookmarks_id_seq'::regclass);
+
+
+--
 -- Name: court_pass_details id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -538,6 +576,14 @@ ALTER TABLE ONLY public.admin_users
 
 ALTER TABLE ONLY public.ar_internal_metadata
     ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
+
+
+--
+-- Name: bookmarks bookmarks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.bookmarks
+    ADD CONSTRAINT bookmarks_pkey PRIMARY KEY (id);
 
 
 --
@@ -630,6 +676,27 @@ CREATE INDEX index_admin_sessions_on_admin_user_id ON public.admin_sessions USIN
 --
 
 CREATE UNIQUE INDEX index_admin_users_on_email_address ON public.admin_users USING btree (email_address);
+
+
+--
+-- Name: index_bookmarks_on_listing_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_bookmarks_on_listing_id ON public.bookmarks USING btree (listing_id);
+
+
+--
+-- Name: index_bookmarks_on_listing_id_and_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_bookmarks_on_listing_id_and_user_id ON public.bookmarks USING btree (listing_id, user_id);
+
+
+--
+-- Name: index_bookmarks_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_bookmarks_on_user_id ON public.bookmarks USING btree (user_id);
 
 
 --
@@ -771,6 +838,22 @@ ALTER TABLE ONLY public.listings
 
 
 --
+-- Name: bookmarks fk_rails_c06420b17c; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.bookmarks
+    ADD CONSTRAINT fk_rails_c06420b17c FOREIGN KEY (listing_id) REFERENCES public.listings(id);
+
+
+--
+-- Name: bookmarks fk_rails_c1ff6fa4ac; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.bookmarks
+    ADD CONSTRAINT fk_rails_c1ff6fa4ac FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
 -- Name: court_pass_details fk_rails_dcc75b9607; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -793,6 +876,7 @@ ALTER TABLE ONLY public.admin_sessions
 SET search_path TO "$user", public, topology, tiger;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260424100606'),
 ('20260423000004'),
 ('20260423000003'),
 ('20260423000002'),

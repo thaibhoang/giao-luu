@@ -140,5 +140,6 @@
   { path: listings_path, icon: "explore", label: "Explore", active: false },
   { path: map_path, icon: "map", label: "Map", active: false },
   { path: my_listings_path, icon: "assignment", label: "Tin của tôi", active: false },
+  *(authenticated? ? [{ path: my_bookmarks_path, icon: "bookmark", label: "Đã lưu", active: false }] : []),
   { path: profile_path, icon: "person", label: "Profile", active: true }
 ]) %>

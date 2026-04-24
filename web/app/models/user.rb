@@ -11,6 +11,8 @@ class User < ApplicationRecord
   has_many :sessions, dependent: :destroy
   has_many :listings, dependent: :nullify
   has_many :registrations, dependent: :destroy
+  has_many :bookmarks, dependent: :destroy
+  has_many :bookmarked_listings, through: :bookmarks, source: :listing
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 

@@ -1,0 +1,22 @@
+<%# Nếu đang ở trang /my/bookmarks — xoá hẳn row khỏi danh sách %>
+<%= turbo_stream.remove dom_id(@listing, :bookmark_row) %>
+
+<%# Nếu đang ở trang index/show — re-render card về trạng thái chưa bookmark %>
+<%= turbo_stream.replace dom_id(@listing, :card) do %>
+  <%= render Ui::ListingCardComponent.new(
+    listing: @listing,
+    bookmarked: false,
+    current_user: current_user
+  ) %>
+<% end %>
+
+<%# Nếu đang ở trang show — update bookmark button trên top bar %>
+<%= turbo_stream.replace dom_id(@listing, :show_bookmark) do %>
+  <%= turbo_frame_tag dom_id(@listing, :show_bookmark) do %>
+    <%= button_to listing_bookmark_path(@listing), method: :post,
+          data: { turbo_stream: true },
+          class: "p-2 rounded-full hover:bg-surface-container-low text-on-surface-variant" do %>
+      <%= inline_svg "bookmark_outline", css_class: "w-5 h-5" %>
+    <% end %>
+  <% end %>
+<% end %>

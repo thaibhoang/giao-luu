@@ -64,7 +64,12 @@
 
     <section class="grid grid-cols-2 gap-4">
       <% @listings.first(20).each do |listing| %>
-        <%= render Ui::ListingCardComponent.new(listing: listing, compact: true) %>
+        <%= render Ui::ListingCardComponent.new(
+          listing: listing,
+          compact: true,
+          bookmarked: @bookmarked_listing_ids&.include?(listing.id) || false,
+          current_user: current_user
+        ) %>
       <% end %>
     </section>
 
@@ -76,5 +81,6 @@
   { path: listings_path, icon: "explore", label: "Explore", active: true },
   { path: map_path, icon: "map", label: "Map", active: false },
   { path: my_listings_path, icon: "assignment", label: "Tin của tôi", active: false },
+  *(authenticated? ? [{ path: my_bookmarks_path, icon: "bookmark", label: "Đã lưu", active: false }] : []),
   { path: authenticated? ? profile_path : new_session_path, icon: "person", label: "Profile", active: false }
 ]) %>

@@ -63,6 +63,7 @@ class Listing < ApplicationRecord
 
   belongs_to :user, optional: true
   has_many :registrations, dependent: :destroy
+  has_many :bookmarks, dependent: :destroy
   has_one  :court_pass_detail, dependent: :destroy
   has_one  :tournament_detail, dependent: :destroy
 

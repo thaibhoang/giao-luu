@@ -10,6 +10,23 @@
 
 <%= render Ui::TopAppBarComponent.new(title: "Match details", back_href: map_path) do |bar| %>
   <% bar.with_trailing do %>
+    <% if authenticated? %>
+      <%= turbo_frame_tag dom_id(@listing, :show_bookmark) do %>
+        <% if @bookmarked %>
+          <%= button_to listing_bookmark_path(@listing), method: :delete,
+                data: { turbo_stream: true, turbo_frame: "_top" },
+                class: "p-2 rounded-full hover:bg-amber-50 text-amber-500" do %>
+            <%= render Ui::IconComponent.new(name: "bookmark") %>
+          <% end %>
+        <% else %>
+          <%= button_to listing_bookmark_path(@listing), method: :post,
+                data: { turbo_stream: true, turbo_frame: "_top" },
+                class: "p-2 rounded-full hover:bg-surface-container-low text-on-surface-variant" do %>
+            <%= render Ui::IconComponent.new(name: "bookmark_border") %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
     <button type="button" class="p-2 rounded-full hover:bg-surface-container-low">
       <%= render Ui::IconComponent.new(name: "share") %>
     </button>

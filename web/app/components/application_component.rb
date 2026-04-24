@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class ApplicationComponent < ViewComponent::Base
+  include Turbo::FramesHelper
+
   private
 
   # Rails no longer exposes sanitize_to_id publicly via helpers.

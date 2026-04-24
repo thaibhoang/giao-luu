@@ -17,6 +17,7 @@ class ListingsController < ApplicationController
              .order(start_at: :asc),
       items: 20
     )
+    @bookmarked_listing_ids = current_user_bookmark_ids(@listings)
   end
 
   def map
@@ -24,6 +25,7 @@ class ListingsController < ApplicationController
     @map_center_lat = parse_coordinate(params[:lat], default: 10.8231, range: -90.0..90.0)
     @map_center_lng = parse_coordinate(params[:lng], default: 106.6297, range: -180.0..180.0)
     @map_focus_listing_id = params[:listing_id]
+    @bookmarked_listing_ids = current_user_bookmark_ids(@listings)
   end
 
   def show
@@ -32,6 +34,8 @@ class ListingsController < ApplicationController
       Arel.sql("ST_Y(geom::geometry)"),
       Arel.sql("ST_X(geom::geometry)")
     )
+    @bookmarked = authenticated? &&
+                  Current.session.user.bookmarks.exists?(listing: @listing)
   end
 
   def my
