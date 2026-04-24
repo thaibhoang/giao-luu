@@ -42,6 +42,7 @@ end
     Listing.insert_with_point!(
      {
        sport: "pickleball",
+       listing_type: "match_finding",
        title: "Seed: Pickleball Sân #{i + 1}",
        body: "Bản ghi thử từ db:seed cho sân #{i + 1}",
        location_name: "Sân #{i + 1} (seed)",
@@ -68,6 +69,7 @@ end
      Listing.insert_with_point!(
        {
          sport: "badminton",
+         listing_type: "match_finding",
          title: "Seed: Badminton Sân #{i + 1}",
          body: "Bản ghi thử từ db:seed cho sân cầu lông #{i + 1}",
          location_name: "Sân cầu lông #{i + 1} (seed)",

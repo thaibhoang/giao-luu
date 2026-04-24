@@ -40,8 +40,7 @@ services:
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/giao_luu_development
       RAILS_INTERNAL_URL: http://web:80
       GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY:-}
-      # Tuỳ chọn: export RAILS_MASTER_KEY trước khi up, hoặc thêm vào web/.env (compose không đọc web/.env trừ khi khai báo env_file)
-      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY:-}
+      # RAILS_MASTER_KEY is read from web/.env (env_file above). Set it there or export on host.
       SCRAPER_HMAC_SECRET: ${SCRAPER_HMAC_SECRET:-dev-secret}
 
   # scraper:
