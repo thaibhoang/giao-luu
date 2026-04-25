@@ -106,7 +106,9 @@
         <label>
           <span class="block text-[11px] text-on-surface-variant mb-1">Tối thiểu</span>
           <select id="drawer-skill-min" data-browse-map-target="skillMin"
-            class="w-full h-10 rounded-xl border border-outline-variant/30 bg-surface-container-low px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors appearance-none">
+            class="w-full h-10 rounded-xl border border-outline-variant/30 bg-surface-container-low px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors appearance-none"
+            data-badminton-options="<%= Listing::SKILL_LEVELS.map { |s| [Listing::SKILL_LEVEL_LABELS[s], s] }.to_json %>"
+            data-pickleball-options="<%= Listing::SKILL_LEVELS_PK.map { |s| [Listing::SKILL_LEVEL_PK_LABELS[s], s] }.to_json %>">
             <option value="yeu">Yếu</option>
             <option value="trung_binh_yeu">Trung bình yếu</option>
             <option value="trung_binh_minus">Trung bình -</option>
@@ -122,7 +124,9 @@
         <label>
           <span class="block text-[11px] text-on-surface-variant mb-1">Tối đa</span>
           <select id="drawer-skill-max" data-browse-map-target="skillMax"
-            class="w-full h-10 rounded-xl border border-outline-variant/30 bg-surface-container-low px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors appearance-none">
+            class="w-full h-10 rounded-xl border border-outline-variant/30 bg-surface-container-low px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors appearance-none"
+            data-badminton-options="<%= Listing::SKILL_LEVELS.map { |s| [Listing::SKILL_LEVEL_LABELS[s], s] }.to_json %>"
+            data-pickleball-options="<%= Listing::SKILL_LEVELS_PK.map { |s| [Listing::SKILL_LEVEL_PK_LABELS[s], s] }.to_json %>">
             <option value="yeu">Yếu</option>
             <option value="trung_binh_yeu">Trung bình yếu</option>
             <option value="trung_binh_minus">Trung bình -</option>

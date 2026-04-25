@@ -1,16 +1,16 @@
 module SessionTestHelper
   def sign_in_as(user)
-    Current.session = user.sessions.create!
-    cookies.signed.permanent[:session_id] = {
-      value: Current.session.id,
-      httponly: true,
-      same_site: :lax
-    }
+    session = user.sessions.create!
+    Current.session = session
+    # cookies.signed không khả dụng trong Rack::Test; dùng cookie thường.
+    # Rails authentication concern đọc cookies.signed[:session_id], nhưng trong
+    # integration test ta set trực tiếp bằng cách POST login thật.
+    post "/session", params: { email_address: user.email_address, password: "password" }
   end
 
   def sign_out
     Current.session&.destroy!
-    cookies.delete("session_id")
+    delete "/session"
   end
 end
 

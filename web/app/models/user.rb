@@ -5,7 +5,7 @@ class User < ApplicationRecord
 
   GENDERS = %w[male female other prefer_not_to_say].freeze
   SKILL_LEVELS_BADMINTON = %w[beginner intermediate advanced competitive].freeze
-  SKILL_LEVELS_PICKLEBALL = %w[2.0-2.5 2.5-3.0 3.0-3.5 3.5-4.0 4.0-4.5 4.5-5.0 5.0+].freeze
+  SKILL_LEVELS_PICKLEBALL = %w[dupr_2_0 dupr_2_5 dupr_3_0 dupr_3_5 dupr_4_0 dupr_4_5 dupr_5_0].freeze
 
   has_secure_password
   has_many :sessions, dependent: :destroy

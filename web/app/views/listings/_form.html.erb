@@ -1,5 +1,6 @@
 <%= form_with model: listing, url: url, method: method, class: "space-y-8",
-             data: { controller: "listing-type" } do |f| %>
+             data: { controller: "listing-type listing-skill",
+                     listing_skill_sport_value: listing.sport.presence || "badminton" } do |f| %>
   <%= render Ui::FormErrorSummaryComponent.new(record: listing, title: "Không thể lưu tin") %>
 
   <%# ── Chọn loại tin ──────────────────────────────────── %>
@@ -26,7 +27,8 @@
 
   <section class="space-y-4">
     <%= render Ui::FieldLabelComponent.new("Chọn môn") %>
-    <%= render Ui::SportSegmentedControlComponent.new(name: "listing[sport]", value: listing.sport) %>
+    <%= render Ui::SportSegmentedControlComponent.new(name: "listing[sport]", value: listing.sport,
+          data: { action: "change->listing-skill#onSportChange change->listing-type#onChange" }) %>
   </section>
 
   <section class="space-y-4">
@@ -79,11 +81,25 @@
     </div>
     <div class="space-y-2">
       <%= render Ui::FieldLabelComponent.new("Trình độ từ", for_id: "listing_skill_level_min") %>
-      <%= render Ui::SelectFieldComponent.new(form: f, attribute: :skill_level_min, choices: Listing::SKILL_LEVELS.map { |s| [Listing.skill_label_for(s), s] }) %>
+      <%# Badminton — ẩn/hiện theo sport %>
+      <div data-listing-skill-target="badmintonSkill">
+        <%= render Ui::SelectFieldComponent.new(form: f, attribute: :skill_level_min, choices: Listing::SKILL_LEVELS.map { |s| [Listing.skill_label_for(s), s] }) %>
+      </div>
+      <%# Pickleball — ẩn/hiện theo sport %>
+      <div data-listing-skill-target="pickleballSkill" class="<%= listing.sport == 'pickleball' ? '' : 'hidden' %>">
+        <%= render Ui::SelectFieldComponent.new(form: f, attribute: :skill_level_min_pk,
+              choices: Listing::SKILL_LEVELS_PK.map { |s| [Listing::SKILL_LEVEL_PK_LABELS[s], s] }) %>
+      </div>
     </div>
     <div class="space-y-2">
       <%= render Ui::FieldLabelComponent.new("Đến", for_id: "listing_skill_level_max") %>
-      <%= render Ui::SelectFieldComponent.new(form: f, attribute: :skill_level_max, choices: Listing::SKILL_LEVELS.map { |s| [Listing.skill_label_for(s), s] }) %>
+      <div data-listing-skill-target="badmintonSkill">
+        <%= render Ui::SelectFieldComponent.new(form: f, attribute: :skill_level_max, choices: Listing::SKILL_LEVELS.map { |s| [Listing.skill_label_for(s), s] }) %>
+      </div>
+      <div data-listing-skill-target="pickleballSkill" class="<%= listing.sport == 'pickleball' ? '' : 'hidden' %>">
+        <%= render Ui::SelectFieldComponent.new(form: f, attribute: :skill_level_max_pk,
+              choices: Listing::SKILL_LEVELS_PK.map { |s| [Listing::SKILL_LEVEL_PK_LABELS[s], s] }) %>
+      </div>
     </div>
     <div class="space-y-2">
       <%= render Ui::FieldLabelComponent.new("Phí (VND)", for_id: "listing_price_estimate", optional_badge: true) %>

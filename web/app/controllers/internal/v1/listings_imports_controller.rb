@@ -33,6 +33,7 @@ module Internal
 
         listing_attrs = {
           sport: extracted["sport"],
+          listing_type: "match_finding",
           title: extracted["title"].presence || extracted["location_name"].to_s,
           body: extracted["body"].presence || payload["raw_text"],
           location_name: extracted["location_name"],

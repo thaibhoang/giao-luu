@@ -98,7 +98,8 @@ class ListingsController < ApplicationController
       created = Listing.insert_with_point!(
         @listing.attributes.symbolize_keys.slice(
           :sport, :listing_type, :title, :body, :location_name, :start_at, :end_at,
-          :slots_needed, :skill_level_min, :skill_level_max, :price_estimate, :contact_info,
+          :slots_needed, :skill_level_min, :skill_level_max, :skill_level_min_pk, :skill_level_max_pk,
+          :price_estimate, :contact_info,
           :source, :source_url, :schema_version, :user_id, :gender_requirement, :play_format
         ),
         longitude: lng,
@@ -142,9 +143,10 @@ class ListingsController < ApplicationController
     if @listing.valid?
       Listing.update_with_point!(
         id: @listing.id,
-        attributes: attrs.symbolize_keys.slice(
+        attributes: attrs.to_h.symbolize_keys.slice(
           :sport, :listing_type, :title, :body, :location_name, :start_at, :end_at,
-          :slots_needed, :skill_level_min, :skill_level_max, :price_estimate, :contact_info,
+          :slots_needed, :skill_level_min, :skill_level_max, :skill_level_min_pk, :skill_level_max_pk,
+          :price_estimate, :contact_info,
           :source, :source_url, :schema_version, :user_id, :gender_requirement, :play_format
         ),
         longitude: lng,
@@ -163,7 +165,8 @@ class ListingsController < ApplicationController
   def listing_params
     params.require(:listing).permit(
       :listing_type, :sport, :title, :body, :location_name, :lat, :lng, :start_at, :end_at,
-      :slots_needed, :skill_level_min, :skill_level_max, :price_estimate, :contact_info,
+      :slots_needed, :skill_level_min, :skill_level_max, :skill_level_min_pk, :skill_level_max_pk,
+      :price_estimate, :contact_info,
       :gender_requirement, :play_format,
       court_pass_detail_attributes: %i[id court_name original_price pass_price booking_proof],
       tournament_detail_attributes: %i[id tournament_name organizer registration_deadline format prize_info registration_link]

@@ -8,6 +8,7 @@ class ApiV1ListingsControllerTest < ActionDispatch::IntegrationTest
     Listing.insert_with_point!(
       {
         sport: "badminton",
+        listing_type: "match_finding",
         title: "API map listing",
         body: "map",
         location_name: "Q1",

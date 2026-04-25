@@ -3,6 +3,7 @@
 class Listing < ApplicationRecord
   SPORTS = %w[badminton pickleball].freeze
 
+  # ── Cầu lông — thang điểm nội bộ ────────────────────────
   # Slug lưu DB / API / LLM; nhãn hiển thị — SKILL_LEVEL_LABELS
   SKILL_LEVELS = %w[
     yeu
@@ -30,6 +31,28 @@ class Listing < ApplicationRecord
     "chuyen_nghiep" => "Chuyên nghiệp"
   }.freeze
   SKILL_LEVEL_INDEX = SKILL_LEVELS.each_with_index.to_h.freeze
+
+  # ── Pickleball — thang DUPR ───────────────────────────
+  SKILL_LEVELS_PK = %w[
+    dupr_2_0
+    dupr_2_5
+    dupr_3_0
+    dupr_3_5
+    dupr_4_0
+    dupr_4_5
+    dupr_5_0
+  ].freeze
+
+  SKILL_LEVEL_PK_LABELS = {
+    "dupr_2_0" => "2.0–2.5 · Mới bắt đầu",
+    "dupr_2_5" => "2.5–3.0 · Cơ bản",
+    "dupr_3_0" => "3.0–3.5 · Trung cấp thấp",
+    "dupr_3_5" => "3.5–4.0 · Trung cấp",
+    "dupr_4_0" => "4.0–4.5 · Trung cấp cao",
+    "dupr_4_5" => "4.5–5.0 · Nâng cao",
+    "dupr_5_0" => "5.0+ · Chuyên nghiệp"
+  }.freeze
+  SKILL_LEVEL_PK_INDEX = SKILL_LEVELS_PK.each_with_index.to_h.freeze
 
   SOURCE_USER_SUBMITTED = "user_submitted"
   SOURCE_FACEBOOK_SCRAPE = "facebook_scrape"
@@ -71,7 +94,8 @@ class Listing < ApplicationRecord
   accepts_nested_attributes_for :tournament_detail, update_only: true, reject_if: :all_blank
 
   validates :sport, inclusion: { in: SPORTS }
-  validates :skill_level_min, :skill_level_max, inclusion: { in: SKILL_LEVELS }, unless: :court_pass?
+  validates :skill_level_min, :skill_level_max, inclusion: { in: SKILL_LEVELS }, unless: -> { court_pass? || pickleball? }
+  validates :skill_level_min_pk, :skill_level_max_pk, inclusion: { in: SKILL_LEVELS_PK }, unless: -> { court_pass? || !pickleball? }, allow_nil: true
   validates :title, :location_name, :contact_info, :source, presence: true
   validates :listing_type, inclusion: { in: LISTING_TYPES }
   validates :gender_requirement, inclusion: { in: GENDER_REQUIREMENTS }, allow_nil: true
@@ -87,6 +111,7 @@ class Listing < ApplicationRecord
   def match_finding? = listing_type == "match_finding"
   def court_pass?    = listing_type == "court_pass"
   def tournament?    = listing_type == "tournament"
+  def pickleball?    = sport == "pickleball"
 
   def listing_type_label
     LISTING_TYPE_LABELS.fetch(listing_type, listing_type)
@@ -124,20 +149,43 @@ class Listing < ApplicationRecord
     return all if slug.blank? || !SKILL_LEVEL_INDEX.key?(slug)
     where(skill_level_min: SKILL_LEVELS[0..SKILL_LEVEL_INDEX[slug]])
   }
+  # Pickleball DUPR — tương tự nhưng dùng cột skill_level_min/max_pk
+  scope :skill_min_filter_pk, ->(slug) {
+    return all if slug.blank? || !SKILL_LEVEL_PK_INDEX.key?(slug)
+    where(skill_level_max_pk: SKILL_LEVELS_PK[SKILL_LEVEL_PK_INDEX[slug]..])
+  }
+  scope :skill_max_filter_pk, ->(slug) {
+    return all if slug.blank? || !SKILL_LEVEL_PK_INDEX.key?(slug)
+    where(skill_level_min_pk: SKILL_LEVELS_PK[0..SKILL_LEVEL_PK_INDEX[slug]])
+  }
 
   def self.skill_label_for(slug)
-    SKILL_LEVEL_LABELS.fetch(slug, slug)
+    SKILL_LEVEL_LABELS.fetch(slug, SKILL_LEVEL_PK_LABELS.fetch(slug, slug))
   end
 
-  def self.skill_range_label_for(min_slug, max_slug)
-    return "" if min_slug.blank? || max_slug.blank?
-    return skill_label_for(min_slug) if min_slug == max_slug
+  def self.skill_label_for_sport(slug, sport)
+    if sport == "pickleball"
+      SKILL_LEVEL_PK_LABELS.fetch(slug, slug)
+    else
+      SKILL_LEVEL_LABELS.fetch(slug, slug)
+    end
+  end
 
-    "#{skill_label_for(min_slug)} - #{skill_label_for(max_slug)}"
+  def self.skill_range_label_for(min_slug, max_slug, sport = "badminton")
+    return "" if min_slug.blank? || max_slug.blank?
+    min_label = skill_label_for_sport(min_slug, sport)
+    max_label = skill_label_for_sport(max_slug, sport)
+    return min_label if min_slug == max_slug
+
+    "#{min_label} - #{max_label}"
   end
 
   def skill_range_label
-    self.class.skill_range_label_for(skill_level_min, skill_level_max)
+    if pickleball?
+      self.class.skill_range_label_for(skill_level_min_pk, skill_level_max_pk, "pickleball")
+    else
+      self.class.skill_range_label_for(skill_level_min, skill_level_max, "badminton")
+    end
   end
 
   def self.within_radius(lat:, lng:, radius_meters:)
@@ -152,6 +200,7 @@ class Listing < ApplicationRecord
   end
 
   def self.map_rows_for(sport: nil, listing_type: nil, from: nil, to: nil, q: nil, skill_min: nil, skill_max: nil, lat: nil, lng: nil, radius_meters: nil, gender: nil, play_format: nil)
+    is_pickleball = sport == "pickleball"
     rel = with_geom
             .where(active: true)
             .by_sport(sport)
@@ -159,13 +208,18 @@ class Listing < ApplicationRecord
             .from_time(from || Time.current)
             .to_time(to)
             .by_keyword(q)
-            .skill_min_filter(skill_min)
-            .skill_max_filter(skill_max)
             .by_gender(gender)
             .by_play_format(play_format)
+    rel = if is_pickleball
+            rel.skill_min_filter_pk(skill_min).skill_max_filter_pk(skill_max)
+          else
+            rel.skill_min_filter(skill_min).skill_max_filter(skill_max)
+          end
     rel = rel.within_radius(lat:, lng:, radius_meters:) if lat && lng && radius_meters
     rel.select(
-      "id, sport, listing_type, title, location_name, start_at, end_at, skill_level_min, skill_level_max, price_estimate, source, gender_requirement, play_format, "\
+      "id, sport, listing_type, title, location_name, start_at, end_at, " \
+      "skill_level_min, skill_level_max, skill_level_min_pk, skill_level_max_pk, " \
+      "price_estimate, source, gender_requirement, play_format, " \
       "ST_Y(geom::geometry) AS lat, ST_X(geom::geometry) AS lng"
     )
   end
@@ -174,6 +228,7 @@ class Listing < ApplicationRecord
   def self.insert_with_point!(attributes, longitude:, latitude:)
     cols = %i[
       sport listing_type title body location_name start_at end_at slots_needed skill_level_min skill_level_max
+      skill_level_min_pk skill_level_max_pk
       price_estimate contact_info source source_url schema_version user_id gender_requirement play_format
       active created_at updated_at
     ]
@@ -194,6 +249,7 @@ class Listing < ApplicationRecord
   def self.update_with_point!(id:, attributes:, longitude:, latitude:)
     cols = %i[
       sport listing_type title body location_name start_at end_at slots_needed skill_level_min skill_level_max
+      skill_level_min_pk skill_level_max_pk
       price_estimate contact_info source source_url schema_version user_id gender_requirement play_format
       active updated_at
     ]
@@ -226,14 +282,26 @@ class Listing < ApplicationRecord
 
   def skill_level_range_order
     return if court_pass?
-    return if skill_level_min.blank? || skill_level_max.blank?
 
-    min_index = SKILL_LEVEL_INDEX[skill_level_min]
-    max_index = SKILL_LEVEL_INDEX[skill_level_max]
-    return if min_index.nil? || max_index.nil?
-    return if min_index <= max_index
+    if pickleball?
+      return if skill_level_min_pk.blank? || skill_level_max_pk.blank?
 
-    errors.add(:skill_level_max, "phải lớn hơn hoặc bằng mức bắt đầu")
+      min_index = SKILL_LEVEL_PK_INDEX[skill_level_min_pk]
+      max_index = SKILL_LEVEL_PK_INDEX[skill_level_max_pk]
+      return if min_index.nil? || max_index.nil?
+      return if min_index <= max_index
+
+      errors.add(:skill_level_max_pk, "phải lớn hơn hoặc bằng mức bắt đầu")
+    else
+      return if skill_level_min.blank? || skill_level_max.blank?
+
+      min_index = SKILL_LEVEL_INDEX[skill_level_min]
+      max_index = SKILL_LEVEL_INDEX[skill_level_max]
+      return if min_index.nil? || max_index.nil?
+      return if min_index <= max_index
+
+      errors.add(:skill_level_max, "phải lớn hơn hoặc bằng mức bắt đầu")
+    end
   end
 
   def detail_record_present

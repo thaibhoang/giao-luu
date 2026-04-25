@@ -43,6 +43,7 @@ class ListingsControllerTest < ActionDispatch::IntegrationTest
     listing = Listing.insert_with_point!(
       {
         sport: "badminton",
+        listing_type: "match_finding",
         title: "Tin cu",
         body: "body",
         location_name: "Q1",
@@ -85,6 +86,7 @@ class ListingsControllerTest < ActionDispatch::IntegrationTest
     listing = Listing.insert_with_point!(
       {
         sport: "badminton",
+        listing_type: "match_finding",
         title: "Tin update quota",
         body: "body",
         location_name: "Q3",

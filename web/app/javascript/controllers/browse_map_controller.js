@@ -180,8 +180,10 @@ export default class extends Controller {
 
     const skillMin = this.skillMinTarget.value
     const skillMax = this.skillMaxTarget.value
-    if (skillMin && skillMin !== "yeu")           params.set("skill_min", skillMin)
-    if (skillMax && skillMax !== "chuyen_nghiep") params.set("skill_max", skillMax)
+    const skillMinOptions = Array.from(this.skillMinTarget.options).map(o => o.value)
+    const skillMaxOptions = Array.from(this.skillMaxTarget.options).map(o => o.value)
+    if (skillMin && skillMin !== skillMinOptions[0])                      params.set("skill_min", skillMin)
+    if (skillMax && skillMax !== skillMaxOptions[skillMaxOptions.length - 1]) params.set("skill_max", skillMax)
 
     if (this.#filterLat !== null && this.#filterLng !== null) {
       params.set("lat",       this.#filterLat.toFixed(6))
@@ -278,6 +280,30 @@ export default class extends Controller {
       btn.classList.toggle("bg-white",               !isActive)
       btn.classList.toggle("text-on-surface",        !isActive)
       btn.classList.toggle("border-outline-variant/40", !isActive)
+    })
+    this.#rebuildSkillOptions(value)
+  }
+
+  #rebuildSkillOptions(sport) {
+    const isPickleball = sport === "pickleball"
+    ;[this.skillMinTarget, this.skillMaxTarget].forEach((select, idx) => {
+      const key = isPickleball ? "pickleballOptions" : "badmintonOptions"
+      const options = JSON.parse(select.dataset[key] ?? "[]")
+      const prevValue = select.value
+      select.innerHTML = ""
+      options.forEach(([label, value]) => {
+        const opt = document.createElement("option")
+        opt.value = value
+        opt.textContent = label
+        select.appendChild(opt)
+      })
+      // Restore value nếu vẫn hợp lệ, nếu không thì chọn đầu/cuối mặc định
+      const values = options.map(([, v]) => v)
+      if (values.includes(prevValue)) {
+        select.value = prevValue
+      } else {
+        select.value = idx === 0 ? values[0] : values[values.length - 1]
+      }
     })
   }
 

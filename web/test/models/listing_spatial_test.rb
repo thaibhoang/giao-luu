@@ -21,6 +21,7 @@ class ListingSpatialTest < ActiveSupport::TestCase
     Listing.insert_with_point!(
       {
         sport: "badminton",
+        listing_type: "match_finding",
         title: "Spatial test listing",
         body: nil,
         location_name: "Gần trung tâm HCM",

@@ -41,6 +41,8 @@ module Api
               end_at: l.end_at&.iso8601,
               skill_level_min: l.skill_level_min,
               skill_level_max: l.skill_level_max,
+              skill_level_min_pk: l.skill_level_min_pk,
+              skill_level_max_pk: l.skill_level_max_pk,
               price_estimate: l.price_estimate,
               source: l.source,
               gender_requirement: l.gender_requirement,
@@ -59,7 +61,8 @@ module Api
         listing = Listing.find(params[:id])
         render json: listing.as_json(only: %i[
                                        id sport listing_type title body location_name start_at end_at slots_needed
-                                       skill_level_min skill_level_max price_estimate contact_info source source_url schema_version
+                                       skill_level_min skill_level_max skill_level_min_pk skill_level_max_pk
+                                       price_estimate contact_info source source_url schema_version
                                      ])
       end
 
@@ -74,8 +77,8 @@ module Api
           created = Listing.insert_with_point!(
             listing.attributes.symbolize_keys.slice(
               :sport, :listing_type, :title, :body, :location_name, :start_at, :end_at,
-              :slots_needed, :skill_level_min, :skill_level_max, :price_estimate, :contact_info,
-              :source, :source_url, :schema_version, :user_id
+              :slots_needed, :skill_level_min, :skill_level_max, :skill_level_min_pk, :skill_level_max_pk,
+              :price_estimate, :contact_info, :source, :source_url, :schema_version, :user_id
             ),
             longitude: listing_create_params[:lng].to_f,
             latitude: listing_create_params[:lat].to_f
@@ -93,7 +96,8 @@ module Api
       def listing_create_params
         params.require(:listing).permit(
           :listing_type, :sport, :title, :body, :location_name, :lat, :lng, :start_at, :end_at,
-          :slots_needed, :skill_level_min, :skill_level_max, :price_estimate, :contact_info
+          :slots_needed, :skill_level_min, :skill_level_max, :skill_level_min_pk, :skill_level_max_pk,
+          :price_estimate, :contact_info
         )
       end
 
