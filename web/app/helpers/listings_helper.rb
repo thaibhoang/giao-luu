@@ -6,6 +6,33 @@ module ListingsHelper
     "pickleball"  => "Pickleball"
   }.freeze
 
+  SPORT_OG_IMAGES = {
+    "badminton"  => "badminton.svg",
+    "pickleball" => "pickleball.svg"
+  }.freeze
+
+  # Tạo chuỗi meta description động từ title + location_name + start_at.
+  #
+  # Ví dụ: "Tìm người chơi cầu lông · Nhà thi đấu Phan Đình Phùng · 07:00, 01/05/2026"
+  #
+  # @param listing [Listing]
+  # @return [String]
+  def listing_meta_description(listing)
+    tz       = "Asia/Ho_Chi_Minh"
+    time_str = listing.start_at.in_time_zone(tz).strftime("%H:%M, %d/%m/%Y")
+    "#{listing.title} · #{listing.location_name} · #{time_str}"
+  end
+
+  # Trả về absolute URL của ảnh OG theo môn thể thao.
+  # Fallback về badminton.svg nếu sport không khớp.
+  #
+  # @param listing [Listing]
+  # @return [String] absolute URL
+  def listing_og_image_url(listing)
+    filename = SPORT_OG_IMAGES.fetch(listing.sport, "badminton.svg")
+    asset_url(filename)
+  end
+
   # Tạo thẻ <script type="application/ld+json"> với dữ liệu Schema.org SportsEvent
   # cho trang chi tiết listing.
   #

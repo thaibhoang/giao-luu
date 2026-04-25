@@ -145,4 +145,45 @@ class ListingsHelperTest < ActionView::TestCase
     data = extract_json_ld(structured_data_tag(listing))
     assert_nil data["organizer"]
   end
+
+  # --- listing_meta_description ---
+
+  test "listing_meta_description returns title · location_name · formatted start_at" do
+    listing = build_listing(
+      title:         "Tìm người chơi cầu lông",
+      location_name: "Nhà thi đấu Phan Đình Phùng",
+      start_at:      Time.utc(2026, 5, 1, 0, 0, 0) # 00:00 UTC = 07:00 Asia/Ho_Chi_Minh
+    )
+    desc = listing_meta_description(listing)
+    assert_equal "Tìm người chơi cầu lông · Nhà thi đấu Phan Đình Phùng · 07:00, 01/05/2026", desc
+  end
+
+  test "listing_meta_description uses Asia/Ho_Chi_Minh timezone" do
+    # 2026-05-01 00:00 UTC = 07:00 ICT (+7)
+    listing = build_listing(start_at: Time.utc(2026, 5, 1, 0, 0, 0))
+    desc = listing_meta_description(listing)
+    assert_includes desc, "07:00, 01/05/2026"
+  end
+
+  # --- listing_og_image_url ---
+
+  test "listing_og_image_url returns absolute URL with badminton.svg for badminton" do
+    listing = build_listing(sport: "badminton")
+    url = listing_og_image_url(listing)
+    assert_match %r{badminton\.svg}, url
+    assert_match %r{\Ahttps?://}, url
+  end
+
+  test "listing_og_image_url returns absolute URL with pickleball.svg for pickleball" do
+    listing = build_listing(sport: "pickleball")
+    url = listing_og_image_url(listing)
+    assert_match %r{pickleball\.svg}, url
+    assert_match %r{\Ahttps?://}, url
+  end
+
+  test "listing_og_image_url falls back to badminton.svg for unknown sport" do
+    listing = build_listing(sport: "tennis")
+    url = listing_og_image_url(listing)
+    assert_match %r{badminton\.svg}, url
+  end
 end
