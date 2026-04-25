@@ -50,6 +50,40 @@
   - `SCRAPER_HMAC_SECRET=<same-as-web>`
 - Chạy `scraper`; service sẽ tạo payload mẫu và gửi về endpoint internal.
 
+## Chạy test (trong Docker)
+
+> **Quan trọng**: toàn bộ test phải chạy qua `docker compose exec web` — không chạy `bin/rails test` trực tiếp trên host vì host không có kết nối PostgreSQL/PostGIS.
+
+### Cú pháp cơ bản
+
+```bash
+# Chạy toàn bộ test suite
+docker compose exec web bin/rails test
+
+# Chạy một file test cụ thể
+docker compose exec web bin/rails test test/helpers/listings_helper_test.rb
+
+# Chạy một test case cụ thể (theo dòng)
+docker compose exec web bin/rails test test/helpers/listings_helper_test.rb:49
+```
+
+### Lần đầu chạy test (setup DB test)
+
+Nếu gặp lỗi `ActiveRecord::EnvironmentMismatchError` (DB đang ở `development`, Rails muốn dùng `test`), chạy 1 lần:
+
+```bash
+docker compose exec -e RAILS_ENV=test web bin/rails db:environment:set
+```
+
+Sau đó chạy test bình thường.
+
+### Warning không cần xử lý
+
+- `unknown OID 35337: failed to recognize type of 'geom'` — PostGIS geography type, bình thường theo ADR-004 (không dùng RGeo adapter).
+- `warning: ::Ruby is reserved for Ruby 3.5` — từ gem `ruby-openai`, không ảnh hưởng.
+
+---
+
 ## Troubleshooting nhanh
 
 - Lỗi PostGIS khi test/migrate:

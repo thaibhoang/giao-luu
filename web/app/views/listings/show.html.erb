@@ -6,6 +6,7 @@
   <meta property="og:description" content="<%= @listing.body.to_s.truncate(140) %>">
   <meta property="og:type" content="article">
   <meta property="og:url" content="<%= listing_url(@listing) %>">
+  <%= structured_data_tag(@listing, lat: @listing_lat, lng: @listing_lng, url: listing_url(@listing)) %>
 <% end %>
 
 <%= render Ui::TopAppBarComponent.new(title: "Match details", back_href: map_path) do |bar| %>
