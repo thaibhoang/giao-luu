@@ -47,6 +47,16 @@ Rails.application.routes.draw do
 
   get "sitemap.xml", to: "sitemap#index", as: :sitemap, defaults: { format: :xml }
 
+  # SEO location landing pages — đặt cuối để không shadow các route khác.
+  # Ví dụ: /cau-long/ho-chi-minh, /pickleball/ha-noi
+  get ":sport/:city_slug",
+      to: "location_landing#show",
+      as: :location_landing,
+      constraints: {
+        sport: /cau-long|pickleball/,
+        city_slug: /[a-z0-9\-]+/
+      }
+
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check

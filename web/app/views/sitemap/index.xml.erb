@@ -13,4 +13,12 @@
     <priority>0.8</priority>
   </url>
   <% end %>
+  <%# Trang landing địa điểm SEO long-tail %>
+  <% @landing_combinations.each do |sport_slug, city_slug| %>
+  <url>
+    <loc><%= location_landing_url(sport_slug, city_slug) %></loc>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <% end %>
 </urlset>

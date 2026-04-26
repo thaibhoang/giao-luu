@@ -1,0 +1,110 @@
+<%# ── Meta tags & canonical ──────────────────────────────────────────── %>
+<% page_title = location_landing_og_title(@sport_label, @city) %>
+<% meta_desc  = location_landing_meta_description(@sport_label, @city, @listings.size) %>
+
+<% content_for :title, page_title %>
+<% content_for :head do %>
+  <link rel="canonical" href="<%= @canonical_url %>">
+  <meta name="description" content="<%= meta_desc %>">
+
+  <meta property="og:type"        content="website">
+  <meta property="og:site_name"   content="SportMatch">
+  <meta property="og:title"       content="<%= page_title %>">
+  <meta property="og:description" content="<%= meta_desc %>">
+  <meta property="og:url"         content="<%= @canonical_url %>">
+  <meta property="og:locale"      content="vi_VN">
+
+  <meta name="twitter:card"        content="summary">
+  <meta name="twitter:title"       content="<%= page_title %>">
+  <meta name="twitter:description" content="<%= meta_desc %>">
+<% end %>
+
+<%# ── Top bar ─────────────────────────────────────────────────────────── %>
+<%= render Ui::TopAppBarComponent.new(title: "#{@sport_label} · #{@city[:name]}", back_href: listings_path) %>
+
+<%= render Ui::PageShellComponent.new(padding_top: "pt-24", padding_bottom: "pb-28", max_width: "max-w-3xl", horizontal_padding: "px-5") do %>
+
+  <%# ── Breadcrumb ──────────────────────────────────────────────────── %>
+  <nav aria-label="Breadcrumb" class="mb-6">
+    <ol class="flex items-center gap-1.5 text-xs text-on-surface-variant flex-wrap">
+      <li><%= link_to "Trang chủ", root_path, class: "hover:text-primary transition-colors" %></li>
+      <li aria-hidden="true" class="select-none">/</li>
+      <li><%= link_to @sport_label, listings_path(sport: @sport_db), class: "hover:text-primary transition-colors" %></li>
+      <li aria-hidden="true" class="select-none">/</li>
+      <li class="font-medium text-on-surface" aria-current="page"><%= @city[:name] %></li>
+    </ol>
+  </nav>
+
+  <%# ── Hero heading ────────────────────────────────────────────────── %>
+  <section class="mb-8 space-y-3">
+    <div class="inline-flex items-center gap-2 bg-primary-container/5 px-3 py-1 rounded-full">
+      <span class="w-2 h-2 rounded-full bg-primary"></span>
+      <span class="text-[10px] font-bold tracking-widest uppercase text-on-surface-variant"><%= @sport_label %></span>
+    </div>
+
+    <h1 class="font-headline text-3xl lg:text-4xl font-black leading-tight tracking-tight text-primary">
+      Giao lưu <%= @sport_label %> tại <%= @city[:name] %>
+    </h1>
+    <div class="h-1 w-12 bg-primary"></div>
+
+    <%# ── Mô tả khu vực (content tĩnh cho SEO) ─────────────────────── %>
+    <p class="text-on-surface-variant leading-relaxed">
+      <%= @city[:description] %>
+    </p>
+  </section>
+
+  <%# ── Tips chơi (tránh thin content) ────────────────────────────── %>
+  <section class="mb-10 bg-surface-container-low rounded-xl p-5 space-y-3">
+    <h2 class="font-semibold text-sm text-on-surface-variant uppercase tracking-wide">
+      Mẹo cho người chơi <%= @sport_label %> tại <%= @city[:name] %>
+    </h2>
+    <ul class="space-y-2">
+      <% @city[:tips].each do |tip| %>
+        <li class="flex items-start gap-2 text-sm text-on-surface">
+          <span class="mt-0.5 w-1.5 h-1.5 rounded-full bg-primary shrink-0"></span>
+          <%= tip %>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+
+  <%# ── Danh sách listing ───────────────────────────────────────────── %>
+  <section>
+    <h2 class="font-headline font-bold text-xl mb-4">
+      Lịch giao lưu sắp tới
+      <span class="ml-2 text-sm font-normal text-on-surface-variant">(<%= @listings.size %> buổi)</span>
+    </h2>
+
+    <% if @listings.any? %>
+      <div class="space-y-4">
+        <% @listings.each do |listing| %>
+          <%= render Ui::ListingCardComponent.new(listing: listing) %>
+        <% end %>
+      </div>
+
+      <div class="mt-8 text-center">
+        <%= link_to "Xem tất cả buổi #{@sport_label}",
+              listings_path(sport: @sport_db),
+              class: "inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline" %>
+      </div>
+    <% else %>
+      <%= render Ui::EmptyStateComponent.new(
+            title: "Chưa có lịch giao lưu",
+            description: "Hiện chưa có buổi #{@sport_label} nào sắp diễn ra tại #{@city[:name]}. Quay lại sau hoặc đăng tin mới!",
+            primary_label: "Đăng tin giao lưu",
+            primary_href: authenticated? ? new_listing_path : new_session_path
+          ) %>
+    <% end %>
+  </section>
+
+  <%# ── CTA đăng tin ────────────────────────────────────────────────── %>
+  <% if @listings.any? %>
+    <section class="mt-12 bg-primary-container/10 rounded-xl p-6 text-center space-y-3">
+      <p class="font-semibold text-on-surface">Bạn muốn tổ chức buổi giao lưu <%= @sport_label %> tại <%= @city[:name] %>?</p>
+      <%= render Ui::ButtonComponent.new("Đăng tin miễn phí",
+            href: authenticated? ? new_listing_path(sport: @sport_db) : new_session_path,
+            full_width: false, size_class: "h-11 px-6") %>
+    </section>
+  <% end %>
+
+<% end %>

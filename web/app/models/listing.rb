@@ -158,6 +158,15 @@ class Listing < ApplicationRecord
     return all if slug.blank? || !SKILL_LEVEL_PK_INDEX.key?(slug)
     where(skill_level_min_pk: SKILL_LEVELS_PK[0..SKILL_LEVEL_PK_INDEX[slug]])
   }
+  # Tìm listing trong bán kính radius_meters (mét) tính từ tọa độ (lat, lng).
+  # Dùng ST_DWithin trên cột geography — chính xác theo khoảng cách mặt đất.
+  # ST_MakePoint nhận (longitude, latitude).
+  scope :near_point, ->(lat, lng, radius_meters) {
+    where(
+      "ST_DWithin(geom, ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography, ?)",
+      lng, lat, radius_meters
+    )
+  }
 
   def self.skill_label_for(slug)
     SKILL_LEVEL_LABELS.fetch(slug, SKILL_LEVEL_PK_LABELS.fetch(slug, slug))

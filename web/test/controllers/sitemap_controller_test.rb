@@ -30,4 +30,22 @@ class SitemapControllerTest < ActionDispatch::IntegrationTest
     get sitemap_path(format: :xml)
     assert_includes response.body, "http://www.sitemaps.org/schemas/sitemap/0.9"
   end
+
+  test "sitemap chứa URL trang landing cau-long/ho-chi-minh" do
+    get sitemap_path(format: :xml)
+    assert_includes response.body, location_landing_url("cau-long", "ho-chi-minh")
+  end
+
+  test "sitemap chứa URL trang landing pickleball/ha-noi" do
+    get sitemap_path(format: :xml)
+    assert_includes response.body, location_landing_url("pickleball", "ha-noi")
+  end
+
+  test "sitemap chứa tất cả combinations landing page" do
+    get sitemap_path(format: :xml)
+    CityRegistry.all_combinations.each do |sport_slug, city_slug|
+      assert_includes response.body, location_landing_url(sport_slug, city_slug),
+        "Thiếu landing URL: #{sport_slug}/#{city_slug}"
+    end
+  end
 end
