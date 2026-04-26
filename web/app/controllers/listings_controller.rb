@@ -107,6 +107,7 @@ class ListingsController < ApplicationController
       )
       save_detail_record!(created, listing_params)
       increment_daily_write_quota!(Current.session.user)
+      GenerateSitemapJob.perform_later
       redirect_to listings_path, notice: "Đăng tin thành công"
     else
       render :new, status: :unprocessable_entity
