@@ -69,10 +69,10 @@ Trang tĩnh + listing động cho SEO long-tail: `/cau-long/ho-chi-minh`, `/pick
 
 ### 1.5 Technical SEO
 
-- [ ] Canonical URL cho tất cả trang có filter/pagination
-- [ ] `hreflang` nếu sau này hỗ trợ song ngữ (VI/EN)
-- [ ] Kiểm tra Core Web Vitals: tối ưu Largest Contentful Paint cho trang listing (ảnh, font)
-- [ ] `preload` Google Maps JS chỉ khi cần (tránh load trên trang không dùng map)
+- [x] Canonical URL cho tất cả trang có filter/pagination
+- [ ] `hreflang` nếu sau này hỗ trợ song ngữ (VI/EN) — *bỏ qua, chưa có kế hoạch đa ngôn ngữ*
+- [x] Kiểm tra Core Web Vitals: tối ưu Largest Contentful Paint cho trang listing (ảnh, font)
+- [x] `preload` Google Maps JS chỉ khi cần (tránh load trên trang không dùng map)
 
 ---
 
@@ -364,7 +364,7 @@ Cập nhật `.env.example` và `docs/TECH_STACK.md` khi implement.
 | SEO | JSON-LD + meta tags | `[ ]` |
 | SEO | Sitemap XML | `[ ]` |
 | SEO | Trang landing địa điểm | `[ ]` |
-| SEO | Technical SEO (canonical, CWV) | `[ ]` |
+| SEO | Technical SEO (canonical, CWV) | `[x]` |
 | Chat | ADR-005 | `[ ]` |
 | Chat | Go chat service | `[ ]` |
 | Chat | Rails integration + UI | `[ ]` |

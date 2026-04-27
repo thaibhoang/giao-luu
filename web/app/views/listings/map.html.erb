@@ -1,4 +1,12 @@
 <% content_for :title, "Bản đồ kèo | SportMatch" %>
+<% content_for :head do %>
+  <link rel="canonical" href="<%= map_url %>">
+  <%# preload Maps JS — chỉ trên trang map, tránh load ở trang không dùng %>
+  <% if ENV["GOOGLE_MAPS_API_KEY"].present? %>
+    <link rel="preload" href="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>" as="script">
+    <link rel="preload" href="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js" as="script">
+  <% end %>
+<% end %>
 
 <%= render Ui::TopAppBarComponent.new(title: "SportMatch") do |bar| %>
   <% bar.with_trailing do %>

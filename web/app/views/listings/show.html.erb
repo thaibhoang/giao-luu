@@ -19,6 +19,11 @@
   <meta name="twitter:image"       content="<%= listing_og_image_url(@listing) %>">
 
   <%= structured_data_tag(@listing, lat: @listing_lat, lng: @listing_lng, url: listing_url(@listing)) %>
+
+  <%# preload Google Maps JS chỉ khi listing có tọa độ — tránh load trên trang không dùng map %>
+  <% if @listing_lat.present? && @listing_lng.present? && ENV["GOOGLE_MAPS_API_KEY"].present? %>
+    <link rel="preload" href="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>" as="script">
+  <% end %>
 <% end %>
 
 <%= render Ui::TopAppBarComponent.new(title: "Match details", back_href: map_path) do |bar| %>

@@ -1,4 +1,8 @@
 <% content_for :title, "SportMatch - Trang chủ" %>
+<% content_for :head do %>
+  <%# Canonical: giữ filter params, bỏ ?page= để tránh duplicate content %>
+  <link rel="canonical" href="<%= listings_url(params.permit(:sport, :listing_type, :gender, :play_format, :q).reject { |_, v| v.blank? }) %>">
+<% end %>
 
 <%= render Ui::TopAppBarComponent.new(title: "SportMatch") do |bar| %>
   <% bar.with_trailing do %>

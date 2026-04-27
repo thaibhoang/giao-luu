@@ -1,4 +1,10 @@
 <% content_for :title, "Sửa tin | SportMatch" %>
+<% content_for :head do %>
+  <%# preload Google Maps JS — form luôn dùng map picker %>
+  <% if ENV["GOOGLE_MAPS_API_KEY"].present? %>
+    <link rel="preload" href="https://maps.googleapis.com/maps/api/js?key=<%= ENV["GOOGLE_MAPS_API_KEY"] %>" as="script">
+  <% end %>
+<% end %>
 
 <%= render Ui::TopAppBarComponent.new(title: "Sửa tin", back_href: my_listings_path, back_icon: "close") do |bar| %>
   <% bar.with_trailing do %>

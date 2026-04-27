@@ -1,4 +1,8 @@
 <% content_for :title, "Tin của tôi | SportMatch" %>
+<% content_for :head do %>
+  <%# Canonical: bỏ ?status= filter để tránh duplicate content %>
+  <link rel="canonical" href="<%= my_listings_url %>">
+<% end %>
 
 <%= render Ui::TopAppBarComponent.new(title: "Tin của tôi", back_href: listings_path, back_icon: "menu") do |bar| %>
   <% bar.with_trailing do %>
