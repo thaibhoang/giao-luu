@@ -333,6 +333,9 @@ CREATE TABLE public.listings (
     active boolean DEFAULT true NOT NULL,
     skill_level_min_pk character varying,
     skill_level_max_pk character varying,
+    rain_probability integer,
+    weather_checked_at timestamp with time zone,
+    CONSTRAINT listings_rain_probability_range CHECK (((rain_probability IS NULL) OR ((rain_probability >= 0) AND (rain_probability <= 100)))),
     CONSTRAINT listings_skill_level_max_pk_valid CHECK (((skill_level_max_pk IS NULL) OR ((skill_level_max_pk)::text = ANY (ARRAY['dupr_2_0'::text, 'dupr_2_5'::text, 'dupr_3_0'::text, 'dupr_3_5'::text, 'dupr_4_0'::text, 'dupr_4_5'::text, 'dupr_5_0'::text])))),
     CONSTRAINT listings_skill_level_max_valid CHECK (((skill_level_max)::text = ANY (ARRAY[('yeu'::character varying)::text, ('trung_binh_yeu'::character varying)::text, ('trung_binh_minus'::character varying)::text, ('trung_binh'::character varying)::text, ('trung_binh_plus'::character varying)::text, ('trung_binh_plus_plus'::character varying)::text, ('trung_binh_kha'::character varying)::text, ('kha'::character varying)::text, ('ban_chuyen'::character varying)::text, ('chuyen_nghiep'::character varying)::text]))),
     CONSTRAINT listings_skill_level_min_pk_valid CHECK (((skill_level_min_pk IS NULL) OR ((skill_level_min_pk)::text = ANY (ARRAY['dupr_2_0'::text, 'dupr_2_5'::text, 'dupr_3_0'::text, 'dupr_3_5'::text, 'dupr_4_0'::text, 'dupr_4_5'::text, 'dupr_5_0'::text])))),
@@ -1034,6 +1037,7 @@ ALTER TABLE ONLY public.chat_rooms
 SET search_path TO "$user", public, tiger, topology;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260429000001'),
 ('20260427000002'),
 ('20260427000001'),
 ('20260424100606'),

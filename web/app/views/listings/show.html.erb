@@ -63,6 +63,9 @@
                      end
       %>
       <%= render Ui::BadgeComponent.new(@listing.listing_type_label, tone: badge_tone) %>
+      <% if listing_rain_warning?(@listing) %>
+        <%= render Ui::BadgeComponent.new("⚠️ Có thể mưa", tone: :warning) %>
+      <% end %>
     </div>
     <h1 class="text-3xl font-extrabold leading-tight tracking-tight text-primary"><%= @listing.title %></h1>
   </section>

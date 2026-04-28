@@ -18,3 +18,8 @@ production:
     class: ExpireListingsJob
     queue: default
     schedule: every day at 23:30
+
+  weather_check:
+    class: WeatherCheckJob
+    queue: default
+    schedule: every 15 minutes

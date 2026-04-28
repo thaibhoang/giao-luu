@@ -30,3 +30,39 @@ expired_listing:
   skill_level_max: trung_binh
   listing_type: match_finding
   active: false
+
+pickleball_future:
+  sport: pickleball
+  title: "Pickleball sân ngoài trời sắp tới"
+  location_name: "Sân Phú Thọ Outdoor"
+  start_at: <%= 2.hours.from_now.iso8601 %>
+  end_at: <%= (2.hours.from_now + 2.hours).iso8601 %>
+  slots_needed: 2
+  contact_info: "zalo.me/pk123"
+  source: user_submitted
+  schema_version: 3
+  skill_level_min_pk: dupr_3_0
+  skill_level_max_pk: dupr_4_0
+  skill_level_min: trung_binh
+  skill_level_max: kha
+  listing_type: match_finding
+  active: true
+  rain_probability: ~
+  weather_checked_at: ~
+
+badminton_future:
+  sport: badminton
+  title: "Cầu lông sân trong nhà sắp tới"
+  location_name: "Nhà thi đấu Phan Đình Phùng"
+  start_at: <%= 2.hours.from_now.iso8601 %>
+  end_at: <%= (2.hours.from_now + 2.hours).iso8601 %>
+  slots_needed: 1
+  contact_info: "zalo.me/bd123"
+  source: user_submitted
+  schema_version: 3
+  skill_level_min: trung_binh
+  skill_level_max: kha
+  listing_type: match_finding
+  active: true
+  rain_probability: ~
+  weather_checked_at: ~

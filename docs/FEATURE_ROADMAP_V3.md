@@ -158,7 +158,7 @@ chat/
 
 ---
 
-## 3. Smart Notification — Alert theo khu vực & điều kiện
+## 3. Smart Notification — Alert theo khu vực & điều kiện - Tạm thời bỏ qua vì tốn phí gửi mail
 
 > Người dùng cài đặt trước bộ điều kiện → tự động nhận thông báo khi có listing mới khớp.
 

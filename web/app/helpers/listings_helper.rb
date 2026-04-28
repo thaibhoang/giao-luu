@@ -33,6 +33,23 @@ module ListingsHelper
     asset_url(filename)
   end
 
+  # Kiểm tra có nên hiển thị badge cảnh báo mưa không.
+  # Điều kiện:
+  #   - sport = pickleball (sân ngoài trời)
+  #   - rain_probability >= 60%
+  #   - weather_checked_at không quá 3 giờ trước (dữ liệu còn tươi)
+  #
+  # @param listing [Listing]
+  # @return [Boolean]
+  def listing_rain_warning?(listing)
+    return false unless listing.sport == "pickleball"
+    return false if listing.rain_probability.nil?
+    return false if listing.weather_checked_at.nil?
+    return false if listing.weather_checked_at < 3.hours.ago
+
+    listing.rain_probability >= WeatherCheckJob::RAIN_THRESHOLD
+  end
+
   # Tạo thẻ <script type="application/ld+json"> với dữ liệu Schema.org SportsEvent
   # cho trang chi tiết listing.
   #
