@@ -90,9 +90,9 @@ Trang tĩnh + listing động cho SEO long-tail: `/cau-long/ho-chi-minh`, `/pick
 | Auth | Rails tạo **signed token** (JWT ngắn hạn), Go verify bằng shared HMAC secret | Không duplicate session logic; nhất quán với ADR-002 |
 | Message storage | PostgreSQL (cùng DB domain) — bảng `messages` | Đơn giản, tận dụng PostGIS DB đã có; tách DB riêng khi scale |
 | Chat room | 1 room per listing — tạo tự động khi user đầu tiên join | Phù hợp use case hiện tại |
-| Rails ↔ Go | Go POST event về Rails webhook khi có tin nhắn mới (Solid Queue trigger notify) | Rails giữ quyền kiểm soát notification |
+| Rails ↔ Go | Go POST webhook `POST /internal/chat_events` về Rails (HTTP + HMAC, tương tự ADR-002) khi có tin nhắn mới (Solid Queue trigger notify) | Rails giữ quyền kiểm soát notification; HTTP webhook đủ dùng, tránh overhead gRPC |
 
-- [ ] Viết `docs/decisions/005-chat-service-go.md`
+- [x] Viết `docs/decisions/005-chat-service-go.md`
 
 ### 2.1 Data Model mới
 
@@ -114,9 +114,9 @@ Trang tĩnh + listing động cho SEO long-tail: `/cau-long/ho-chi-minh`, `/pick
 | `body` | `text` | Nội dung (max 2000 ký tự) |
 | `created_at` | `timestamptz` | |
 
-- [ ] Migration: `create_chat_rooms`, `create_messages`
-- [ ] Index: `index_messages_on_chat_room_id_and_created_at`
-- [ ] Cập nhật `docs/DATA_MODEL.md`
+- [x] Migration: `create_chat_rooms`, `create_messages`
+- [x] Index: `index_messages_on_chat_room_id_and_created_at`
+- [x] Cập nhật `docs/DATA_MODEL.md`
 
 ### 2.2 Go Chat Service (`chat/`)
 
@@ -134,27 +134,27 @@ chat/
   Dockerfile
 ```
 
-- [ ] Khởi tạo `chat/go.mod` (module `github.com/thaibhoang/giao-luu/chat`)
-- [ ] Implement `Hub`: map `roomID → []client`, broadcast goroutine
-- [ ] Implement auth middleware: nhận `token` query param, verify HMAC với `CHAT_HMAC_SECRET`
-- [ ] Implement store: insert message vào PostgreSQL (`pgx` driver)
-- [ ] Implement notify: POST `POST /internal/chat_events` về Rails (signed, tương tự ADR-002)
-- [ ] Dockerfile cho `chat/` service
-- [ ] Thêm service `chat` vào `docker-compose.yml`
+- [x] Khởi tạo `chat/go.mod` (module `github.com/thaibhoang/giao-luu/chat`)
+- [x] Implement `Hub`: map `roomID → []client`, broadcast goroutine
+- [x] Implement auth middleware: nhận `token` query param, verify HMAC với `CHAT_HMAC_SECRET`
+- [x] Implement store: insert message vào PostgreSQL (`pgx` driver)
+- [x] Implement notify: POST `POST /internal/chat_events` về Rails (signed, tương tự ADR-002)
+- [x] Dockerfile cho `chat/` service
+- [x] Thêm service `chat` vào `docker-compose.yml`
 
 ### 2.3 Rails side — Chat integration
 
-- [ ] Endpoint `GET /listings/:id/chat_token` — trả JWT ngắn hạn (15 phút) để Go verify
-- [ ] Controller `ChatRoomsController`: tạo room nếu chưa có, load history `messages`
-- [ ] View: embed chat UI trong trang chi tiết listing (Stimulus controller kết nối WebSocket Go)
-- [ ] Internal webhook `POST /internal/chat_events` — trigger Solid Queue job gửi notification
+- [x] Endpoint `GET /listings/:id/chat_token` — trả JWT ngắn hạn (15 phút) để Go verify
+- [x] Controller `ChatRoomsController`: tạo room nếu chưa có, load history `messages`
+- [x] View: embed chat UI trong trang chi tiết listing (Stimulus controller kết nối WebSocket Go)
+- [x] Internal webhook `POST /internal/chat_events` — trigger Solid Queue job gửi notification
 
 ### 2.4 Chat UI (Rails + Stimulus)
 
-- [ ] Stimulus controller `chat_controller.js`: connect WS, append message, scroll to bottom
-- [ ] UI: panel chat bên dưới listing detail, hiển thị messages, input gửi
-- [ ] Giới hạn: chỉ user đã join listing (hoặc chủ listing) mới xem được chat room
-- [ ] Rate limiting phía Go: max 10 messages/phút/user
+- [x] Stimulus controller `chat_controller.js`: connect WS, append message, scroll to bottom
+- [x] UI: panel chat bên dưới listing detail, hiển thị messages, input gửi
+- [x] Giới hạn: chỉ user đã join listing (hoặc chủ listing) mới xem được chat room
+- [x] Rate limiting phía Go: max 10 messages/phút/user
 
 ---
 
@@ -365,9 +365,9 @@ Cập nhật `.env.example` và `docs/TECH_STACK.md` khi implement.
 | SEO | Sitemap XML | `[ ]` |
 | SEO | Trang landing địa điểm | `[ ]` |
 | SEO | Technical SEO (canonical, CWV) | `[x]` |
-| Chat | ADR-005 | `[ ]` |
-| Chat | Go chat service | `[ ]` |
-| Chat | Rails integration + UI | `[ ]` |
+| Chat | ADR-005 | `[x]` |
+| Chat | Go chat service | `[x]` |
+| Chat | Rails integration + UI | `[x]` |
 | Notification | Data model subscription | `[ ]` |
 | Notification | UI cài đặt subscription | `[ ]` |
 | Notification | Match + dispatch jobs | `[ ]` |

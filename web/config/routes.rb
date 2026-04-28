@@ -9,6 +9,8 @@ Rails.application.routes.draw do
   resources :listings, only: %i[index show new create edit update] do
     resources :registrations, only: %i[index create destroy]
     resource :bookmark, only: %i[create destroy]
+    resource :chat_room, only: %i[show]
+    get :chat_token, on: :member
   end
   get "geocoding/lookup", to: "geocoding#lookup"
   get "map", to: "listings#map"
@@ -43,6 +45,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       post "listings/import", to: "listings_imports#create"
     end
+    post "chat_events", to: "chat_events#create"
   end
 
   get "sitemap.xml", to: "sitemap#index", as: :sitemap, defaults: { format: :xml }

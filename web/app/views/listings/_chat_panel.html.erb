@@ -1,0 +1,99 @@
+<%# Chat panel cho listing detail — nhúng cuối article.
+    Hiển thị theo 3 trạng thái:
+      - Chưa đăng nhập          → mời đăng nhập
+      - Đã đăng nhập nhưng chưa join → yêu cầu đăng ký tham gia
+      - Đã join / chủ listing   → panel chat đầy đủ %>
+
+<% if !authenticated? %>
+<%# ── Chưa đăng nhập ──────────────────────────────────────── %>
+<section class="space-y-3">
+  <h3 class="text-[10px] font-bold text-on-surface-variant tracking-[0.2em] uppercase">
+    💬 Phòng chat
+  </h3>
+  <div class="rounded-3xl border border-outline-variant/20 bg-surface-container-lowest px-6 py-8 text-center space-y-3">
+    <p class="text-sm text-on-surface-variant">Đăng nhập để tham gia chat cùng phòng giao lưu.</p>
+    <%= render Ui::ButtonComponent.new("Đăng nhập", variant: :secondary, href: new_session_path) %>
+  </div>
+</section>
+
+<% elsif @chat_access == false %>
+<%# ── Đã đăng nhập nhưng chưa đăng ký tham gia ───────────── %>
+<section class="space-y-3">
+  <h3 class="text-[10px] font-bold text-on-surface-variant tracking-[0.2em] uppercase">
+    💬 Phòng chat
+  </h3>
+  <div class="rounded-3xl border border-outline-variant/20 bg-surface-container-lowest px-6 py-8 text-center space-y-3">
+    <div class="flex justify-center">
+      <%= render Ui::IconComponent.new(name: "lock", size_class: "text-3xl text-on-surface-variant") %>
+    </div>
+    <p class="text-sm font-semibold text-on-surface">Chỉ người tham gia mới được nhắn tin</p>
+    <p class="text-xs text-on-surface-variant">Đăng ký tham gia buổi giao lưu để mở khóa phòng chat.</p>
+  </div>
+</section>
+
+<% else %>
+<%# ── Có quyền truy cập — hiện panel chat đầy đủ ─────────── %>
+<section
+  id="chat-panel"
+  class="space-y-3"
+  data-controller="chat"
+  data-chat-token-url-value="<%= chat_token_listing_path(@listing) %>"
+  data-chat-service-url-value="<%= ENV.fetch("CHAT_SERVICE_URL", "ws://localhost:8081") %>"
+  data-chat-room-id-value="<%= @chat_room&.id %>"
+  data-chat-current-user-id-value="<%= Current.session.user.id %>"
+  data-chat-owner-id-value="<%= @listing.user_id %>"
+  data-chat-users-value="<%= (@chat_users || {}).to_json %>"
+>
+  <h3 class="text-[10px] font-bold text-on-surface-variant tracking-[0.2em] uppercase">
+    💬 Phòng chat
+  </h3>
+
+  <div class="rounded-3xl border border-outline-variant/20 bg-surface-container-lowest overflow-hidden flex flex-col"
+       style="min-height: 280px; max-height: 420px;">
+    <%# Message history — JS sẽ append tin nhắn realtime bên dưới %>
+    <div
+      data-chat-target="messages"
+      class="flex-1 overflow-y-auto px-4 py-3 space-y-2 text-sm"
+      aria-live="polite"
+      aria-label="Tin nhắn phòng chat"
+    >
+      <%# Server-side history — render ngay khi trang load, JS không cần fetch lại %>
+      <% @chat_messages&.each do |msg| %>
+        <%= render "listings/chat_message", msg: msg %>
+      <% end %>
+    </div>
+
+    <%# Input ─────────────────────────────────────────────────── %>
+    <div class="border-t border-outline-variant/20 px-3 py-2 flex gap-2 items-center">
+      <input
+        type="text"
+        data-chat-target="input"
+        placeholder="Nhắn tin…"
+        maxlength="2000"
+        autocomplete="off"
+        data-action="keydown.enter->chat#send"
+        class="flex-1 rounded-xl border border-outline-variant bg-surface px-3 py-2 text-sm text-on-surface
+               placeholder:text-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary"
+        aria-label="Nội dung tin nhắn"
+      >
+      <button
+        type="button"
+        data-action="click->chat#send"
+        data-chat-target="sendBtn"
+        class="h-10 w-10 flex-shrink-0 flex items-center justify-center rounded-xl bg-primary text-on-primary-container
+               hover:opacity-90 active:scale-95 disabled:opacity-40 transition-all"
+        aria-label="Gửi tin nhắn"
+      >
+        <%= render Ui::IconComponent.new(name: "send", size_class: "text-xl") %>
+      </button>
+    </div>
+  </div>
+
+  <%# Trạng thái kết nối — Stimulus cập nhật text/visibility %>
+  <p
+    data-chat-target="status"
+    class="text-xs text-on-surface-variant text-center hidden"
+    aria-live="polite"
+  ></p>
+</section>
+<% end %>

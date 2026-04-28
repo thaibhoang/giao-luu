@@ -94,6 +94,36 @@ Tên bảng theo quy ước plural của ActiveRecord; model **`GeocodingCache`*
 | `raw_response` | `jsonb` (optional) | Debug — có thể tắt trong production |
 | `created_at` | `timestamptz` | |
 
+### `chat_rooms`
+
+Mỗi listing có tối đa 1 phòng chat. Rails tạo lazy khi user đầu tiên mở trang chat.
+
+| Cột | Kiểu | Mô tả |
+|-----|------|--------|
+| `id` | `bigserial` | PK |
+| `listing_id` | `bigint` FK UNIQUE | 1 room per listing — ràng buộc unique ở DB |
+| `created_at` | `timestamptz` | |
+
+**Chỉ mục:** unique `index_chat_rooms_on_listing_id_unique`.
+
+### `messages`
+
+Tin nhắn trong một chat room. Không có `updated_at` — tin nhắn không được sửa sau khi gửi.
+
+| Cột | Kiểu | Mô tả |
+|-----|------|--------|
+| `id` | `bigserial` | PK |
+| `chat_room_id` | `bigint` FK | |
+| `user_id` | `bigint` FK | Người gửi |
+| `body` | `text` NOT NULL | Nội dung; CHECK max 2000 ký tự, không rỗng |
+| `created_at` | `timestamptz` | |
+
+**Chỉ mục:** composite `index_messages_on_chat_room_id_and_created_at` (load history theo thứ tự thời gian).
+
+**CHECK constraints:** `messages_body_max_length` (`char_length(body) <= 2000`), `messages_body_not_blank` (`char_length(trim(body)) > 0`).
+
+> Go chat service ghi trực tiếp vào hai bảng này qua `pgx/v5`. Rails quản lý migration và đọc history qua `ChatRoomsController`. Chi tiết: [ADR-005](decisions/005-chat-service-go.md).
+
 ### `reputation_events` (wildcard — roadmap)
 
 Cho check-in uy tín; chi tiết acceptance: [FEATURE_ROADMAP.md](FEATURE_ROADMAP.md).
@@ -124,6 +154,7 @@ Cho check-in uy tín; chi tiết acceptance: [FEATURE_ROADMAP.md](FEATURE_ROADMA
 - **Chỉ mục `geocoding_caches`**: unique `location_query`; GIST `index_geocoding_caches_on_geom`.
 - **Solid Queue / Cache / Cable**: bảng job và cache nằm theo cấu hình đa DB trong `config/database.yml` (production) — không trộn vào bảng domain ở trên.
 - **Ghi chú ActiveRecord**: kiểu `geography` có OID tùy DB; pg có thể log `unknown OID ... geom` và coi cột như `String` khi đọc — chấp nhận trong MVP; ghi `geom` nên qua SQL (`Listing.insert_with_point!`, `GeocodingCache.insert_with_point!`) hoặc migration/raw query.
+- **Migration chat** (Phase 3): [`db/migrate/20260427000001_create_chat_rooms.rb`](../db/migrate/20260427000001_create_chat_rooms.rb), [`db/migrate/20260427000002_create_messages.rb`](../db/migrate/20260427000002_create_messages.rb) — bảng `chat_rooms` (unique `listing_id`) và `messages` (CHECK body length ≤ 2000).
 - **Kiểm thử**: `test/models/listing_spatial_test.rb` (cần PostGIS).
 
 ## Liên kết

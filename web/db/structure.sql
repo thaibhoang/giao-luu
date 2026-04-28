@@ -206,6 +206,36 @@ ALTER SEQUENCE public.bookmarks_id_seq OWNED BY public.bookmarks.id;
 
 
 --
+-- Name: chat_rooms; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.chat_rooms (
+    id bigint NOT NULL,
+    listing_id bigint NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: chat_rooms_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.chat_rooms_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: chat_rooms_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.chat_rooms_id_seq OWNED BY public.chat_rooms.id;
+
+
+--
 -- Name: court_pass_details; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -332,6 +362,40 @@ CREATE SEQUENCE public.listings_id_seq
 --
 
 ALTER SEQUENCE public.listings_id_seq OWNED BY public.listings.id;
+
+
+--
+-- Name: messages; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.messages (
+    id bigint NOT NULL,
+    chat_room_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    body text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT messages_body_max_length CHECK ((char_length(body) <= 2000)),
+    CONSTRAINT messages_body_not_blank CHECK ((char_length(TRIM(BOTH FROM body)) > 0))
+);
+
+
+--
+-- Name: messages_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.messages_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: messages_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.messages_id_seq OWNED BY public.messages.id;
 
 
 --
@@ -511,6 +575,13 @@ ALTER TABLE ONLY public.bookmarks ALTER COLUMN id SET DEFAULT nextval('public.bo
 
 
 --
+-- Name: chat_rooms id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.chat_rooms ALTER COLUMN id SET DEFAULT nextval('public.chat_rooms_id_seq'::regclass);
+
+
+--
 -- Name: court_pass_details id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -529,6 +600,13 @@ ALTER TABLE ONLY public.geocoding_caches ALTER COLUMN id SET DEFAULT nextval('pu
 --
 
 ALTER TABLE ONLY public.listings ALTER COLUMN id SET DEFAULT nextval('public.listings_id_seq'::regclass);
+
+
+--
+-- Name: messages id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.messages ALTER COLUMN id SET DEFAULT nextval('public.messages_id_seq'::regclass);
 
 
 --
@@ -592,6 +670,14 @@ ALTER TABLE ONLY public.bookmarks
 
 
 --
+-- Name: chat_rooms chat_rooms_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.chat_rooms
+    ADD CONSTRAINT chat_rooms_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: court_pass_details court_pass_details_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -613,6 +699,14 @@ ALTER TABLE ONLY public.geocoding_caches
 
 ALTER TABLE ONLY public.listings
     ADD CONSTRAINT listings_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: messages messages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.messages
+    ADD CONSTRAINT messages_pkey PRIMARY KEY (id);
 
 
 --
@@ -705,6 +799,20 @@ CREATE INDEX index_bookmarks_on_user_id ON public.bookmarks USING btree (user_id
 
 
 --
+-- Name: index_chat_rooms_on_listing_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_chat_rooms_on_listing_id ON public.chat_rooms USING btree (listing_id);
+
+
+--
+-- Name: index_chat_rooms_on_listing_id_unique; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_chat_rooms_on_listing_id_unique ON public.chat_rooms USING btree (listing_id);
+
+
+--
 -- Name: index_court_pass_details_on_listing_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -761,6 +869,27 @@ CREATE INDEX index_listings_on_user_id ON public.listings USING btree (user_id);
 
 
 --
+-- Name: index_messages_on_chat_room_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_messages_on_chat_room_id ON public.messages USING btree (chat_room_id);
+
+
+--
+-- Name: index_messages_on_chat_room_id_and_created_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_messages_on_chat_room_id_and_created_at ON public.messages USING btree (chat_room_id, created_at);
+
+
+--
+-- Name: index_messages_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_messages_on_user_id ON public.messages USING btree (user_id);
+
+
+--
 -- Name: index_registrations_on_listing_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -803,6 +932,14 @@ CREATE UNIQUE INDEX index_users_on_email_address ON public.users USING btree (em
 
 
 --
+-- Name: messages fk_rails_00aac238e8; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.messages
+    ADD CONSTRAINT fk_rails_00aac238e8 FOREIGN KEY (chat_room_id) REFERENCES public.chat_rooms(id);
+
+
+--
 -- Name: tournament_details fk_rails_098aa17f52; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -816,6 +953,14 @@ ALTER TABLE ONLY public.tournament_details
 
 ALTER TABLE ONLY public.registrations
     ADD CONSTRAINT fk_rails_2447744ad8 FOREIGN KEY (listing_id) REFERENCES public.listings(id);
+
+
+--
+-- Name: messages fk_rails_273a25a7a6; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.messages
+    ADD CONSTRAINT fk_rails_273a25a7a6 FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -875,12 +1020,22 @@ ALTER TABLE ONLY public.admin_sessions
 
 
 --
+-- Name: chat_rooms fk_rails_eca7826014; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.chat_rooms
+    ADD CONSTRAINT fk_rails_eca7826014 FOREIGN KEY (listing_id) REFERENCES public.listings(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user", public, topology, tiger;
+SET search_path TO "$user", public, tiger, topology;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260427000002'),
+('20260427000001'),
 ('20260424100606'),
 ('20260424000002'),
 ('20260424000001'),

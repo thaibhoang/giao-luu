@@ -1,0 +1,13 @@
+<%# Partial cho 1 message — dùng bởi server-side history và JS clone template.
+    Biến cần thiết: msg (object có .id, .user_id, .body, .created_at) %>
+<div class="flex gap-2 items-start" data-message-id="<%= msg.id %>">
+  <span class="text-xs flex items-center gap-0.5 overflow-hidden" style="flex:0 0 5rem;width:5rem" data-chat-user-label data-user-id="<%= msg.user_id %>">
+    <span class="font-semibold text-secondary truncate block w-full" title="#<%= msg.user_id %>">#<%= msg.user_id %></span>
+  </span>
+  <p class="text-on-surface leading-snug break-words min-w-0 flex-1"><%= h(msg.body) %></p>
+  <time
+    class="ml-2 text-xs text-on-surface-variant whitespace-nowrap shrink-0"
+    datetime="<%= msg.created_at.utc.iso8601 %>"
+    title="<%= msg.created_at.utc.iso8601 %>"
+  ></time>
+</div>

@@ -26,7 +26,14 @@
           <% end %>
         <% end %>
       <% end %>
-      <%= link_to "Chi tiết", listing_path(listing), class: "text-xs font-semibold text-primary whitespace-nowrap", data: { turbo_frame: "_top" } %>
+      <%= link_to listing_path(listing),
+            class: "p-1.5 rounded-full hover:bg-surface-container text-on-surface-variant flex items-center justify-center",
+            title: "Xem chi tiết",
+            data: { turbo_frame: "_top" } do %>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+          <path fill-rule="evenodd" d="M12.97 3.97a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 1 1-1.06-1.06l6.22-6.22H3a.75.75 0 0 1 0-1.5h16.19l-6.22-6.22a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+        </svg>
+      <% end %>
     </div>
   </div>
   <div class="mt-4 space-y-2 text-sm text-on-surface-variant">
@@ -51,7 +58,7 @@
   <% end %>
   <% if show_actions %>
     <div class="mt-4 flex items-center justify-end gap-4">
-      <%= link_to "Sửa", edit_listing_path(listing), class: "text-sm font-bold text-primary" %>
+      <%= link_to "Sửa", edit_listing_path(listing), class: "text-sm font-bold text-primary", data: { turbo_frame: "_top" } %>
     </div>
   <% end %>
 </article>

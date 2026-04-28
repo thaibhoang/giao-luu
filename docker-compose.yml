@@ -42,6 +42,7 @@ services:
       GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY:-}
       # RAILS_MASTER_KEY is read from web/.env (env_file above). Set it there or export on host.
       SCRAPER_HMAC_SECRET: ${SCRAPER_HMAC_SECRET:-dev-secret}
+      CHAT_HMAC_SECRET: ${CHAT_HMAC_SECRET:-dev-chat-secret}
 
   # scraper:
   #   build:
@@ -53,6 +54,24 @@ services:
   #     RAILS_INTERNAL_URL: http://web:80
   #     SCRAPER_HMAC_SECRET: ${SCRAPER_HMAC_SECRET:-dev-secret}
   #   restart: "no"
+
+  chat:
+    build:
+      context: ./chat
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      web:
+        condition: service_started
+    ports:
+      - "8081:8081"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/giao_luu_development
+      CHAT_HMAC_SECRET: ${CHAT_HMAC_SECRET:-dev-chat-secret}
+      RAILS_INTERNAL_URL: http://web:80
+      PORT: "8081"
+    restart: unless-stopped
 
 volumes:
   postgres_data:

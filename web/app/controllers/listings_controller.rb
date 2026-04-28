@@ -4,7 +4,7 @@ class ListingsController < ApplicationController
   include Pagy::Method
 
   allow_unauthenticated_access only: %i[index show map]
-  before_action :require_authentication, only: %i[my new create edit update]
+  before_action :require_authentication, only: %i[my new create edit update chat_token]
 
   def index
     @pagy, @listings = pagy(
@@ -36,6 +36,49 @@ class ListingsController < ApplicationController
     )
     @bookmarked = authenticated? &&
                   Current.session.user.bookmarks.exists?(listing: @listing)
+
+    # Chat panel — upsert room + load server-side history cho user đã đăng nhập
+    if authenticated?
+      user = Current.session.user
+      @chat_access = chat_accessible?(@listing, user)
+      if @chat_access
+        @chat_room = ChatRoom.find_or_create_for_listing!(@listing)
+        @chat_messages = @chat_room.recent_messages(limit: 50)
+        # Map user_id → display label cho chat panel
+        participant_ids = (@chat_messages.map(&:user_id) + [ @listing.user_id, user.id ]).compact.uniq
+        @chat_users = User.where(id: participant_ids)
+                          .pluck(:id, :display_name, :email_address)
+                          .to_h { |id, name, email| [ id, name.presence || email.split("@").first ] }
+      end
+    end
+  end
+
+  # GET /listings/:id/chat_token
+  # Trả về HMAC token 15 phút để browser kết nối WebSocket Go (ADR-005).
+  # Token format: base64url("<user_id>.<room_id>.<expires_unix>") + "." + hex(HMAC-SHA256)
+  def chat_token
+    listing = Listing.find(params[:id])
+    user = Current.session.user
+
+    unless chat_accessible?(listing, user)
+      return render json: { error: "forbidden" }, status: :forbidden
+    end
+
+    room = ChatRoom.find_or_create_for_listing!(listing)
+
+    secret = ENV["CHAT_HMAC_SECRET"].to_s
+    return render json: { error: "chat service unavailable" }, status: :service_unavailable if secret.blank?
+
+    expires_at = 15.minutes.from_now.to_i
+    payload    = "#{user.id}.#{room.id}.#{expires_at}"
+    sig        = OpenSSL::HMAC.hexdigest("SHA256", secret, payload)
+    token      = Base64.urlsafe_encode64(payload, padding: false) + "." + sig
+
+    render json: {
+      token:      token,
+      room_id:    room.id,
+      expires_in: 15 * 60
+    }
   end
 
   def my
@@ -255,5 +298,14 @@ class ListingsController < ApplicationController
     range.cover?(num) ? num : default
   rescue ArgumentError, TypeError
     default
+  end
+
+  # Kiểm tra user có quyền vào chat room không:
+  # chỉ chủ listing hoặc người đã đăng ký tham gia.
+  def chat_accessible?(listing, user)
+    return false unless user
+    return true if listing.user_id == user.id
+
+    listing.registrations.exists?(user: user)
   end
 end
