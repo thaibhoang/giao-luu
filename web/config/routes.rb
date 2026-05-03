@@ -7,7 +7,12 @@ Rails.application.routes.draw do
   patch "profile", to: "users#update"
   root "home#index"
   resources :listings, only: %i[index show new create edit update] do
-    resources :registrations, only: %i[index create destroy]
+    resources :registrations, only: %i[index create destroy] do
+      member do
+        put :checkin
+        put :confirm
+      end
+    end
     resource :bookmark, only: %i[create destroy]
     resource :chat_room, only: %i[show]
     get :chat_token, on: :member
@@ -16,6 +21,7 @@ Rails.application.routes.draw do
   get "map", to: "listings#map"
   get "my-listings", to: "listings#my", as: :my_listings
   get "my/bookmarks", to: "my/bookmarks#index", as: :my_bookmarks
+  get "my/registrations", to: "my/registrations#index", as: :my_registrations
   get "empty-map", to: "pages#empty_map"
   get "error-page", to: "pages#error_page"
   get "policy", to: "pages#policy"

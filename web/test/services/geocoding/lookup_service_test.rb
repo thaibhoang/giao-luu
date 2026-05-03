@@ -42,7 +42,7 @@ module Geocoding
           result = service.call
           assert_equal true, result[:ok]
           assert_equal false, result.dig(:data, :from_cache)
-          cached = GeocodingCache.lookup("san cong hoa")
+          cached = GeocodingCache.lookup(GeocodingCache.normalize_query("Sân Cộng Hoà"))
           assert_in_delta 10.803, cached[:lat], 0.0001
           assert_in_delta 106.665, cached[:lng], 0.0001
           assert_equal "nominatim", cached[:provider]
@@ -66,7 +66,7 @@ module Geocoding
           result = service.call
           assert_equal true, result[:ok]
           assert_equal "google", result.dig(:data, :provider)
-          cached = GeocodingCache.lookup("san fallback")
+          cached = GeocodingCache.lookup(GeocodingCache.normalize_query("Sân fallback"))
           assert_equal "google", cached[:provider]
         end
       end

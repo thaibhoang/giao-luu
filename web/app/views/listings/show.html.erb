@@ -308,16 +308,39 @@
     ) %>
 
   <% elsif already_registered %>
-    <%# Đã đăng ký — cho huỷ %>
+    <%
+      my_reg        = @listing.registrations.find_by(user: current_user)
+      ended         = @listing.end_at <= Time.current
+      can_checkin   = ended && my_reg && my_reg.checked_in_at.nil?
+      checked_in    = my_reg&.checked_in_at.present?
+    %>
     <div class="flex gap-3">
-      <span class="flex-1 flex items-center justify-center gap-2 h-14 px-5 rounded-xl bg-surface-container-high border border-outline-variant text-on-surface-variant text-sm font-semibold">
-        <%= render Ui::IconComponent.new(name: "check_circle", size_class: "text-xl text-green-600") %>
-        Đã đăng ký tham gia
-      </span>
+      <% if can_checkin %>
+        <%# Sau end_at — hiện nút check-in %>
+        <%= button_to(
+          checkin_listing_registration_path(@listing, my_reg),
+          method: :put,
+          class: "flex-1 flex items-center justify-center gap-2 h-14 px-5 rounded-xl bg-primary text-on-primary-container font-lexend font-bold text-sm hover:opacity-90 active:scale-[0.98]"
+        ) do %>
+          <%= render Ui::IconComponent.new(name: "where_to_vote", size_class: "text-xl") %>
+          Check-in
+        <% end %>
+      <% elsif checked_in %>
+        <span class="flex-1 flex items-center justify-center gap-2 h-14 px-5 rounded-xl bg-surface-container-high border border-outline-variant text-on-surface-variant text-sm font-semibold">
+          <%= render Ui::IconComponent.new(name: "where_to_vote", size_class: "text-xl text-green-600") %>
+          Đã check-in
+        </span>
+      <% else %>
+        <span class="flex-1 flex items-center justify-center gap-2 h-14 px-5 rounded-xl bg-surface-container-high border border-outline-variant text-on-surface-variant text-sm font-semibold">
+          <%= render Ui::IconComponent.new(name: "check_circle", size_class: "text-xl text-green-600") %>
+          Đã đăng ký tham gia
+        </span>
+      <% end %>
       <%= button_to(
-        listing_registration_path(@listing, @listing.registrations.find_by(user: current_user)),
+        listing_registration_path(@listing, my_reg),
         method: :delete,
-        class: "h-14 px-5 rounded-xl bg-surface-container-high border border-outline-variant text-on-surface-variant text-sm font-semibold hover:bg-surface-container-highest flex items-center gap-2"
+        class: "h-14 px-5 rounded-xl bg-surface-container-high border border-outline-variant text-on-surface-variant text-sm font-semibold hover:bg-surface-container-highest flex items-center gap-2",
+        disabled: checked_in || ended
       ) do %>
         <%= render Ui::IconComponent.new(name: "close", size_class: "text-xl") %>
         Huỷ

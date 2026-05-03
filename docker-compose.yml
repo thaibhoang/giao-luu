@@ -37,7 +37,12 @@ services:
     environment:
       RAILS_ENV: development
       PORT: "80"
-      DATABASE_URL: postgres://postgres:postgres@postgres:5432/giao_luu_development
+      # Không dùng DATABASE_URL để Rails tự chọn database đúng theo RAILS_ENV
+      # (development → giao_luu_development, test → giao_luu_test).
+      DATABASE_HOST: postgres
+      DATABASE_PORT: "5432"
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgres
       RAILS_INTERNAL_URL: http://web:80
       GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY:-}
       # RAILS_MASTER_KEY is read from web/.env (env_file above). Set it there or export on host.

@@ -235,10 +235,10 @@ chat/
 
 > Bảng `reputation_events` đã có trong data model — implement logic.
 
-- [ ] Sau `end_at`, người đã join listing nhận email/notification → "Bạn có đến giao lưu không?"
+- [ ] Sau `end_at`, người đã join listing có thể vào lại listing → click "Check-in" để xác nhận đã tham gia, người chủ listing thì có thể click "Confirm attendance" để xác nhận người tham gia
 - [ ] Cả hai bên confirm → tạo `reputation_events` với `points_delta = +10`
 - [ ] Hiển thị tổng điểm uy tín trên profile user (badge + số)
-- [ ] Nếu listing bị hủy không báo trước: chủ listing bị trừ điểm (`points_delta = -5`)
+- [ ] cần có trang để  xem lại listing đã tham gia (tin mình đã đăng ký tham gia), giống như trang "My Listings" nhưng dành cho lịch sử tham gia
 
 ### 4.3 Trang Profile Công khai
 
@@ -247,6 +247,8 @@ chat/
 - [ ] Liên kết từ listing detail → profile của chủ tin
 
 ---
+
+### 4.4 Cập nhật lại phần đăng ký tham gia listing, owner của listing cần đồng ý mới được tham gia, và chỉ những người đã được chấp nhận mới có thể check-in, và được owner xác nhận tham gia để nhận điểm uy tín. Điều này sẽ giúp tăng tính xác thực của việc check-in, tránh tình trạng người dùng đăng ký tham gia nhưng không đến, hoặc check-in giả mạo. Chat room cũng chỉ dành cho người đã được chấp nhận tham gia để tăng tính riêng tư và khuyến khích người dùng chỉ đăng ký tham gia khi thực sự có ý định tham gia.
 
 ## 5. Kiến trúc cập nhật — Sơ đồ luồng Phase 3
 

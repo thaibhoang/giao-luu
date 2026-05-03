@@ -13,6 +13,7 @@ class User < ApplicationRecord
   has_many :registrations, dependent: :destroy
   has_many :bookmarks, dependent: :destroy
   has_many :bookmarked_listings, through: :bookmarks, source: :listing
+  has_many :reputation_events, dependent: :destroy
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
@@ -29,6 +30,12 @@ class User < ApplicationRecord
 
   def name_or_email
     display_name.presence || email_address.split("@").first
+  end
+
+  # Tổng điểm uy tín — SUM của tất cả reputation_events.
+  # Trả về 0 nếu chưa có event nào.
+  def reputation_points
+    reputation_events.sum(:points_delta)
   end
 
   generates_token_for :password_reset, expires_in: PASSWORD_RESET_EXPIRES_IN do

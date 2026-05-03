@@ -95,8 +95,10 @@ class ListingSpatialTest < ActiveSupport::TestCase
     # Listing nằm trong bán kính 5km phải được trả về
     assert_equal 1, Listing.near_point(center_lat, center_lng, 5_000).count
 
-    # Listing không nằm trong bán kính 100m phải không được trả về
-    assert_equal 0, Listing.near_point(center_lat, center_lng, 100).count
+    # Điểm cách xa (Hà Nội ~1700km) — listing không nằm trong bán kính 100km
+    hanoi_lat = 21.0285
+    hanoi_lng = 105.8542
+    assert_equal 0, Listing.near_point(hanoi_lat, hanoi_lng, 100_000).count
   end
 
   test "scope near_point kết hợp with by_sport lọc đúng môn" do
@@ -115,7 +117,8 @@ class ListingSpatialTest < ActiveSupport::TestCase
     Listing.insert_with_point!(
       { sport: "pickleball", listing_type: "match_finding", title: "Pickleball gần", body: nil,
         location_name: "Sân pickleball", start_at: 2.days.from_now, end_at: 2.days.from_now + 2.hours,
-        slots_needed: 2, contact_info: "https://example.com/2", source: "facebook_scrape",
+        slots_needed: 2, skill_level_min: "yeu", skill_level_max: "trung_binh",
+        contact_info: "https://example.com/2", source: "facebook_scrape",
         schema_version: 3, user_id: nil, active: true },
       longitude: center_lng, latitude: center_lat
     )

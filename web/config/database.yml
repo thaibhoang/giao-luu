@@ -18,7 +18,7 @@ default: &default
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  user: <%= ENV["DATABASE_USER"] %>
+  username: <%= ENV["DATABASE_USER"] %>
   password: <%= ENV["DATABASE_PASSWORD"] %>
   # Docker Compose map PostGIS ra host 54322 — xem .env.example ở gốc repo.
   host: <%= ENV.fetch("DATABASE_HOST", "localhost") %>

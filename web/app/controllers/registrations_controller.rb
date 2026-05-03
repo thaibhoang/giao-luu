@@ -2,7 +2,8 @@
 
 class RegistrationsController < ApplicationController
   before_action :set_listing
-  before_action :require_owner, only: :index
+  before_action :require_login, only: %i[checkin confirm]
+  before_action :require_owner, only: %i[index confirm]
 
   # GET /listings/:listing_id/registrations — chỉ chủ bài xem
   def index
@@ -31,6 +32,26 @@ class RegistrationsController < ApplicationController
     end
   end
 
+  # PUT /listings/:listing_id/registrations/:id/checkin — người tham gia tự check-in
+  def checkin
+    @registration = @listing.registrations.find_by!(user: Current.session.user)
+    if @registration.checkin!
+      redirect_to @listing, notice: "Đã check-in thành công! 🎉"
+    else
+      redirect_to @listing, alert: "Không thể check-in lúc này (chưa kết thúc hoặc đã check-in rồi)."
+    end
+  end
+
+  # PUT /listings/:listing_id/registrations/:id/confirm — chủ listing xác nhận
+  def confirm
+    @registration = @listing.registrations.find(params[:id])
+    if @registration.owner_confirm!
+      redirect_to listing_registrations_path(@listing), notice: "Đã xác nhận tham dự."
+    else
+      redirect_to listing_registrations_path(@listing), alert: "Không thể xác nhận lúc này."
+    end
+  end
+
   private
 
     def set_listing
@@ -44,6 +65,12 @@ class RegistrationsController < ApplicationController
     def require_owner
       unless Current.session.user == @listing.user
         redirect_to @listing, alert: "Bạn không có quyền xem danh sách này."
+      end
+    end
+
+    def require_login
+      unless Current.session&.user
+        redirect_to new_session_path, alert: "Vui lòng đăng nhập."
       end
     end
 end

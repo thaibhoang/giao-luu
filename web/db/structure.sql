@@ -412,7 +412,10 @@ CREATE TABLE public.registrations (
     note text,
     phone character varying,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    checked_in_at timestamp with time zone,
+    owner_confirmed_at timestamp with time zone,
+    rewarded_at timestamp with time zone
 );
 
 
@@ -433,6 +436,42 @@ CREATE SEQUENCE public.registrations_id_seq
 --
 
 ALTER SEQUENCE public.registrations_id_seq OWNED BY public.registrations.id;
+
+
+--
+-- Name: reputation_events; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.reputation_events (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    source_type character varying NOT NULL,
+    source_id bigint NOT NULL,
+    points_delta integer NOT NULL,
+    reason character varying NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    CONSTRAINT reputation_events_points_delta_nonzero CHECK ((points_delta <> 0))
+);
+
+
+--
+-- Name: reputation_events_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.reputation_events_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: reputation_events_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.reputation_events_id_seq OWNED BY public.reputation_events.id;
 
 
 --
@@ -620,6 +659,13 @@ ALTER TABLE ONLY public.registrations ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
+-- Name: reputation_events id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reputation_events ALTER COLUMN id SET DEFAULT nextval('public.reputation_events_id_seq'::regclass);
+
+
+--
 -- Name: sessions id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -718,6 +764,14 @@ ALTER TABLE ONLY public.messages
 
 ALTER TABLE ONLY public.registrations
     ADD CONSTRAINT registrations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: reputation_events reputation_events_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reputation_events
+    ADD CONSTRAINT reputation_events_pkey PRIMARY KEY (id);
 
 
 --
@@ -914,6 +968,20 @@ CREATE INDEX index_registrations_on_user_id ON public.registrations USING btree 
 
 
 --
+-- Name: index_reputation_events_on_source_type_and_source_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_reputation_events_on_source_type_and_source_id ON public.reputation_events USING btree (source_type, source_id);
+
+
+--
+-- Name: index_reputation_events_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_reputation_events_on_user_id ON public.reputation_events USING btree (user_id);
+
+
+--
 -- Name: index_sessions_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -972,6 +1040,14 @@ ALTER TABLE ONLY public.messages
 
 ALTER TABLE ONLY public.registrations
     ADD CONSTRAINT fk_rails_2e0658f554 FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: reputation_events fk_rails_6fa9a4470d; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.reputation_events
+    ADD CONSTRAINT fk_rails_6fa9a4470d FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -1037,6 +1113,8 @@ ALTER TABLE ONLY public.chat_rooms
 SET search_path TO "$user", public, tiger, topology;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260429000003'),
+('20260429000002'),
 ('20260429000001'),
 ('20260427000002'),
 ('20260427000001'),

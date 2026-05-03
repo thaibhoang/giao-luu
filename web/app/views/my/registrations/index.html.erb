@@ -1,0 +1,80 @@
+<% content_for :title, "Lịch sử tham gia | SportMatch" %>
+
+<%= render Ui::TopAppBarComponent.new(title: "Lịch sử tham gia", back_href: listings_path) %>
+
+<%= render Ui::PageShellComponent.new(padding_top: "pt-24", padding_bottom: "pb-28", max_width: "max-w-2xl", horizontal_padding: "px-5") do %>
+  <% if @registrations.empty? %>
+    <%= render Ui::EmptyStateComponent.new(
+      icon: "sports_tennis",
+      title: "Chưa tham gia buổi chơi nào",
+      description: "Đăng ký tham gia các buổi chơi để tích lũy điểm uy tín.",
+      primary_label: "Khám phá tin",
+      primary_href: listings_path
+    ) %>
+  <% else %>
+    <div class="space-y-4">
+      <% @registrations.each do |reg| %>
+        <% listing = reg.listing %>
+        <div class="p-5 bg-surface-container-lowest border border-outline-variant/20 rounded-3xl space-y-3">
+          <%# Tên buổi chơi %>
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0 flex-1">
+              <%= link_to listing_path(listing), class: "font-bold text-on-surface hover:text-primary line-clamp-2 leading-snug" do %>
+                <%= listing.title %>
+              <% end %>
+              <p class="text-xs text-on-surface-variant mt-0.5">
+                <%= l(listing.start_at, format: :long) %>
+              </p>
+            </div>
+            <%# Badge điểm %>
+            <% if reg.rewarded? %>
+              <span class="shrink-0 px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold">+10 điểm</span>
+            <% end %>
+          </div>
+
+          <%# Trạng thái check-in %>
+          <div class="flex flex-wrap gap-2 text-xs">
+            <% if reg.checked_in_at.present? %>
+              <span class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">
+                <%= render Ui::IconComponent.new(name: "where_to_vote", size_class: "text-sm") %>
+                Check-in lúc <%= l(reg.checked_in_at, format: :short) %>
+              </span>
+            <% else %>
+              <span class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant">
+                <%= render Ui::IconComponent.new(name: "pending", size_class: "text-sm") %>
+                Chờ check-in
+              </span>
+            <% end %>
+
+            <% if reg.owner_confirmed_at.present? %>
+              <span class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-50 text-purple-700">
+                <%= render Ui::IconComponent.new(name: "verified", size_class: "text-sm") %>
+                Chủ xác nhận
+              </span>
+            <% end %>
+          </div>
+
+          <%# Nút check-in nếu chưa làm và đã kết thúc %>
+          <% if listing.end_at <= Time.current && reg.checked_in_at.nil? %>
+            <%= button_to(
+              checkin_listing_registration_path(listing, reg),
+              method: :put,
+              class: "w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-on-primary-container font-lexend font-bold text-sm hover:opacity-90"
+            ) do %>
+              <%= render Ui::IconComponent.new(name: "where_to_vote", size_class: "text-base") %>
+              Check-in ngay
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>
+
+<%= render Ui::BottomNavComponent.new(items: [
+  { path: listings_path, icon: "explore", label: "Explore", active: false },
+  { path: map_path, icon: "map", label: "Map", active: false },
+  { path: my_listings_path, icon: "assignment", label: "Tin của tôi", active: false },
+  { path: my_bookmarks_path, icon: "bookmark", label: "Đã lưu", active: false },
+  { path: authenticated? ? profile_path : new_session_path, icon: "person", label: "Profile", active: false }
+]) %>
