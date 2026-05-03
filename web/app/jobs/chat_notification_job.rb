@@ -16,7 +16,7 @@ class ChatNotificationJob < ApplicationJob
       "listing=#{listing_id} sender=#{sender_user_id} message=#{message_id}"
     )
 
-    return unless event == "new_message"
+    nil unless event == "new_message"
 
     # TODO Sprint 4: notify các thành viên đã đăng ký listing qua email
     # listing = Listing.find_by(id: listing_id)

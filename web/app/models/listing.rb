@@ -221,9 +221,9 @@ class Listing < ApplicationRecord
             .by_play_format(play_format)
     rel = if is_pickleball
             rel.skill_min_filter_pk(skill_min).skill_max_filter_pk(skill_max)
-          else
+    else
             rel.skill_min_filter(skill_min).skill_max_filter(skill_max)
-          end
+    end
     rel = rel.within_radius(lat:, lng:, radius_meters:) if lat && lng && radius_meters
     rel.select(
       "id, sport, listing_type, title, location_name, start_at, end_at, " \
