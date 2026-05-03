@@ -1,0 +1,89 @@
+<li class="p-5 bg-surface-container-lowest border border-outline-variant/20 rounded-3xl space-y-2">
+  <div class="flex items-center gap-3">
+    <%# Avatar + link đến profile công khai %>
+    <%= link_to public_user_profile_path(reg.user), data: { turbo_frame: "_top" },
+          class: "shrink-0" do %>
+      <% gravatar_hash = Digest::MD5.hexdigest(reg.user.email_address.downcase.strip) %>
+      <img src="https://www.gravatar.com/avatar/<%= gravatar_hash %>?s=80&d=identicon"
+           alt="<%= reg.user.name_or_email %>"
+           class="w-10 h-10 rounded-full bg-primary/10 object-cover hover:ring-2 hover:ring-primary transition-all">
+    <% end %>
+    <div class="min-w-0 flex-1">
+      <%= link_to public_user_profile_path(reg.user),
+            class: "font-semibold text-on-surface hover:text-primary truncate block",
+            data: { turbo_frame: "_top" } do %>
+        <%= reg.user.name_or_email %>
+      <% end %>
+      <p class="text-xs text-on-surface-variant">
+        Đăng ký lúc <%= l(reg.created_at, format: :long) %>
+      </p>
+    </div>
+    <%# Điểm uy tín + badges trạng thái %>
+    <div class="flex flex-col items-end gap-1 shrink-0 text-xs">
+      <% pts = reg.user.reputation_points %>
+      <span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full font-bold
+        <%= pts > 0 ? 'bg-green-100 text-green-700' : 'bg-surface-container text-on-surface-variant' %>">
+        <%= render Ui::IconComponent.new(name: "military_tech", size_class: "text-sm") %>
+        <%= pts %> điểm
+      </span>
+      <% if reg.rewarded? %>
+        <span class="px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-semibold">✅ +10đ</span>
+      <% end %>
+      <% if reg.checked_in_at.present? %>
+        <span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">Check-in ✓</span>
+      <% end %>
+      <% if reg.owner_confirmed_at.present? %>
+        <span class="px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">Confirmed ✓</span>
+      <% end %>
+    </div>
+  </div>
+
+  <% if reg.phone.present? %>
+    <div class="flex items-center gap-2 text-sm text-on-surface-variant">
+      <%= render Ui::IconComponent.new(name: "phone", size_class: "text-base") %>
+      <span><%= reg.phone %></span>
+    </div>
+  <% end %>
+
+  <% if reg.note.present? %>
+    <div class="pt-1 border-t border-outline-variant/10">
+      <p class="text-sm text-on-surface leading-relaxed"><%= reg.note %></p>
+    </div>
+  <% end %>
+
+  <%# Nút Accept / Reject cho đơn pending %>
+  <% if reg.pending? %>
+    <div class="pt-2 border-t border-outline-variant/10 flex gap-2">
+      <%= button_to(
+        accept_listing_registration_path(listing, reg),
+        method: :put,
+        class: "flex items-center gap-1.5 px-4 py-2 rounded-xl bg-green-50 text-green-700 text-sm font-semibold hover:bg-green-100 border border-green-200"
+      ) do %>
+        <%= render Ui::IconComponent.new(name: "check_circle", size_class: "text-base") %>
+        Chấp nhận
+      <% end %>
+      <%= button_to(
+        reject_listing_registration_path(listing, reg),
+        method: :put,
+        class: "flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-50 text-red-600 text-sm font-semibold hover:bg-red-100 border border-red-200"
+      ) do %>
+        <%= render Ui::IconComponent.new(name: "cancel", size_class: "text-base") %>
+        Từ chối
+      <% end %>
+    </div>
+  <% end %>
+
+  <%# Nút Confirm tham dự cho đơn accepted sau end_at %>
+  <% if reg.accepted? && listing.end_at <= Time.current && reg.owner_confirmed_at.nil? %>
+    <div class="pt-2 border-t border-outline-variant/10">
+      <%= button_to(
+        confirm_listing_registration_path(listing, reg),
+        method: :put,
+        class: "flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary text-sm font-semibold hover:bg-primary/20"
+      ) do %>
+        <%= render Ui::IconComponent.new(name: "how_to_reg", size_class: "text-base") %>
+        Xác nhận đã tham dự
+      <% end %>
+    </div>
+  <% end %>
+</li>

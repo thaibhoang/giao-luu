@@ -301,11 +301,11 @@ class ListingsController < ApplicationController
   end
 
   # Kiểm tra user có quyền vào chat room không:
-  # chỉ chủ listing hoặc người đã đăng ký tham gia.
+  # chỉ chủ listing hoặc người đã được accepted.
   def chat_accessible?(listing, user)
     return false unless user
     return true if listing.user_id == user.id
 
-    listing.registrations.exists?(user: user)
+    listing.registrations.accepted.exists?(user: user)
   end
 end

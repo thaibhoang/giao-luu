@@ -1,0 +1,116 @@
+<%
+  display_name  = @public_user.name_or_email
+  sports        = [ @public_user.sport_badminton? ? "Cầu lông" : nil,
+                    @public_user.sport_pickleball? ? "Pickleball" : nil ].compact.join(" & ")
+  city          = @public_user.address.presence || "Việt Nam"
+%>
+<% content_for :title, "#{display_name} · SportMatch" %>
+<% content_for :head do %>
+  <meta name="description" content="Hồ sơ của <%= display_name %> — #{sports.presence || 'SportMatch'} tại #{city}. Điểm uy tín: <%= @reputation_points %>.">
+  <meta property="og:title"       content="<%= display_name %> · SportMatch">
+  <meta property="og:description" content="<%= sports.presence || "SportMatch" %> · <%= city %>">
+  <meta property="og:url"         content="<%= public_user_profile_url(@public_user) %>">
+  <link rel="canonical"           href="<%= public_user_profile_url(@public_user) %>">
+<% end %>
+
+<%= render Ui::TopAppBarComponent.new(title: "Hồ sơ người dùng", back_href: :back) %>
+
+<%= render Ui::PageShellComponent.new(padding_top: "pt-24", padding_bottom: "pb-28", max_width: "max-w-lg", horizontal_padding: "px-5") do %>
+
+  <%# ── Avatar + tên + điểm uy tín ── %>
+  <div class="flex items-center gap-4 mb-8">
+    <%# Gravatar %>
+    <% gravatar_hash = Digest::MD5.hexdigest(@public_user.email_address.downcase.strip) %>
+    <img src="https://www.gravatar.com/avatar/<%= gravatar_hash %>?s=96&d=identicon"
+         alt="<%= display_name %>"
+         class="w-16 h-16 rounded-full bg-primary/10 object-cover shrink-0">
+    <div>
+      <h1 class="font-headline text-xl font-bold text-on-surface"><%= display_name %></h1>
+      <% if @public_user.address.present? %>
+        <p class="text-xs text-on-surface-variant flex items-center gap-1 mt-0.5">
+          <%= render Ui::IconComponent.new(name: "location_on", size_class: "text-sm") %>
+          <%= @public_user.address %>
+        </p>
+      <% end %>
+      <%# Điểm uy tín %>
+      <span class="inline-flex items-center gap-1 mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold
+        <%= @reputation_points > 0 ? 'bg-green-100 text-green-700' : 'bg-surface-container text-on-surface-variant' %>">
+        <%= render Ui::IconComponent.new(name: "military_tech", size_class: "text-sm") %>
+        <%= @reputation_points %> điểm uy tín
+      </span>
+    </div>
+  </div>
+
+  <%# ── Môn thể thao & trình độ ── %>
+  <% if @public_user.sport_badminton? || @public_user.sport_pickleball? %>
+    <section class="mb-8">
+      <h2 class="font-lexend text-[10px] font-bold tracking-[0.2em] uppercase text-on-surface-variant mb-3">Môn thể thao</h2>
+      <div class="grid grid-cols-2 gap-3">
+        <% if @public_user.sport_badminton? %>
+          <div class="bg-primary/10 border border-primary/30 rounded-2xl p-4">
+            <div class="flex items-center gap-2 mb-2">
+              <%= render Ui::SportIconComponent.new(sport: :badminton, class: "w-5 h-5") %>
+              <span class="text-sm font-semibold text-on-surface">Cầu lông</span>
+            </div>
+            <% if @public_user.skill_level_badminton.present? %>
+              <span class="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full font-medium">
+                <%= helpers.badminton_skill_label(@public_user.skill_level_badminton) %>
+              </span>
+            <% end %>
+          </div>
+        <% end %>
+        <% if @public_user.sport_pickleball? %>
+          <div class="bg-primary/10 border border-primary/30 rounded-2xl p-4">
+            <div class="flex items-center gap-2 mb-2">
+              <%= render Ui::SportIconComponent.new(sport: :pickleball, class: "w-5 h-5") %>
+              <span class="text-sm font-semibold text-on-surface">Pickleball</span>
+            </div>
+            <% if @public_user.skill_level_pickleball.present? %>
+              <span class="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full font-medium">
+                DUPR <%= @public_user.skill_level_pickleball.gsub("dupr_", "").gsub("_", ".") %>
+              </span>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <%# ── Giới thiệu ── %>
+  <% if @public_user.bio.present? %>
+    <section class="mb-8">
+      <h2 class="font-lexend text-[10px] font-bold tracking-[0.2em] uppercase text-on-surface-variant mb-3">Giới thiệu</h2>
+      <p class="text-sm text-on-surface leading-relaxed bg-surface-container-low rounded-2xl px-4 py-3"><%= @public_user.bio %></p>
+    </section>
+  <% end %>
+
+  <%# ── Tin đã đăng ── %>
+  <section>
+    <h2 class="font-lexend text-[10px] font-bold tracking-[0.2em] uppercase text-on-surface-variant mb-3">
+      Tin đã đăng (<%= @public_listings.size %>)
+    </h2>
+    <% if @public_listings.empty? %>
+      <p class="text-sm text-on-surface-variant py-4 text-center">Chưa có tin nào.</p>
+    <% else %>
+      <div class="space-y-3">
+        <% @public_listings.each do |listing| %>
+          <%= link_to listing_path(listing), class: "block p-4 bg-surface-container-lowest border border-outline-variant/20 rounded-2xl hover:bg-surface-container-low transition-colors" do %>
+            <div class="flex items-center gap-2 text-on-surface-variant mb-1">
+              <%= render Ui::SportIconComponent.new(sport: listing.sport, class: "w-4 h-4") %>
+              <span class="text-[10px] font-semibold uppercase tracking-widest"><%= listing.sport.humanize %></span>
+            </div>
+            <p class="font-semibold text-on-surface text-sm line-clamp-2"><%= listing.title %></p>
+            <p class="text-xs text-on-surface-variant mt-1 flex items-center gap-1">
+              <%= render Ui::IconComponent.new(name: "schedule", size_class: "text-xs") %>
+              <%= l(listing.start_at, format: :short) %>
+              <span class="mx-1">·</span>
+              <%= render Ui::IconComponent.new(name: "location_on", size_class: "text-xs") %>
+              <%= listing.location_name %>
+            </p>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+
+<% end %>

@@ -17,7 +17,7 @@
 </section>
 
 <% elsif @chat_access == false %>
-<%# ── Đã đăng nhập nhưng chưa đăng ký tham gia ───────────── %>
+<%# ── Đã đăng nhập nhưng chưa được chấp nhận ─────────────── %>
 <section class="space-y-3">
   <h3 class="text-[10px] font-bold text-on-surface-variant tracking-[0.2em] uppercase">
     💬 Phòng chat
@@ -26,8 +26,13 @@
     <div class="flex justify-center">
       <%= render Ui::IconComponent.new(name: "lock", size_class: "text-3xl text-on-surface-variant") %>
     </div>
-    <p class="text-sm font-semibold text-on-surface">Chỉ người tham gia mới được nhắn tin</p>
-    <p class="text-xs text-on-surface-variant">Đăng ký tham gia buổi giao lưu để mở khóa phòng chat.</p>
+    <p class="text-sm font-semibold text-on-surface">Chỉ người được chấp nhận mới được nhắn tin</p>
+    <% my_reg = authenticated? && @listing.registrations.find_by(user: Current.session.user) %>
+    <% if my_reg&.pending? %>
+      <p class="text-xs text-amber-600 font-semibold">⏳ Đơn của bạn đang chờ chủ tin duyệt…</p>
+    <% else %>
+      <p class="text-xs text-on-surface-variant">Đăng ký tham gia và chờ chủ tin chấp nhận để mở khóa phòng chat.</p>
+    <% end %>
   </div>
 </section>
 

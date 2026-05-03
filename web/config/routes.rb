@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   resource :session
   resources :users, only: %i[new create]
+  get "users/:id", to: "users#public_show", as: :public_user_profile
   resources :passwords, param: :token
   get "profile", to: "users#show", as: :profile
   get "profile/edit", to: "users#edit", as: :edit_profile
@@ -11,6 +12,8 @@ Rails.application.routes.draw do
       member do
         put :checkin
         put :confirm
+        put :accept
+        put :reject
       end
     end
     resource :bookmark, only: %i[create destroy]

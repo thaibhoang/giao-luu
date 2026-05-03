@@ -2,6 +2,8 @@
 
 module Ui
   class ListingCardComponent < ApplicationComponent
+    include ListingsHelper
+
     def initialize(listing:, show_actions: false, compact: false, bookmarked: false, current_user: nil)
       @listing = listing
       @show_actions = show_actions

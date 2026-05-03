@@ -7,6 +7,9 @@
         <span class="text-[10px] font-semibold uppercase tracking-widest"><%= listing.sport.humanize %></span>
       </div>
       <h3 class="font-headline font-bold leading-tight <%= compact ? "text-base" : "text-lg" %>"><%= listing.title %></h3>
+      <% if listing_rain_warning?(listing) %>
+        <span class="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">⚠️ Có thể mưa</span>
+      <% end %>
     </div>
     <div class="flex items-center gap-2 shrink-0">
       <% if current_user %>

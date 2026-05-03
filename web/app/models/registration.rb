@@ -3,20 +3,48 @@
 class Registration < ApplicationRecord
   CHECKIN_POINTS = 10  # điểm cộng cho mỗi bên khi cả hai confirm
 
+  STATUSES = %w[pending accepted rejected].freeze
+
   belongs_to :listing
   belongs_to :user
 
   validates :listing_id, uniqueness: { scope: :user_id, message: "Bạn đã đăng ký tham gia bài này rồi" }
+  validates :status, inclusion: { in: STATUSES }
   validate :cannot_register_own_listing
   validate :listing_must_be_user_submitted
 
   default_scope { order(created_at: :asc) }
 
+  scope :pending,  -> { where(status: "pending") }
+  scope :accepted, -> { where(status: "accepted") }
+  scope :rejected, -> { where(status: "rejected") }
+
+  # ── Status helpers ──────────────────────────────────────
+
+  def pending?   = status == "pending"
+  def accepted?  = status == "accepted"
+  def rejected?  = status == "rejected"
+
+  # Chủ listing chấp nhận đơn đăng ký
+  def accept!
+    return false unless pending?
+    update!(status: "accepted")
+    true
+  end
+
+  # Chủ listing từ chối đơn đăng ký
+  def reject!
+    return false unless pending?
+    update!(status: "rejected")
+    true
+  end
+
   # ── Check-in helpers ────────────────────────────────────
 
-  # Người tham gia tự xác nhận đã đến (chỉ sau end_at)
+  # Người tham gia tự xác nhận đã đến (chỉ sau end_at, phải được accepted)
   def checkin!
     return false if checked_in_at.present?
+    return false unless accepted?
     return false unless listing.end_at <= Time.current
 
     update!(checked_in_at: Time.current)
@@ -24,9 +52,10 @@ class Registration < ApplicationRecord
     true
   end
 
-  # Chủ listing xác nhận người tham gia đã đến (chỉ sau end_at)
+  # Chủ listing xác nhận người tham gia đã đến (chỉ sau end_at, phải được accepted)
   def owner_confirm!
     return false if owner_confirmed_at.present?
+    return false unless accepted?
     return false unless listing.end_at <= Time.current
 
     update!(owner_confirmed_at: Time.current)

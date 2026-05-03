@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UsersController < ApplicationController
-  allow_unauthenticated_access only: %i[new create]
+  allow_unauthenticated_access only: %i[new create public_show]
   before_action :set_user, only: %i[show edit update]
 
   def new
@@ -18,6 +18,7 @@ class UsersController < ApplicationController
     end
   end
 
+  # GET /profile — hồ sơ của chính mình (yêu cầu đăng nhập)
   def show
   end
 
@@ -30,6 +31,16 @@ class UsersController < ApplicationController
     else
       render :edit, status: :unprocessable_entity
     end
+  end
+
+  # GET /users/:id — trang profile công khai
+  def public_show
+    @public_user = User.find(params[:id])
+    @public_listings = @public_user.listings
+                                   .upcoming
+                                   .order(start_at: :asc)
+                                   .limit(10)
+    @reputation_points = @public_user.reputation_points
   end
 
   private

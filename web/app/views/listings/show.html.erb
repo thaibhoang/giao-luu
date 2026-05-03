@@ -181,6 +181,27 @@
 
   <section class="space-y-3 pb-10">
     <a class="inline-flex items-center gap-2 text-primary font-bold text-sm border-b border-surface-variant pb-1" href="<%= @listing.contact_info %>">Xem thêm thông tin liên hệ</a>
+    <%# Link đến profile công khai của chủ tin %>
+    <% if @listing.user.present? %>
+      <%= link_to public_user_profile_path(@listing.user),
+            class: "flex items-center gap-3 p-3 bg-surface-container-low rounded-2xl hover:bg-surface-container transition-colors",
+            data: { turbo_frame: "_top" } do %>
+        <% gravatar_hash = Digest::MD5.hexdigest(@listing.user.email_address.downcase.strip) %>
+        <img src="https://www.gravatar.com/avatar/<%= gravatar_hash %>?s=64&d=identicon"
+             alt="<%= @listing.user.name_or_email %>"
+             class="w-10 h-10 rounded-full bg-primary/10 object-cover shrink-0">
+        <div class="min-w-0 flex-1">
+          <p class="text-xs text-on-surface-variant uppercase tracking-wider font-semibold">Chủ tin</p>
+          <p class="font-semibold text-on-surface text-sm truncate"><%= @listing.user.name_or_email %></p>
+        </div>
+        <% pts = @listing.user.reputation_points %>
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold shrink-0
+          <%= pts > 0 ? 'bg-green-100 text-green-700' : 'bg-surface-container text-on-surface-variant' %>">
+          <%= render Ui::IconComponent.new(name: "military_tech", size_class: "text-sm") %>
+          <%= pts %> điểm
+        </span>
+      <% end %>
+    <% end %>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
       <%= render Ui::ButtonComponent.new(
         "Mở trong bản đồ",
@@ -311,11 +332,21 @@
     <%
       my_reg        = @listing.registrations.find_by(user: current_user)
       ended         = @listing.end_at <= Time.current
-      can_checkin   = ended && my_reg && my_reg.checked_in_at.nil?
+      can_checkin   = ended && my_reg&.accepted? && my_reg&.checked_in_at.nil?
       checked_in    = my_reg&.checked_in_at.present?
     %>
     <div class="flex gap-3">
-      <% if can_checkin %>
+      <% if my_reg&.pending? %>
+        <span class="flex-1 flex items-center justify-center gap-2 h-14 px-5 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-sm font-semibold">
+          <%= render Ui::IconComponent.new(name: "pending", size_class: "text-xl") %>
+          Chờ chủ tin duyệt…
+        </span>
+      <% elsif my_reg&.rejected? %>
+        <span class="flex-1 flex items-center justify-center gap-2 h-14 px-5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm font-semibold">
+          <%= render Ui::IconComponent.new(name: "cancel", size_class: "text-xl") %>
+          Đơn bị từ chối
+        </span>
+      <% elsif can_checkin %>
         <%# Sau end_at — hiện nút check-in %>
         <%= button_to(
           checkin_listing_registration_path(@listing, my_reg),
@@ -333,17 +364,19 @@
       <% else %>
         <span class="flex-1 flex items-center justify-center gap-2 h-14 px-5 rounded-xl bg-surface-container-high border border-outline-variant text-on-surface-variant text-sm font-semibold">
           <%= render Ui::IconComponent.new(name: "check_circle", size_class: "text-xl text-green-600") %>
-          Đã đăng ký tham gia
+          Đã được chấp nhận
         </span>
       <% end %>
-      <%= button_to(
-        listing_registration_path(@listing, my_reg),
-        method: :delete,
-        class: "h-14 px-5 rounded-xl bg-surface-container-high border border-outline-variant text-on-surface-variant text-sm font-semibold hover:bg-surface-container-highest flex items-center gap-2",
-        disabled: checked_in || ended
-      ) do %>
-        <%= render Ui::IconComponent.new(name: "close", size_class: "text-xl") %>
-        Huỷ
+      <% unless my_reg&.rejected? %>
+        <%= button_to(
+          listing_registration_path(@listing, my_reg),
+          method: :delete,
+          class: "h-14 px-5 rounded-xl bg-surface-container-high border border-outline-variant text-on-surface-variant text-sm font-semibold hover:bg-surface-container-highest flex items-center gap-2",
+          disabled: checked_in || ended
+        ) do %>
+          <%= render Ui::IconComponent.new(name: "close", size_class: "text-xl") %>
+          Huỷ
+        <% end %>
       <% end %>
     </div>
 

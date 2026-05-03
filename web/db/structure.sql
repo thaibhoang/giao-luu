@@ -415,7 +415,8 @@ CREATE TABLE public.registrations (
     updated_at timestamp(6) without time zone NOT NULL,
     checked_in_at timestamp with time zone,
     owner_confirmed_at timestamp with time zone,
-    rewarded_at timestamp with time zone
+    rewarded_at timestamp with time zone,
+    status character varying DEFAULT 'pending'::character varying NOT NULL
 );
 
 
@@ -1113,6 +1114,7 @@ ALTER TABLE ONLY public.chat_rooms
 SET search_path TO "$user", public, tiger, topology;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260503000001'),
 ('20260429000003'),
 ('20260429000002'),
 ('20260429000001'),
